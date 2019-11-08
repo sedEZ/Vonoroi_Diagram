@@ -16,4 +16,6 @@ int main(int argc, char *argv[])
  *  已經完成當按下Run的時候開始建立vonoroi 物件
  *  GraphicScene接下來需建立自己的RunOneStep去呼叫Vonoroi物件的RunOneStep
  *  並把回傳結果畫出,更新畫布
+ *  **Voronoi拼錯
 */
+
