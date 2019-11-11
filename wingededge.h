@@ -1,6 +1,7 @@
 #ifndef WINGEDEDGE_H
 #define WINGEDEDGE_H
 #include <vector>
+#include <math.h>
 using namespace std;
 
 /*
@@ -16,6 +17,12 @@ class WingedEdge
 public:
     WingedEdge();
     WingedEdge(vector<double> p_x, vector<double>p_y);
+
+    void constructTwoPointsVoronoi();
+    int getNumPolygons();
+
+    void setWaitingMerge(bool i);
+    bool IsWaitingMerge();
 
 private:
     int num_polygons;
@@ -46,7 +53,8 @@ private:
     vector<double> x;
     vector<double> y;
 
-
+    //For storing : Check if the WingedEdge object is waiting merging.
+    bool waiting_merge;
 };
 
 #endif // WINGEDEDGE_H

@@ -19,13 +19,13 @@ SOURCES += \
     main.cpp \
     dialog.cpp \
     mygraphicsscene.cpp \
-    vonoroi.cpp \
+    voronoi.cpp \
     wingededge.cpp
 
 HEADERS += \
     dialog.h \
     mygraphicsscene.h \
-    vonoroi.h \
+    voronoi.h \
     wingededge.h
 
 FORMS += \

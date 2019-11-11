@@ -33,7 +33,11 @@ void Dialog::on_pushButton_clicked()
 //Step by step
 void Dialog::on_pushButton_2_clicked()
 {
+    if (!this->scene->initialized()){
+       this->scene->initializeVonoroi();
+    }
     //Run_next_step();
+    //this->scene->runOneStep();
 }
 
 //Clear

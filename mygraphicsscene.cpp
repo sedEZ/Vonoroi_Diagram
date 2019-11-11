@@ -9,7 +9,7 @@ MyGraphicsScene::MyGraphicsScene(){
 
 void MyGraphicsScene::restart()
 {
-    //Clear generating points
+    //Clear all generating points
     this->clear();
     this->setInitializedIndicator(0);
     delete this->v;
@@ -37,13 +37,32 @@ void MyGraphicsScene::initializeVonoroi()
         x.push_back(this->g_points[i].x());
         y.push_back(this->g_points[i].y());
     }
-    v = new Vonoroi(x,y);
-
+    v = new Voronoi(x,y);
 }
 
+/*
 //Todo
 void MyGraphicsScene::runOneStep()
 {
+    WingedEdge current_vonoroi = this->v->runOneStep();
+    //Update scene with current_vonoroi
+    //Check if reaching result
+}
+*/
+
+//Temporary version: for first time demo
+void MyGraphicsScene::runOneStep()
+{
+    if(g_points.size()==1){
+
+    }
+    else if(g_points.size()==2){
+
+    }
+    else if(g_points.size()==3){
+
+    }
+
     WingedEdge current_vonoroi = this->v->runOneStep();
     //Update scene with current_vonoroi
     //Check if reaching result

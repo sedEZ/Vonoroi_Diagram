@@ -2,7 +2,7 @@
 #define MYGRAPHICSSCENE_H
 
 #include "wingededge.h"
-#include "vonoroi.h"
+#include "voronoi.h"
 #include <QGraphicsScene>
 #include <QGraphicsSceneMouseEvent>
 #include <QGraphicsEllipseItem>
@@ -19,8 +19,9 @@ public:
 
     void initializeVonoroi();
 
-    //Todo
+    //**Todo
     void runOneStep();
+
 
     //Restart vonoroi's diagram
     void restart();
@@ -33,9 +34,9 @@ public slots:
     void mousePressEvent(QGraphicsSceneMouseEvent* e);
 private:
     //Class for running vonoroi's diagram step-by-step using divide-and-conquer strategy
-    Vonoroi* v;
+    Voronoi* v;
 
-    //generation points of Vonoroi's diagram
+    //generating points of Vonoroi's diagram
     QVector<QPointF> g_points;
 
     //If initialized_indicator == 0, initilize the vonoroi's diagram,
