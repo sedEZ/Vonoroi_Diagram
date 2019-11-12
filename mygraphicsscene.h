@@ -22,7 +22,6 @@ public:
     //**Todo
     void runOneStep();
 
-
     //Restart vonoroi's diagram
     void restart();
     void addAGeneratingPoints(QPointF* pos, qreal width, qreal height );

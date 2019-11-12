@@ -10,9 +10,10 @@ MyGraphicsScene::MyGraphicsScene(){
 void MyGraphicsScene::restart()
 {
     //Clear all generating points
+
     this->clear();
     this->setInitializedIndicator(0);
-    delete this->v;
+
 }
 
 //Use mouse to add genetating points of vonoroi diagram
@@ -53,15 +54,6 @@ void MyGraphicsScene::runOneStep()
 //Temporary version: for first time demo
 void MyGraphicsScene::runOneStep()
 {
-    if(g_points.size()==1){
-
-    }
-    else if(g_points.size()==2){
-
-    }
-    else if(g_points.size()==3){
-
-    }
 
     WingedEdge current_vonoroi = this->v->runOneStep();
     //Update scene with current_vonoroi

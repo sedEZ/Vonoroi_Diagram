@@ -16,7 +16,8 @@ using namespace std;
 class Voronoi{
 public:
     Voronoi();
-    Voronoi(vector<double> p_x, vector<double>p_y);
+    Voronoi(vector<double> p_x, vector<double> p_y);
+    ~Voronoi();
 
     //One step is referred to be finishing merging 2 WingedEdge objects into 1.
     WingedEdge runOneStep();

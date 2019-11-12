@@ -6,11 +6,16 @@ Voronoi::Voronoi()
 
 }
 //Constructor
-Voronoi::Voronoi(vector<double> p_x, vector<double>p_y)
+Voronoi::Voronoi(vector<double> p_x, vector<double> p_y)
 {
     //Create original generating points & push it into stack
     WingedEdge generating_points(p_x,p_y);
     s_stack.push(generating_points);
+}
+
+Voronoi::~Voronoi()
+{
+    delete this;
 }
 
 
@@ -24,17 +29,37 @@ WingedEdge Voronoi::runOneStep()
 
     //If the next stack is not waiting for merging, then it is to be divide
     //Loop until a waiting-for-merging WingedEdge is to be run.
-    while(!this->s_stack.top().IsWaitingMerge()){
+    while(!this->s_stack.empty() && !this->s_stack.top().IsWaitingMerge()){
         //Get top
         WingedEdge current_divide = s_stack.top(); s_stack.pop();
         if(current_divide.getNumPolygons() == 1){
             //If current_divide has just 1 point, returns
             done_stack.push(current_divide);
+            return current_divide;
         }
         else if(current_divide.getNumPolygons() == 2){
             //If current_divide has 2 points, find the vertical line & update the WingedEdge data structure
             current_divide.constructTwoPointsVoronoi();
             done_stack.push(current_divide);
+            return current_divide;
+        }
+        else if(current_divide.getNumPolygons() == 3){
+            //If current_divide has 3 points, seperate as 1p and 2p & update the WingedEdge data structure
+
+            if(current_divide.threePointsVertical()){
+                //Special situation: three points on the same vertical line
+
+            }
+            else{
+                WingedEdge *W_l,*W_r;
+                current_divide.divide(W_l,W_r);
+
+                current_divide.setWaitingMerge(true);
+                s_stack.push(current_divide);
+                s_stack.push(*W_l);
+                s_stack.push(*W_r);
+            }
+
         }
         else{
             //m = find_median_line(current_divide) , m is the x-coordinate of median line
@@ -61,10 +86,12 @@ WingedEdge Voronoi::runOneStep()
     //Right WingedEdge
     WingedEdge S_r = done_stack.top(); done_stack.pop();
 
-    //current_merge.MERGE(S_l,S_r);
+    //Temporary function for first time demo
+    current_merge.merge(S_l,S_r);
 
     //Done merge, put current_merge into done_stack
     done_stack.push(current_merge);
 
     return current_merge;
 }
+

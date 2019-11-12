@@ -18,12 +18,27 @@ public:
     WingedEdge();
     WingedEdge(vector<double> p_x, vector<double>p_y);
 
+    void constructTOnePointsVoronoi();
     void constructTwoPointsVoronoi();
+
+    void divide(WingedEdge* W_l,WingedEdge* W_r);
+
+    //Todo
+    void merge(WingedEdge S_l,WingedEdge S_r);
+
+    //Temporary version for first demo
+    double findMedianLine();
+
     int getNumPolygons();
+
+    bool threePointsVertical();
 
     void setWaitingMerge(bool i);
     bool IsWaitingMerge();
 
+
+
+//Variables
 private:
     int num_polygons;
     int num_vertices;
