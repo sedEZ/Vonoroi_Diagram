@@ -6,6 +6,7 @@
 #include <QGraphicsScene>
 #include <QGraphicsSceneMouseEvent>
 #include <QGraphicsEllipseItem>
+#include <QGraphicsLineItem>
 #include <QPointF>
 #include <QVector>
 #include <stack>
@@ -27,6 +28,9 @@ public:
     void addAGeneratingPoints(QPointF* pos, qreal width, qreal height );
     bool initialized(){return initialized_indicator;}
     void setInitializedIndicator(int i);
+    bool voronoiEmpty();
+
+
 signals:
 
 public slots:

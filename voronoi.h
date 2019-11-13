@@ -21,6 +21,7 @@ public:
 
     //One step is referred to be finishing merging 2 WingedEdge objects into 1.
     WingedEdge runOneStep();
+    bool empty();
 
 private:
     //Stack for run Vonoroi's diagram with divide-and-conquer strategy

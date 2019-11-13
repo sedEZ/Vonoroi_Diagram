@@ -15,6 +15,10 @@ Voronoi::Voronoi(vector<double> p_x, vector<double> p_y)
 
 Voronoi::~Voronoi()
 {
+    while(!s_stack.empty())
+        s_stack.pop();
+    while(!done_stack.empty())
+        s_stack.pop();
     delete this;
 }
 
@@ -40,6 +44,7 @@ WingedEdge Voronoi::runOneStep()
         else if(current_divide.getNumPolygons() == 2){
             //If current_divide has 2 points, find the vertical line & update the WingedEdge data structure
             current_divide.constructTwoPointsVoronoi();
+
             done_stack.push(current_divide);
             return current_divide;
         }
@@ -48,7 +53,6 @@ WingedEdge Voronoi::runOneStep()
 
             if(current_divide.threePointsVertical()){
                 //Special situation: three points on the same vertical line
-
             }
             else{
                 WingedEdge *W_l,*W_r;
@@ -73,6 +77,7 @@ WingedEdge Voronoi::runOneStep()
         }
     }
 
+    //In first demo, this step should be run only when 3 points
     WingedEdge current_merge = this->s_stack.top(); s_stack.pop();
 
     //Assert if done_stack has more than 2 elements
@@ -93,5 +98,10 @@ WingedEdge Voronoi::runOneStep()
     done_stack.push(current_merge);
 
     return current_merge;
+}
+
+bool Voronoi::empty()
+{
+    return s_stack.empty();
 }
 

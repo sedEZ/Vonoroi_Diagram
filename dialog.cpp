@@ -1,5 +1,6 @@
 #include "dialog.h"
 #include "ui_dialog.h"
+#include <QDebug>
 
 Dialog::Dialog(QWidget *parent)
     : QDialog(parent)
@@ -27,7 +28,11 @@ void Dialog::on_pushButton_clicked()
        this->scene->initializeVonoroi();
     }
 
-    //this->scene->v->run_to_end();
+    while(!this->scene->voronoiEmpty()){
+        qDebug()<<"Run next step";
+        this->scene->runOneStep();
+        qDebug()<<"Finish running the step";
+    }
 }
 
 //Step by step
@@ -37,7 +42,12 @@ void Dialog::on_pushButton_2_clicked()
        this->scene->initializeVonoroi();
     }
     //Run_next_step();
-    //this->scene->runOneStep();
+    qDebug()<<"Run next step";
+    if(this->scene->voronoiEmpty()){
+        return;
+    }
+
+    this->scene->runOneStep();
 }
 
 //Clear
