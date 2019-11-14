@@ -24,7 +24,7 @@ public:
     void constructTOnePointsVoronoi();
     void constructTwoPointsVoronoi();
 
-    void divide(WingedEdge* W_l,WingedEdge* W_r);
+    void divide(WingedEdge &W_l,WingedEdge &W_r);
 
     //Todo
     void merge(WingedEdge S_l,WingedEdge S_r);
@@ -44,9 +44,31 @@ public:
 
     void getOridinaryEdgesCoordinates(int i, double& x_1,double& x_2,double& y_1,double& y_2);
 
+    void findPerpendicularBisector(double x_1,double y_1,double x_2, double y_2,double& m, double& b);
 
+    vector<double> get_g_x();
+    vector<double> get_g_y();
+    vector<int> get_w();
+    vector<double> get_x();
+    vector<double> get_y();
+    vector<int> get_right_polygon();
+    vector<int> get_left_polygon();
+    vector<int> get_start_vertex();
+    vector<int> get_end_vertex();
 
 //Variables
+    vector<int> getCw_predecessor() const;
+    void setCw_predecessor(const vector<int> &value);
+
+    vector<int> getCcw_predecessor() const;
+    void setCcw_predecessor(const vector<int> &value);
+
+    vector<int> getCw_successor() const;
+    void setCw_successor(const vector<int> &value);
+
+    vector<int> getCcw_successor() const;
+    void setCcw_successor(const vector<int> &value);
+
 private:
     int num_polygons;
     int num_vertices;

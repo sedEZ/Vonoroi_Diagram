@@ -18,7 +18,7 @@ void WingedEdge::constructTOnePointsVoronoi()
 {
     num_vertices = 0;
     num_edges = 0;
-    w[0] = 0; //infinity
+    w.push_back(0); //infinity
 }
 
 void WingedEdge::constructTwoPointsVoronoi()
@@ -29,9 +29,16 @@ void WingedEdge::constructTwoPointsVoronoi()
         qDebug()<<"Number of generating points is not 2. To use this function, only 2 points is available.";
         return;
     }
-
+/*
+    if(this->g_y[0] > this->g_y[1]){
+        double tmp = this->g_y[0],     tmp_x = this->g_x[0];
+        this->g_y[0] = this->g_y[1] ;  this->g_x[0] = this->g_x[1];
+        this->g_y[1] = tmp          ;  this->g_y[1] = tmp_x;
+    }*/
     double x_1 = this->g_x[0],x_2 = this->g_x[1];
     double y_1 = this->g_y[0],y_2 = this->g_y[1];
+
+
 
     this->w.resize(2);
     this->w[0] = 1;
@@ -85,8 +92,8 @@ void WingedEdge::constructTwoPointsVoronoi()
         qDebug()<<"y_2 = "<<y_2;
 
         //y = mx + b
-        double m = (x_2-x_1)/(y_1-y_2);
-        double b = (x_1*x_1+y_1*y_1-x_2*x_2-y_2*y_2)/(2*(y_1-y_2));
+        double m,b;
+        findPerpendicularBisector(x_1,y_1,x_2,y_2,m,b);
 
         //x = ny + c
         double n = (y_1-y_2)/(x_2-x_1);
@@ -177,11 +184,13 @@ void WingedEdge::constructTwoPointsVoronoi()
     this->ccw_successor[2]=1;
 }
 
-void WingedEdge::divide(WingedEdge *W_l, WingedEdge *W_r)
+void WingedEdge::divide(WingedEdge &W_l, WingedEdge &W_r)
 {
     //Divide part
     vector<double> l_x,l_y,r_x,r_y;
     double m = this->findMedianLine();//Three points version
+
+
     for(unsigned long i=0;i<this->g_x.size();i++){
         //num_polygons should be same as g_x.size() and g_y.size()
 
@@ -195,13 +204,101 @@ void WingedEdge::divide(WingedEdge *W_l, WingedEdge *W_r)
             r_y.push_back(g_y[i]);
         }
     }
-    W_l = new WingedEdge(l_x,l_y);
-    W_r = new WingedEdge(r_x,r_y);
+    W_l = WingedEdge(l_x,l_y);
+    W_r = WingedEdge(r_x,r_y);
+
 }
 
 void WingedEdge::merge(WingedEdge S_l, WingedEdge S_r)
 {
+        qDebug()<<"merge";
+    //Temporary version
+    //if(S_l.getNumPolygons()==1){
+        vector<double> S_l_g_x = S_l.get_g_x();
+        vector<double> S_l_g_y = S_l.get_g_y();
+        vector<double> S_r_g_x = S_r.get_g_x();
+        vector<double> S_r_g_y = S_r.get_g_y();
 
+        double S_r_upper_x ,S_r_upper_y , S_r_lower_x ,S_r_lower_y;
+        if(S_r_g_y[0] < S_r_g_y[1]){
+            S_r_upper_x = S_r_g_x[1];
+            S_r_upper_y = S_r_g_y[1];
+            S_r_lower_x = S_r_g_x[0];
+            S_r_lower_y = S_r_g_y[0];
+        }
+        else{
+            S_r_upper_x = S_r_g_x[0];
+            S_r_upper_y = S_r_g_y[0];
+            S_r_lower_x = S_r_g_x[1];
+            S_r_lower_y = S_r_g_y[1];
+        }
+
+
+        //upper point
+        double x_1 = S_l_g_x[0] , y_1 = S_l_g_y[0];
+        double x_2 = S_r_upper_x , y_2 = S_r_upper_y;
+        //y = mx + b
+        double m,b;
+        findPerpendicularBisector(x_1,y_1,x_2,y_2,m,b);
+        //x = ny + c
+        double n = (y_1-y_2)/(x_2-x_1);
+        double c = b*(y_2-y_1)/(x_2-x_1);
+
+        double x_bot = n*600+c, y_bot = 600;
+
+        //lower point
+        x_1 = S_l_g_x[0] , y_1 = S_l_g_y[0];
+        x_2 = S_r_lower_x , y_2 = S_r_lower_y;
+        //y = mx + b
+        findPerpendicularBisector(x_1,y_1,x_2,y_2,m,b);
+        //x = ny + c
+        n = (y_1-y_2)/(x_2-x_1);
+        c = b*(y_2-y_1)/(x_2-x_1);
+        double x_top = n*0+c, y_top = 0;
+    /***************************************************************/
+        vector<int> S_r_w = S_r.get_w();
+        vector<double> S_r_x = S_r.get_x();
+        vector<double> S_r_y = S_r.get_y();
+        double m_r = (S_r_y[1]-S_r_y[0])/(S_r_x[1]-S_r_x[0]);
+        double b_r = S_r_y[0]-m_r*S_r_x[0];
+
+        //Cross point
+        double x_mid = (b_r-b)/(m-m_r) ,y_mid = m*x_mid+b;
+
+
+        this->num_edges=3;
+        this->changeArraysForEdges(this->num_edges);
+
+        this->x.push_back(S_r_x[1]);//right-most vertex of S_r
+        this->x.push_back(x_mid);
+        this->x.push_back(x_top);
+        this->x.push_back(x_bot);
+
+        this->y.push_back(S_r_y[1]);//right-most vertex of S_r
+        this->y.push_back(y_mid);
+        this->y.push_back(y_top);
+        this->y.push_back(y_bot);
+
+        //Todo : adjust WingedEdge ds
+
+        //Man-made judgement, not general
+        this->start_vertex[0] = 0;
+        this->end_vertex[0] = 1;
+        this->start_vertex[1] = 2;
+        this->end_vertex[1] = 1;
+        this->start_vertex[2] = 1;
+        this->end_vertex[2] = 3;
+
+
+        //Wrong assighment, but these can help drawing
+        this->right_polygon[0]=0;
+        this->left_polygon[0]=0;
+        this->right_polygon[1]=0;
+        this->left_polygon[1]=0;
+        this->right_polygon[2]=0;
+        this->left_polygon[2]=0;
+
+   // }
 }
 
 double WingedEdge::findMedianLine()
@@ -270,3 +367,95 @@ void WingedEdge::getOridinaryEdgesCoordinates(int i, double &x_1, double &x_2, d
     y_2 = y[end_vertex[i]];
 
 }
+
+void WingedEdge::findPerpendicularBisector(double x_1, double y_1, double x_2, double y_2, double &m, double &b)
+{
+    m = (x_2-x_1)/(y_1-y_2);
+    b = (x_1*x_1+y_1*y_1-x_2*x_2-y_2*y_2)/(2*(y_1-y_2));
+}
+
+vector<double> WingedEdge::get_g_x()
+{
+    return g_x;
+}
+vector<double> WingedEdge::get_g_y()
+{
+    return g_y;
+}
+
+vector<int> WingedEdge::get_w()
+{
+    return w;
+}
+vector<double> WingedEdge::get_x()
+{
+    return x;
+}
+vector<double> WingedEdge::get_y()
+{
+    return y;
+}
+
+vector<int> WingedEdge::get_right_polygon()
+{
+    return right_polygon;
+}
+
+vector<int> WingedEdge::get_left_polygon()
+{
+    return left_polygon;
+}
+
+vector<int> WingedEdge::get_start_vertex()
+{
+    return start_vertex;
+}
+
+vector<int> WingedEdge::get_end_vertex()
+{
+    return end_vertex;
+}
+
+vector<int> WingedEdge::getCw_predecessor() const
+{
+    return cw_predecessor;
+}
+
+void WingedEdge::setCw_predecessor(const vector<int> &value)
+{
+    cw_predecessor = value;
+}
+
+vector<int> WingedEdge::getCcw_predecessor() const
+{
+    return ccw_predecessor;
+}
+
+void WingedEdge::setCcw_predecessor(const vector<int> &value)
+{
+    ccw_predecessor = value;
+}
+
+vector<int> WingedEdge::getCw_successor() const
+{
+    return cw_successor;
+}
+
+void WingedEdge::setCw_successor(const vector<int> &value)
+{
+    cw_successor = value;
+}
+
+vector<int> WingedEdge::getCcw_successor() const
+{
+    return ccw_successor;
+}
+
+void WingedEdge::setCcw_successor(const vector<int> &value)
+{
+    ccw_successor = value;
+}
+
+
+
+

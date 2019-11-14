@@ -29,6 +29,7 @@ public:
     bool initialized(){return initialized_indicator;}
     void setInitializedIndicator(int i);
     bool voronoiEmpty();
+    void clearLine_p();
 
 
 signals:
@@ -41,6 +42,9 @@ private:
 
     //generating points of Vonoroi's diagram
     QVector<QPointF> g_points;
+
+    //Storing pointers to QGraphicsLineItem
+    QVector<QGraphicsLineItem*> line_p;
 
     //If initialized_indicator == 0, initilize the vonoroi's diagram,
     //then adjust initialized_indicator to 1;

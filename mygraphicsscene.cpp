@@ -12,6 +12,7 @@ MyGraphicsScene::MyGraphicsScene(){
 void MyGraphicsScene::restart()
 {
     //Clear all generating points
+    this->clearLine_p();
     this->clear();
     this->setInitializedIndicator(0);
     this->g_points.clear();
@@ -36,6 +37,16 @@ bool MyGraphicsScene::voronoiEmpty()
     return v->empty();
 }
 
+void MyGraphicsScene::clearLine_p()
+{
+    if(!line_p.empty()){
+        qDebug()<<"line_p is not empty";
+        for(unsigned long i=0;i<line_p.size();i++)
+            this->removeItem(line_p[i]);
+        line_p.clear();
+    }
+}
+
 void MyGraphicsScene::initializeVonoroi()
 {
     //Create the vectors of generating points' x,y coordinates
@@ -46,6 +57,7 @@ void MyGraphicsScene::initializeVonoroi()
         y.push_back(this->g_points[i].y());
     }
     v = new Voronoi(x,y);
+    this->setInitializedIndicator(1);
 }
 
 /*
@@ -65,9 +77,11 @@ void MyGraphicsScene::runOneStep()
         return;
 
     WingedEdge current_vonoroi = this->v->runOneStep();
+    this->clearLine_p();
 
     //Update scene with current_vonoroi
     //Check if reaching result
+
     vector<int> e;
     current_vonoroi.getOrdinaryEdges(e);
 
@@ -77,6 +91,7 @@ void MyGraphicsScene::runOneStep()
         QGraphicsLineItem* l = new QGraphicsLineItem(x_1, y_1, x_2, y_2);
         l->setPen(QPen(Qt::red));
         this->addItem(l);
+        this->line_p.append(l);
     }
 
 }

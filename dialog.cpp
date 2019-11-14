@@ -55,3 +55,30 @@ void Dialog::on_pushButton_3_clicked()
 {
     this->scene->restart();
 }
+
+
+void Dialog::on_lineEdit_editingFinished()
+{
+    QString savedText = ui->lineEdit->text();
+    QString fileName(savedText);
+    if (!fileName.endsWith(".txt"))
+        fileName = fileName.append(".txt");
+    QFile file(fileName);
+    file.open(QIODevice::ReadOnly);
+    QTextStream tx(&file);
+    QString str;
+    str = tx.readLine();
+    qDebug()<<str;
+    file.close();
+
+    while(!tx.atEnd()){
+        str = tx.readLine();
+        if(str[0] == '#' || str[0] == ' ' || str.size()==0)
+            continue;
+        else if(str[0] == '0'){
+            tx.flush();
+            break;
+        }
+        qDebug()<<str;
+    }
+}
