@@ -11,6 +11,7 @@
 #include <QFileDialog>
 #include <QFile>
 #include <QTextStream>
+#include <QPointF>
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class Dialog; }
@@ -24,6 +25,8 @@ public:
     Dialog(QWidget *parent = nullptr);
     ~Dialog();
 
+    void set_a_voronoi_from_tx();
+
 private slots:
     void on_pushButton_clicked();
 
@@ -36,5 +39,8 @@ private slots:
 private:
     Ui::Dialog *ui;
     MyGraphicsScene * scene;
+    QTextStream *tx;
+    QFile* file;
+    bool from_tx;
 };
 #endif // DIALOG_H

@@ -12,6 +12,7 @@ WingedEdge::WingedEdge(vector<double> p_x, vector<double> p_y){
         g_y.push_back(p_y[i]);
     }
     num_polygons = i+1;//i+1 is the infinity polygon
+    waiting_merge=false;
 }
 
 void WingedEdge::constructTOnePointsVoronoi()
@@ -148,8 +149,8 @@ void WingedEdge::constructTwoPointsVoronoi()
         //b = ((x[1]-g_x[0]), (y[1]-g_y[0]))
         //a x b > 0 => b is on the left side of a
         if((x[1]-x[0])*(x[1]-g_x[0]) - (y[1]-y[0])*(y[1]-g_y[0]) < 0){
-            iter_swap(g_x.begin()+0,g_x.begin()+1);
-            iter_swap(g_y.begin()+0,g_y.begin()+1);
+            iter_swap(x.begin()+0,x.begin()+1);
+            iter_swap(y.begin()+0,y.begin()+1);
         }
     }
 
@@ -186,47 +187,124 @@ void WingedEdge::constructTwoPointsVoronoi()
 
 void WingedEdge::divide(WingedEdge &W_l, WingedEdge &W_r)
 {
+
     //Divide part
     vector<double> l_x,l_y,r_x,r_y;
-    double m = this->findMedianLine();//Three points version
+    double m ;
 
+    qDebug()<<"g_x[0]="<<g_x[0]<<"g_x[1]="<<g_x[1]<<"g_x[2]="<<g_x[2];
+    qDebug()<<"g_y[0]="<<g_y[0]<<"g_y[1]="<<g_y[1]<<"g_y[2]="<<g_y[2];
 
-    for(unsigned long i=0;i<this->g_x.size();i++){
-        //num_polygons should be same as g_x.size() and g_y.size()
+    //Deal with 3 points at the same vertical line
+    if(this->threePointsVertical()){
+        qDebug()<<"3 points at the same vertical line";
+        if(this->g_y[0]>=this->g_y[1]&&this->g_y[0]>=this->g_y[2]){
+            l_x.push_back(this->g_x[0]);
+            l_y.push_back(this->g_y[0]);
 
-        //Less than m, put in left
-        if(this->g_x[i] < m){
-            l_x.push_back(g_x[i]);
-            l_y.push_back(g_y[i]);
+            r_x.push_back(this->g_x[1]);
+            r_y.push_back(this->g_y[1]);
+            r_x.push_back(this->g_x[2]);
+            r_y.push_back(this->g_y[2]);
         }
-        else if(this->g_x[i] >= m){
-            r_x.push_back(g_x[i]);
-            r_y.push_back(g_y[i]);
+        else if(this->g_y[1]>=this->g_y[0]&&this->g_y[1]>=this->g_y[2]){
+            l_x.push_back(this->g_x[1]);
+            l_y.push_back(this->g_y[1]);
+
+            r_x.push_back(this->g_x[0]);
+            r_y.push_back(this->g_y[0]);
+            r_x.push_back(this->g_x[2]);
+            r_y.push_back(this->g_y[2]);
+        }
+        else if(this->g_y[2]>=this->g_y[1]&&this->g_y[2]>=this->g_y[0]){
+            l_x.push_back(this->g_x[2]);
+            l_y.push_back(this->g_y[2]);
+
+            r_x.push_back(this->g_x[0]);
+            r_y.push_back(this->g_y[0]);
+            r_x.push_back(this->g_x[1]);
+            r_y.push_back(this->g_y[1]);
+        }
+    }
+    else{
+        m = this->findMedianLine();//Three points version
+        for(unsigned long i=0;i<this->g_x.size();i++){
+            //num_polygons should be same as g_x.size() and g_y.size()
+
+            //Less than m, put in left
+            if(this->g_x[i] <m){
+                l_x.push_back(g_x[i]);
+                l_y.push_back(g_y[i]);
+            }
+            else if(this->g_x[i] >= m ){
+                r_x.push_back(g_x[i]);
+                r_y.push_back(g_y[i]);
+            }
+        }
+        if(r_x.size()>2){
+            if(r_x[0]==m){
+                l_x.push_back(r_x[0]);
+                l_y.push_back(r_y[0]);
+                r_x.erase(r_x.begin()+0);
+                r_y.erase(r_y.begin()+0);
+            }
+            else if(r_x[1]==m){
+                l_x.push_back(r_x[1]);
+                l_y.push_back(r_y[1]);
+                r_x.erase(r_x.begin()+1);
+                r_y.erase(r_y.begin()+1);
+            }
         }
     }
     W_l = WingedEdge(l_x,l_y);
     W_r = WingedEdge(r_x,r_y);
+    qDebug()<<"W_l.getNumPolygons()"<<W_l.getNumPolygons();
+    qDebug()<<"W_r.getNumPolygons()"<<W_r.getNumPolygons();
 
 }
 
 void WingedEdge::merge(WingedEdge S_l, WingedEdge S_r)
 {
         qDebug()<<"merge";
+        bool swapped = false;
+
+        qDebug()<<"S_l.getNumPolygons()"<<S_l.getNumPolygons();
+        if(S_l.getNumPolygons()>1){
+            qDebug()<<"1";
+            WingedEdge tmp = S_l;
+            S_l = S_r;
+            S_r = tmp;
+            swapped = true;
+        }
     //Temporary version
-    //if(S_l.getNumPolygons()==1){
         vector<double> S_l_g_x = S_l.get_g_x();
         vector<double> S_l_g_y = S_l.get_g_y();
         vector<double> S_r_g_x = S_r.get_g_x();
         vector<double> S_r_g_y = S_r.get_g_y();
 
         double S_r_upper_x ,S_r_upper_y , S_r_lower_x ,S_r_lower_y;
-        if(S_r_g_y[0] < S_r_g_y[1]){
+        double m1 = (S_r_g_y[0]-S_l_g_y[0])/(S_r_g_x[0]-S_l_g_x[0]);
+        double m2 = (S_r_g_y[1]-S_l_g_y[0])/(S_r_g_x[1]-S_l_g_x[0]);
+
+        qDebug()<<"m1 = "<<m1<<", m2 = "<<m2;
+        //Slope smaller is upper
+        if(m1 < m2){
             S_r_upper_x = S_r_g_x[1];
             S_r_upper_y = S_r_g_y[1];
             S_r_lower_x = S_r_g_x[0];
             S_r_lower_y = S_r_g_y[0];
         }
-        else{
+        else if(m1 > m2){
+            S_r_upper_x = S_r_g_x[0];
+            S_r_upper_y = S_r_g_y[0];
+            S_r_lower_x = S_r_g_x[1];
+            S_r_lower_y = S_r_g_y[1];
+        }
+        else if(m1 == m2){
+            /*double dis_0 =(S_r_g_x[0]-S_l_g_x[0])*(S_r_g_x[0]-S_l_g_x[0])
+                         +(S_r_g_y[0]-S_l_g_y[0])*(S_r_g_y[0]-S_l_g_y[0]);
+            double dis_1 =(S_r_g_x[1]-S_l_g_x[0])*(S_r_g_x[1]-S_l_g_x[0])
+                    +(S_r_g_y[1]-S_l_g_y[0])*(S_r_g_y[1]-S_l_g_y[0]);*/
             S_r_upper_x = S_r_g_x[0];
             S_r_upper_y = S_r_g_y[0];
             S_r_lower_x = S_r_g_x[1];
@@ -269,16 +347,29 @@ void WingedEdge::merge(WingedEdge S_l, WingedEdge S_r)
         this->num_edges=3;
         this->changeArraysForEdges(this->num_edges);
 
-        this->x.push_back(S_r_x[1]);//right-most vertex of S_r
-        this->x.push_back(x_mid);
-        this->x.push_back(x_top);
-        this->x.push_back(x_bot);
+        if((S_r_x[1] > S_r_x[0] && !swapped) || (S_r_x[1] < S_r_x[0] && swapped)){
+            this->x.push_back(S_r_x[1]);//right-most vertex of S_r
+            this->x.push_back(x_mid);
+            this->x.push_back(x_top);
+            this->x.push_back(x_bot);
 
-        this->y.push_back(S_r_y[1]);//right-most vertex of S_r
-        this->y.push_back(y_mid);
-        this->y.push_back(y_top);
-        this->y.push_back(y_bot);
+            this->y.push_back(S_r_y[1]);//right-most vertex of S_r
+            this->y.push_back(y_mid);
+            this->y.push_back(y_top);
+            this->y.push_back(y_bot);
+        }
+        else{
+            this->x.push_back(S_r_x[0]);//left-most vertex of S_r
+            this->x.push_back(x_mid);
+            this->x.push_back(x_top);
+            this->x.push_back(x_bot);
 
+            this->y.push_back(S_r_y[0]);//left-most vertex of S_r
+            this->y.push_back(y_mid);
+            this->y.push_back(y_top);
+            this->y.push_back(y_bot);
+
+        }
         //Todo : adjust WingedEdge ds
 
         //Man-made judgement, not general
@@ -288,7 +379,6 @@ void WingedEdge::merge(WingedEdge S_l, WingedEdge S_r)
         this->end_vertex[1] = 1;
         this->start_vertex[2] = 1;
         this->end_vertex[2] = 3;
-
 
         //Wrong assighment, but these can help drawing
         this->right_polygon[0]=0;
@@ -322,7 +412,7 @@ int WingedEdge::getNumPolygons()
 
 bool WingedEdge::threePointsVertical()
 {
-    return num_polygons==3 && g_x[0]==g_x[1] && g_x[1]==g_x[2];
+    return num_polygons==3 && (int)g_x[0]==(int)g_x[1] && (int)g_x[1]==(int)g_x[2];
 }
 
 void WingedEdge::setWaitingMerge(bool i)

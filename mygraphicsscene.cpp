@@ -49,6 +49,7 @@ void MyGraphicsScene::clearLine_p()
 
 void MyGraphicsScene::initializeVonoroi()
 {
+
     //Create the vectors of generating points' x,y coordinates
     //in order to create vonoroi
     vector<double> x,y;
@@ -58,6 +59,7 @@ void MyGraphicsScene::initializeVonoroi()
     }
     v = new Voronoi(x,y);
     this->setInitializedIndicator(1);
+
 }
 
 /*
@@ -75,6 +77,11 @@ void MyGraphicsScene::runOneStep()
 {
     if(this->v->empty())
         return;
+    else if(this->v->stack_leak()){
+        qDebug()<<"Stack size out of range.Exit";
+        exit(-1);
+    }
+
 
     WingedEdge current_vonoroi = this->v->runOneStep();
     this->clearLine_p();

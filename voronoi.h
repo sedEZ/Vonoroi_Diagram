@@ -22,8 +22,15 @@ public:
     //One step is referred to be finishing merging 2 WingedEdge objects into 1.
     WingedEdge runOneStep();
     bool empty();
+    bool stack_leak();
+
+    int getNum_polygons() const;
+    void setNum_polygons(int value);
 
 private:
+
+    int num_polygons;
+
     //Stack for run Vonoroi's diagram with divide-and-conquer strategy
     //No matter if the WingedEdge objects are To Be Divide or Wait For Merge, put them in this stack
     //and there will be no conflits.

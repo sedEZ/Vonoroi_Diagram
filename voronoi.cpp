@@ -11,6 +11,8 @@ Voronoi::Voronoi(vector<double> p_x, vector<double> p_y)
     //Create original generating points & push it into stack
     WingedEdge generating_points(p_x,p_y);
     s_stack.push(generating_points);
+    num_polygons = p_x.size();
+
 }
 
 Voronoi::~Voronoi()
@@ -32,13 +34,19 @@ WingedEdge Voronoi::runOneStep()
         exit(-1);
     }
 
+    qDebug()<<"this->s_stack.size()="<<this->s_stack.size();
     //If the next stack is not waiting for merging, then it is to be divide
     //Loop until a waiting-for-merging WingedEdge is to be run.
     while(!this->s_stack.empty() && !this->s_stack.top().IsWaitingMerge()){
+
+        if(this->stack_leak()){
+            qDebug()<<"Stack leak";
+            exit(-1);
+        }
         //Get top
         qDebug()<<"before : s_stack.size()"<<s_stack.size();
         WingedEdge current_divide = s_stack.top(); s_stack.pop();
-
+        qDebug()<<"current_divide.getNumPolygons() ="<<current_divide.getNumPolygons();
         qDebug()<<"after : s_stack.size()"<<s_stack.size();
 
         if(current_divide.getNumPolygons() == 1){
@@ -53,24 +61,19 @@ WingedEdge Voronoi::runOneStep()
         else if(current_divide.getNumPolygons() == 2){
             //If current_divide has 2 points, find the vertical line & update the WingedEdge data structure
             current_divide.constructTwoPointsVoronoi();
-
             done_stack.push(current_divide);
             return current_divide;
         }
         else if(current_divide.getNumPolygons() == 3){
 
             //If current_divide has 3 points, seperate as 1p and 2p & update the WingedEdge data structure
-            if(current_divide.threePointsVertical()){
-                //Special situation: three points on the same vertical line
-            }
-            else{
-                WingedEdge W_l,W_r;
-                current_divide.divide(W_l,W_r);
-                current_divide.setWaitingMerge(true);
-                s_stack.push(current_divide);
-                s_stack.push(W_l);
-                s_stack.push(W_r);
-            }
+
+            WingedEdge W_l,W_r;
+            current_divide.divide(W_l,W_r);
+            current_divide.setWaitingMerge(true);
+            s_stack.push(current_divide);
+            s_stack.push(W_l);
+            s_stack.push(W_r);
         }
         else{
             //m = find_median_line(current_divide) , m is the x-coordinate of median line
@@ -102,12 +105,27 @@ WingedEdge Voronoi::runOneStep()
 
     //Done merge, put current_merge into done_stack
 
-    done_stack.push(current_merge);
+    this->done_stack.push(current_merge);
     return current_merge;
 }
 
 bool Voronoi::empty()
 {
-    return s_stack.empty();
+    return this->s_stack.empty();
+}
+
+bool Voronoi::stack_leak()
+{
+    return this->s_stack.size() > this->num_polygons+1;
+}
+
+int Voronoi::getNum_polygons() const
+{
+    return num_polygons;
+}
+
+void Voronoi::setNum_polygons(int value)
+{
+    num_polygons = value;
 }
 
