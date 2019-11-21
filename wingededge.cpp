@@ -269,11 +269,13 @@ void WingedEdge::constructThreePointsVoronoi()
                 //first vertix is (0,b)
                 this->x[0] = 0;
                 this->y[0] = b;
+                this->w[0] = 0;
             }
             else{
                 //first vertix is (c,0)
                 this->x[0] = c;
                 this->y[0] = 0;
+                this->w[0] = 0;
             }
 
             //x_cross_y_600 is the x-coordinate of the point that intersect with y=600
@@ -282,11 +284,13 @@ void WingedEdge::constructThreePointsVoronoi()
                 //second vertex is at the bound of y=600
                 this->x[1] = x_cross_y_600;
                 this->y[1] = 600;
+                this->w[1] = 0;
             }
             else{
                 //second vertex is at the bound of x=600
                 this->x[1] = 600;
                 this->y[1] = m*600+b;
+                this->w[1] = 0;
             }
         }
         else{//m<0
@@ -295,11 +299,13 @@ void WingedEdge::constructThreePointsVoronoi()
                 //first vertix is (0,b)
                 this->x[0] = 0;
                 this->y[0] = b;
+                this->w[0] = 0;
             }
             else{
                 //first vertix is (n*600+c,600)
                 this->x[0] = n*600+c;
                 this->y[0] = 0;
+                this->w[0] = 0;
             }
 
             //x_cross_y_0 is the x-coordinate of the point that intersect with y=0
@@ -309,24 +315,163 @@ void WingedEdge::constructThreePointsVoronoi()
                 //second vertex is at the bound of y=0
                 this->x[1] = x_cross_y_0;
                 this->y[1] = 0;
+                this->w[1] = 0;
             }
             else{
                 //second vertex is at the bound of x=600
                 this->x[1] = 600;
                 this->y[1] = m*600+b;
+                this->w[1] = 0;
             }
         }
         /** Done add vertices **/
     }
     else if( (int(this->g_x[0]) == int(this->g_x[1])) || (int(this->g_x[1])==int(this->g_x[2])) ){
         /*兩點垂直*/
+        this->w.resize(4);
+        this->x.resize(4);this->y.resize(4);
 
-        if(this->g_x[0] == this->g_x[1]){
+        if(fabs(this->g_x[0] - this->g_x[1]) < 1e-8){
             //2 points on left, 1 point on right
+            this->x[0] = 0;
+            this->y[0] = (this->g_y[0]+this->g_y[1])/2;
+            this->w[0] = 0;
 
+            double m_top,m_bot,b_top,b_bot;
+            double n_top,n_bot,c_top,c_bot;
+
+            if(fabs(this->g_y[1] - this->g_y[2]) < 1e-8){
+                this->x[1] = (this->g_x[1] + this->g_x[2])/2;
+                this->y[1] = 600;
+                this->w[1] = 0;
+            }
+            else{
+                this->findPerpendicularBisector(this->g_x[1],this->g_y[1],this->g_x[2],this->g_y[2],m_top,b_top);
+                n_top = 1/m_top;    c_top = (-1)*b_top/m_top;
+                double x_cross_y_600;
+                x_cross_y_600 = n_top*600+c_top;
+
+                //point intersect with upper margin
+                if(x_cross_y_600>=0 && x_cross_y_600<=600){
+                    this->x[1] = x_cross_y_600;
+                    this->y[1] = 600;
+                    this->w[1] = 0;
+                }
+                else if(x_cross_y_600 <0){
+                    this->x[1] = 0;
+                    this->y[1] = b_top;
+                    this->w[1] = 0;
+                }
+                else{
+                    this->x[1] = 600;
+                    this->y[1] = m_top*600+b_top;
+                    this->w[1] = 0;
+                }
+            }
+
+            if(fabs(this->g_y[0] - this->g_y[2]) < 1e-8){
+                this->x[2] = (this->g_x[0] + this->g_x[2])/2;
+                this->y[2] = 600;
+                this->w[2] = 0;
+            }
+            else{
+                this->findPerpendicularBisector(this->g_x[0],this->g_y[0],this->g_x[2],this->g_y[2],m_bot,b_bot);
+                n_bot = 1/m_bot;    c_bot = (-1)*b_bot/m_bot;
+
+                double x_cross_y_0;
+                x_cross_y_0 = n_bot*600+c_bot;
+
+                //points intersect with lower margin
+                if(x_cross_y_0>=0 && x_cross_y_0<=600){
+                    this->x[2] = x_cross_y_0;
+                    this->y[2] = 0;
+                    this->w[2] = 0;
+                }
+                else if(x_cross_y_0 <0){
+                    this->x[2] = 0;
+                    this->y[2] = b_bot;
+                    this->w[2] = 0;
+                }
+                else{
+                    this->x[2] = 600;
+                    this->y[2] = b_bot;
+                    this->w[2] = 0;
+                }
+            }
+            /*Todo*/
+            //Construct wingededge ds
         }
         else{
             //2 points on right, 1 point on left
+            this->x[0] = 600;
+            this->y[0] = (this->g_y[1]+this->g_y[2])/2;
+            this->w[0] = 0;
+
+            double m_top,m_bot,b_top,b_bot;
+            double n_top,n_bot,c_top,c_bot;
+
+            if(fabs(this->g_y[0] - this->g_y[2]) < 1e-8){
+                this->x[1] = (this->g_x[0] + this->g_x[2])/2;
+                this->y[1] = 600;
+                this->w[1] = 0;
+            }
+            else{
+                this->findPerpendicularBisector(this->g_x[0],this->g_y[0],this->g_x[2],this->g_y[2],m_top,b_top);
+                n_top = 1/m_top;    c_top = (-1)*b_top/m_top;
+                double x_cross_y_600;
+                x_cross_y_600 = n_top*600+c_top;
+
+                //point intersect with upper margin
+                if(x_cross_y_600>=0 && x_cross_y_600<=600){
+                    this->x[1] = x_cross_y_600;
+                    this->y[1] = 600;
+                    this->w[1] = 0;
+                }
+                else if(x_cross_y_600 <0){
+                    this->x[1] = 0;
+                    this->y[1] = b_top;
+                    this->w[1] = 0;
+                }
+                else{
+                    this->x[1] = 600;
+                    this->y[1] = m_top*600+b_top;
+                    this->w[1] = 0;
+                }
+            }
+
+            if(fabs(this->g_y[0] - this->g_y[1]) < 1e-8){
+                this->x[2] = (this->g_x[0] + this->g_x[1])/2;
+                this->y[2] = 600;
+                this->w[2] = 0;
+            }
+            else{
+                this->findPerpendicularBisector(this->g_x[0],this->g_y[0],this->g_x[1],this->g_y[1],m_bot,b_bot);
+                n_bot = 1/m_bot;    c_bot = (-1)*b_bot/m_bot;
+
+                double x_cross_y_0;
+                x_cross_y_0 = n_bot*600+c_bot;
+
+                //points intersect with lower margin
+                if(x_cross_y_0>=0 && x_cross_y_0<=600){
+                    this->x[2] = x_cross_y_0;
+                    this->y[2] = 0;
+                    this->w[2] = 0;
+                }
+                else if(x_cross_y_0 <0){
+                    this->x[2] = 0;
+                    this->y[2] = b_bot;
+                    this->w[2] = 0;
+                }
+                else{
+                    this->x[2] = 600;
+                    this->y[2] = b_bot;
+                    this->w[2] = 0;
+                }
+
+            }
+            /*Todo*/
+            //Construct wingededge ds
+
         }
     }
     else{
@@ -491,7 +636,6 @@ void WingedEdge::merge(WingedEdge S_l, WingedEdge S_r)
         //Cross point
         double x_mid = (b_r-b)/(m-m_r) ,y_mid = m*x_mid+b;
 
-
         this->num_edges=3;
         this->changeArraysForEdges(this->num_edges);
 
@@ -608,6 +752,10 @@ void WingedEdge::getOridinaryEdgesCoordinates(int i, double &x_1, double &x_2, d
 
 void WingedEdge::findPerpendicularBisector(double x_1, double y_1, double x_2, double y_2, double &m, double &b)
 {
+    if(fabs(y_1 - y_2)<1e-8){
+        qDebug()<<"findPerpendicularBisector :divide by zero error! y_1 == y_2.";
+        exit(-1);
+    }
     m = (x_2-x_1)/(y_1-y_2);
     b = (x_1*x_1+y_1*y_1-x_2*x_2-y_2*y_2)/(2*(y_1-y_2));
 }
