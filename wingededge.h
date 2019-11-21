@@ -1,7 +1,7 @@
 #ifndef WINGEDEDGE_H
 #define WINGEDEDGE_H
-#include <vector>
 #include <algorithm>
+#include <vector>
 #include <math.h>
 using namespace std;
 
@@ -21,19 +21,17 @@ public:
     WingedEdge();
     WingedEdge(vector<double> p_x, vector<double>p_y);
 
-    void constructTOnePointsVoronoi();
+    void constructOnePointVoronoi();
     void constructTwoPointsVoronoi();
+    void constructThreePointsVoronoi();
 
     void divide(WingedEdge &W_l,WingedEdge &W_r);
-
     //Todo
     void merge(WingedEdge S_l,WingedEdge S_r);
 
     //Temporary version for first demo
     double findMedianLine();
-
     int getNumPolygons();
-
     bool threePointsVertical();
 
     void setWaitingMerge(bool i);
@@ -101,5 +99,11 @@ private:
     //For storing : Check if the WingedEdge object is waiting merging.
     bool waiting_merge;
 };
+
+struct g_point{
+    double x,y;
+};
+
+bool compare_g_point(const g_point a, const g_point b);
 
 #endif // WINGEDEDGE_H

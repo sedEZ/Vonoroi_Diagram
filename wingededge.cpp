@@ -15,7 +15,7 @@ WingedEdge::WingedEdge(vector<double> p_x, vector<double> p_y){
     waiting_merge=false;
 }
 
-void WingedEdge::constructTOnePointsVoronoi()
+void WingedEdge::constructOnePointVoronoi()
 {
     num_vertices = 0;
     num_edges = 0;
@@ -30,16 +30,8 @@ void WingedEdge::constructTwoPointsVoronoi()
         qDebug()<<"Number of generating points is not 2. To use this function, only 2 points is available.";
         return;
     }
-/*
-    if(this->g_y[0] > this->g_y[1]){
-        double tmp = this->g_y[0],     tmp_x = this->g_x[0];
-        this->g_y[0] = this->g_y[1] ;  this->g_x[0] = this->g_x[1];
-        this->g_y[1] = tmp          ;  this->g_y[1] = tmp_x;
-    }*/
     double x_1 = this->g_x[0],x_2 = this->g_x[1];
     double y_1 = this->g_y[0],y_2 = this->g_y[1];
-
-
 
     this->w.resize(2);
     this->w[0] = 1;
@@ -47,10 +39,10 @@ void WingedEdge::constructTwoPointsVoronoi()
     this->num_vertices = 3;
     this->num_edges=3;
 
-
+    //Initializing all edges' arrays in wingededge data structure
     this->changeArraysForEdges(this->num_edges);
 
-    if(y_1 == y_2){ //Vertical median line
+    if(y_1 == y_2){//Vertical median line
         //x = b
         double b = (x_1+x_2)/2;
 
@@ -70,13 +62,11 @@ void WingedEdge::constructTwoPointsVoronoi()
     else if(x_1 == x_2){//Horizontal median line
         //y = c
         double c = (y_1+y_2)/2;
-
         //(x_1,y_1) = (0,c)
         x.push_back(0.0);
         y.push_back(c);
 
         //(x_1,y_1) = (600,c)
-
         x.push_back(600.0);
         y.push_back(c);
 
@@ -86,12 +76,6 @@ void WingedEdge::constructTwoPointsVoronoi()
         }
     }
     else{
-
-        qDebug()<<"x_1 = "<<x_1;
-        qDebug()<<"y_1 = "<<y_1;
-        qDebug()<<"x_2 = "<<x_2;
-        qDebug()<<"y_2 = "<<y_2;
-
         //y = mx + b
         double m,b;
         findPerpendicularBisector(x_1,y_1,x_2,y_2,m,b);
@@ -99,11 +83,6 @@ void WingedEdge::constructTwoPointsVoronoi()
         //x = ny + c
         double n = (y_1-y_2)/(x_2-x_1);
         double c = b*(y_2-y_1)/(x_2-x_1);
-
-        qDebug()<<"m = "<<m;
-        qDebug()<<"b = "<<b;
-        qDebug()<<"n = "<<n;
-        qDebug()<<"c = "<<c;
 
         //Find the 2 vertices cross with the edge of scene
         double y_0,y_600,x_0,x_600;
@@ -126,22 +105,14 @@ void WingedEdge::constructTwoPointsVoronoi()
             x.push_back(600.0);
             y.push_back(y_600);
         }
-
         if(x_0 >=0 && x_0 <=600){
             x.push_back(x_0);
             y.push_back(0);
         }
-
         if(x_600 >=0 && x_600 <=600){
             x.push_back(x_600);
             y.push_back(600.0);
         }
-
-        qDebug()<<"x[0] = "<<x[0];
-        qDebug()<<"y[0] = "<<y[0];
-        qDebug()<<"x[1] = "<<x[1];
-        qDebug()<<"y[1] = "<<y[1];
-
 
         //(g_x[0],g_y[0]) should be at left side of edge[0], (g_x[1],g_y[1]) should be at right side of edge[0].
         //Use cross product to judge if (g_x[0],g_y[0]) is on the left of edge[0]
@@ -185,15 +156,189 @@ void WingedEdge::constructTwoPointsVoronoi()
     this->ccw_successor[2]=1;
 }
 
+void WingedEdge::constructThreePointsVoronoi()
+{
+    if(this->getNumPolygons() != 3){
+        qDebug()<<"Number of generating points is not 3. To use this function, only 3 points is available.";
+        return;
+    }
+
+    /*依照(x,y) sorts generating points in increasing order*/
+    vector<struct g_point> g_p;
+    struct g_point tmp_p;
+    tmp_p.x = this->g_x[0];
+    tmp_p.y = this->g_y[0];
+    g_p.push_back(tmp_p);
+
+    tmp_p.x = this->g_x[1];
+    tmp_p.y = this->g_y[1];
+    g_p.push_back(tmp_p);
+
+    tmp_p.x = this->g_x[2];
+    tmp_p.y = this->g_y[2];
+    g_p.push_back(tmp_p);
+
+    sort(g_p.begin(),g_p.end(),compare_g_point);
+
+    //Judge three points' positions to construct the voronoi
+    if( (int(this->g_y[0])==int(this->g_y[1])) && (int(this->g_y[1])==int(this->g_y[2])) ){
+        /*三點共線-水平*/
+
+        this->w.resize(4);
+        this->x.resize(4);this->y.resize(4);
+        //畫兩條垂直edge
+        //First edge : (x[0],y[0])~(x[1],y[1])
+        this->x[0] = (this->g_x[0]+this->g_x[1])/2;
+        this->y[0] = 0;     this->w[0] = 0;//points at infinity
+
+        this->x[1] = (this->g_x[0]+this->g_x[1])/2;
+        this->y[1] = 600;   this->w[1] = 0;//points at infinity
+
+        //Second edge : (x[2],y[2])~(x[3],y[3])
+        this->x[2] = (this->g_x[1]+this->g_x[2])/2;
+        this->y[2] = 0;     this->w[2] = 0;//points at infinity
+        this->x[3] = (this->g_x[1]+this->g_x[2])/2;
+        this->y[3] = 600;   this->w[3] = 0;//points at infinity
+
+        this->num_vertices = 4;
+
+        //Setting edges
+        this->num_edges=6;//2 oridinary edges, 4 augumented edges
+        this->changeArraysForEdges(this->num_edges);
+
+        /***Todo***/
+        //Config edges' arrays
+    }
+    else if( (int(this->g_x[0])==int(this->g_x[1])) && (int(this->g_x[1])==int(this->g_x[2])) ){
+        /*三點共線-垂直*/
+        this->w.resize(4);
+        this->x.resize(4);this->y.resize(4);
+        //畫兩條水平edge
+        //First edge : (x[0],y[0])~(x[1],y[1])
+        this->x[0] = 0;
+        this->y[0] = (this->g_y[0]+this->g_y[1])/2;
+        this->w[0] = 0;//points at infinity
+
+        this->x[1] = 600;
+        this->y[1] = (this->g_y[0]+this->g_y[1])/2;
+        this->w[1] = 0;//points at infinity
+
+        //Second edge : (x[2],y[2])~(x[3],y[3])
+        this->x[2] = 0;
+        this->y[2] = (this->g_y[1]+this->g_y[2])/2;
+        this->w[2] = 0;//points at infinity
+
+        this->x[3] = 600;
+        this->y[3] = (this->g_y[0]+this->g_y[1])/2;
+        this->w[3] = 0;//points at infinity
+
+        this->num_vertices = 4;
+
+        //Setting edges
+        this->num_edges=6;//2 oridinary edges, 4 augumented edges
+        this->changeArraysForEdges(this->num_edges);
+
+        /***Todo***/
+        //Config edges' arrays
+    }
+    else if( fabs((this->g_y[1]-this->g_y[0])/(this->g_x[1]-this->g_x[0]) - (this->g_y[2]-this->g_y[1])/(this->g_x[2]-this->g_x[1])) < 1e-8 ){
+        /*三點共線-其他*/
+        this->w.resize(4);
+        this->x.resize(4);this->y.resize(4);
+
+        double x_1,y_1,x_2,y_2;
+        x_1 = this->g_x[0];
+        y_1 = this->g_y[0];
+        x_2 = this->g_x[1];
+        y_2 = this->g_y[1];
+
+        //y = mx + b , x = ny + c
+        double m,b,n,c;
+        this->findPerpendicularBisector(x_1,y_1,x_2,y_2,m,b);
+        n = 1/m;        c = (-1)*b/m;
+
+        /** Start add vertices **/
+
+        //Judge where the vertices should be.
+        if(m>=0){
+            if(b >= 0 && b<= 600){
+                //first vertix is (0,b)
+                this->x[0] = 0;
+                this->y[0] = b;
+            }
+            else{
+                //first vertix is (c,0)
+                this->x[0] = c;
+                this->y[0] = 0;
+            }
+
+            //x_cross_y_600 is the x-coordinate of the point that intersect with y=600
+            double x_cross_y_600 = n*600+c;
+            if(x_cross_y_600 >=0 && x_cross_y_600 <=600){
+                //second vertex is at the bound of y=600
+                this->x[1] = x_cross_y_600;
+                this->y[1] = 600;
+            }
+            else{
+                //second vertex is at the bound of x=600
+                this->x[1] = 600;
+                this->y[1] = m*600+b;
+            }
+        }
+        else{//m<0
+
+            if(b >= 0 && b<= 600){
+                //first vertix is (0,b)
+                this->x[0] = 0;
+                this->y[0] = b;
+            }
+            else{
+                //first vertix is (n*600+c,600)
+                this->x[0] = n*600+c;
+                this->y[0] = 0;
+            }
+
+            //x_cross_y_0 is the x-coordinate of the point that intersect with y=0
+            double x_cross_y_0 = n*0+c;
+
+            if(x_cross_y_0 >0 && x_cross_y_0 <600){
+                //second vertex is at the bound of y=0
+                this->x[1] = x_cross_y_0;
+                this->y[1] = 0;
+            }
+            else{
+                //second vertex is at the bound of x=600
+                this->x[1] = 600;
+                this->y[1] = m*600+b;
+            }
+        }
+        /** Done add vertices **/
+    }
+    else if( (int(this->g_x[0]) == int(this->g_x[1])) || (int(this->g_x[1])==int(this->g_x[2])) ){
+        /*兩點垂直*/
+
+        if(this->g_x[0] == this->g_x[1]){
+            //2 points on left, 1 point on right
+
+        }
+        else{
+            //2 points on right, 1 point on left
+        }
+    }
+    else{
+
+    }
+
+    /*更新WingedEdge DS*/
+
+}
+
 void WingedEdge::divide(WingedEdge &W_l, WingedEdge &W_r)
 {
 
     //Divide part
     vector<double> l_x,l_y,r_x,r_y;
     double m ;
-
-    qDebug()<<"g_x[0]="<<g_x[0]<<"g_x[1]="<<g_x[1]<<"g_x[2]="<<g_x[2];
-    qDebug()<<"g_y[0]="<<g_y[0]<<"g_y[1]="<<g_y[1]<<"g_y[2]="<<g_y[2];
 
     //Deal with 3 points at the same vertical line
     if(this->threePointsVertical()){
@@ -230,7 +375,6 @@ void WingedEdge::divide(WingedEdge &W_l, WingedEdge &W_r)
         m = this->findMedianLine();//Three points version
         for(unsigned long i=0;i<this->g_x.size();i++){
             //num_polygons should be same as g_x.size() and g_y.size()
-
             //Less than m, put in left
             if(this->g_x[i] <m){
                 l_x.push_back(g_x[i]);
@@ -245,10 +389,10 @@ void WingedEdge::divide(WingedEdge &W_l, WingedEdge &W_r)
             if(r_x[0]==m){
                 l_x.push_back(r_x[0]);
                 l_y.push_back(r_y[0]);
+            }
+            else if(r_x[1]==m){y.push_back(r_y[0]);
                 r_x.erase(r_x.begin()+0);
                 r_y.erase(r_y.begin()+0);
-            }
-            else if(r_x[1]==m){
                 l_x.push_back(r_x[1]);
                 l_y.push_back(r_y[1]);
                 r_x.erase(r_x.begin()+1);
@@ -547,5 +691,12 @@ void WingedEdge::setCcw_successor(const vector<int> &value)
 }
 
 
-
-
+bool compare_g_point(const g_point a, const g_point b)
+{
+    if(a.x == b.x){
+        return a.y < b.y;
+    }
+    else{
+        return a.x < b.x;
+    }
+}

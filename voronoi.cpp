@@ -38,7 +38,6 @@ WingedEdge Voronoi::runOneStep()
     //If the next stack is not waiting for merging, then it is to be divide
     //Loop until a waiting-for-merging WingedEdge is to be run.
     while(!this->s_stack.empty() && !this->s_stack.top().IsWaitingMerge()){
-
         if(this->stack_leak()){
             qDebug()<<"Stack leak";
             exit(-1);
@@ -46,16 +45,12 @@ WingedEdge Voronoi::runOneStep()
         //Get top
         qDebug()<<"before : s_stack.size()"<<s_stack.size();
         WingedEdge current_divide = s_stack.top(); s_stack.pop();
-        qDebug()<<"current_divide.getNumPolygons() ="<<current_divide.getNumPolygons();
         qDebug()<<"after : s_stack.size()"<<s_stack.size();
 
         if(current_divide.getNumPolygons() == 1){
-
             //If current_divide has just 1 point, returns
-            current_divide.constructTOnePointsVoronoi();
-
+            current_divide.constructOnePointVoronoi();
             done_stack.push(current_divide);
-
             return current_divide;
         }
         else if(current_divide.getNumPolygons() == 2){
@@ -65,25 +60,15 @@ WingedEdge Voronoi::runOneStep()
             return current_divide;
         }
         else if(current_divide.getNumPolygons() == 3){
-
-            //If current_divide has 3 points, seperate as 1p and 2p & update the WingedEdge data structure
-
+            //If current_divide has 3 points, construct directly & update the WingedEdge data structure
+        }
+        else{
             WingedEdge W_l,W_r;
             current_divide.divide(W_l,W_r);
             current_divide.setWaitingMerge(true);
             s_stack.push(current_divide);
             s_stack.push(W_l);
             s_stack.push(W_r);
-        }
-        else{
-            //m = find_median_line(current_divide) , m is the x-coordinate of median line
-            //W_l = {(i,current_divide.g_x[i],current_divide.g_y[i]) | current_divide.g[i] < m}
-            //W_r = {(i,current_divide.g_x[i],current_divide.g_y[i]) | current_divide.g[i] >=m}
-
-            //current_divide.setWaitingMerge(true);
-            //s_stack.push(current_divide);
-            //s_stack.push(WingeEdge(W_l));
-            //s_stack.push(WingeEdge(W_r));
         }
     }
 
@@ -94,7 +79,6 @@ WingedEdge Voronoi::runOneStep()
         qDebug()<<"Merge error : done_stack has less than 2 elements.";
         exit(-1);
     }
-
     //Left WingedEdge
     WingedEdge S_l = done_stack.top(); done_stack.pop();
     //Right WingedEdge
