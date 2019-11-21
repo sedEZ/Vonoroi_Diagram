@@ -179,6 +179,10 @@ void WingedEdge::constructThreePointsVoronoi()
     g_p.push_back(tmp_p);
 
     sort(g_p.begin(),g_p.end(),compare_g_point);
+    this->g_x[0] = g_p[0].x;this->g_y[0] = g_p[0].y;
+    this->g_x[1] = g_p[1].x;this->g_y[1] = g_p[1].y;
+    this->g_x[2] = g_p[2].x;this->g_y[2] = g_p[2].y;
+
 
     //Judge three points' positions to construct the voronoi
     if( (int(this->g_y[0])==int(this->g_y[1])) && (int(this->g_y[1])==int(this->g_y[2])) ){
@@ -326,7 +330,7 @@ void WingedEdge::constructThreePointsVoronoi()
         }
     }
     else{
-
+        /*一般情況*/
     }
 
     /*更新WingedEdge DS*/
