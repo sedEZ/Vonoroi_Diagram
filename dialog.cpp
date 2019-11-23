@@ -53,6 +53,7 @@ void Dialog::set_a_voronoi_from_tx()
         }
 
     }while(!this->tx->atEnd());
+
     qDebug()<<"Read 1 voronoi";
 }
 
@@ -67,7 +68,7 @@ void Dialog::on_pushButton_clicked()
     }
 
     if(this->tx_finish){
-        qDebug()<<"Here";
+        this->file->close();
         this->scene->restart();
         this->tx_finish = false;
         return;
@@ -82,7 +83,7 @@ void Dialog::on_pushButton_clicked()
     while(!this->scene->voronoiEmpty()){
         this->scene->runOneStep();
     }
-
+    this->scene->writeOutputTxt("./result.txt");
     qDebug()<<"Finish running all steps";
 }
 
@@ -95,7 +96,7 @@ void Dialog::on_pushButton_2_clicked()
     }
 
     if(this->tx_finish){
-        qDebug()<<"Here";
+        this->file->close();
         this->scene->restart();
         this->tx_finish = false;
         return;
@@ -129,14 +130,13 @@ void Dialog::on_pushButton_4_clicked()
     QString fileName = QFileDialog::getOpenFileName(this, tr("Open File"),
                                                     "/",
                                                     tr("Txt (*.txt)"));
-
     if(fileName.isEmpty() || fileName.isNull()){
         return;
     }
     if (!fileName.endsWith(".txt"))
         fileName = fileName.append(".txt");
     this->file = new QFile(fileName);
-    file->open(QIODevice::ReadOnly);
+    this->file->open(QIODevice::ReadOnly);
     tx = new QTextStream(file);
     from_tx = true;
     qDebug()<<"Read from "<<fileName<<" success!";

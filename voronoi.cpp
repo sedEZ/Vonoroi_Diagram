@@ -24,7 +24,6 @@ Voronoi::~Voronoi()
     delete this;
 }
 
-
 WingedEdge Voronoi::runOneStep()
 {
     if(s_stack.empty()){
@@ -109,5 +108,10 @@ int Voronoi::getNum_polygons() const
 void Voronoi::setNum_polygons(int value)
 {
     num_polygons = value;
+}
+
+WingedEdge Voronoi::getResult()
+{
+    return this->done_stack.top();
 }
 

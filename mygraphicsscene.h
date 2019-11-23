@@ -3,12 +3,16 @@
 
 #include "wingededge.h"
 #include "voronoi.h"
+#include <QFile>
 #include <QGraphicsScene>
 #include <QGraphicsSceneMouseEvent>
 #include <QGraphicsEllipseItem>
 #include <QGraphicsLineItem>
 #include <QPointF>
 #include <QVector>
+#include <QString>
+
+#include <algorithm>
 #include <stack>
 #include <vector>
 
@@ -20,15 +24,18 @@ public:
 
     bool initializeVonoroi();
 
-    //**Todo
+
+    void addAGeneratingPoints(QPointF* pos, qreal width, qreal height );
     void runOneStep();
+
+    void writeOutputTxt(QString dir);
 
     //Restart vonoroi's diagram
     void restart();
-    void addAGeneratingPoints(QPointF* pos, qreal width, qreal height );
+
+    bool voronoiEmpty();
     bool initialized(){return initialized_indicator;}
     void setInitializedIndicator(int i);
-    bool voronoiEmpty();
     void clearLine_p();
 
 

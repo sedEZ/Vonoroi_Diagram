@@ -1084,8 +1084,9 @@ void WingedEdge::configArraysForEdges(int edge_num, int rp, int lp, int sv, int 
 
 }
 
-void WingedEdge::getOrdinaryEdges(vector<int>& e)
+vector<int> WingedEdge::getOrdinaryEdges()
 {
+    vector<int> e;
     //Don't return augumented edges but oridinary edges.
     //The augumented edges are adjacent to p_infinity
     for(unsigned long i=0;i<num_edges;i++){
@@ -1094,7 +1095,7 @@ void WingedEdge::getOrdinaryEdges(vector<int>& e)
         //put oridinary edge number into e
         e.push_back(i);
     }
-
+    return e;
 }
 
 void WingedEdge::getOridinaryEdgesCoordinates(int i, double &x_1, double &x_2, double &y_1, double &y_2)

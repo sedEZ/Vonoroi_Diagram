@@ -27,6 +27,7 @@ public:
     int getNum_polygons() const;
     void setNum_polygons(int value);
 
+    WingedEdge getResult();
 private:
 
     int num_polygons;
