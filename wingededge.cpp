@@ -1,6 +1,8 @@
 #include "wingededge.h"
 #include <QDebug>
 
+#define INF 65536
+
 WingedEdge::WingedEdge(){
 
 }
@@ -822,12 +824,13 @@ void WingedEdge::divide(WingedEdge &W_l, WingedEdge &W_r)
 
     //Step 1 : Find a median line L perpendicular to the X-axis
     //which divides W into W_l and W_r, with equal sizes.
-    L = this->findMedianLine();//To be modified
+    //Use Prune-and-Search
+    L = this->find_k_th_Line(this->get_g_x(),this->g_x.size()/2);
 
     for(unsigned long i=0;i<this->g_x.size();i++){
         //num_polygons should be same as g_x.size() and g_y.size()
         //Less than m, put in left
-        if(this->g_x[i] <L){
+        if(this->g_x[i] < L){
             l_x.push_back(g_x[i]);
             l_y.push_back(g_y[i]);
         }
@@ -886,22 +889,78 @@ void WingedEdge::merge(WingedEdge S_l, WingedEdge S_r)
      * The resulting graph is the Voronoi diagram of S = SL ∪ SR
      */
 
-
-
 }
 
-double WingedEdge::findMedianLine()
+double WingedEdge::find_k_th_Line(vector<double> S,unsigned long k)
 {
-    //Brute-force for three points version
-    if((this->g_x[2] >= this->g_x[1] && this->g_x[1] >= this->g_x[0]) || (this->g_x[0] >= this->g_x[1] && this->g_x[1] >= this->g_x[2]))
-        //g_x[1] is median
-        return g_x[1];
-    else if((this->g_x[2] >= this->g_x[0] && this->g_x[0] >= this->g_x[1]) || (this->g_x[1] >= this->g_x[0] && this->g_x[0] >= this->g_x[2]))
-        //g_x[0] is median
-        return g_x[0];
-    else if((this->g_x[0] >= this->g_x[2] && this->g_x[2] >= this->g_x[1]) || (this->g_x[1] >= this->g_x[2] && this->g_x[2] >= this->g_x[0]))
-        //g_x[2] is median
-        return g_x[2];
+    if(S.size() <= 20){
+        //If the size is less than 20, sort it directly
+        //O(1)
+
+        sort(S.begin(),S.end());
+
+        if(S.size()%2 == 0){
+            return (S[S.size()/2]+S[S.size()/2 - 1])/2;
+        }
+        else{
+            return S[S.size()/2];
+        }
+    }
+
+    //Step 1: Divide S into n/5 subsets
+    //Add some dummy INF points to the last subset
+    //if n is not a net multiple of 5
+    if(S.size() % 5 != 0){
+        //Add some dummy INF points
+        //O(1)
+        for(unsigned long i=0;i<5-(S.size() % 5);i++){
+            S.push_back(INF);
+        }
+    }
+
+    //Step 2: Sort each subset of elements and add the median into "medians"
+    //O(n)
+    vector<double> medians;
+    for(unsigned long i=0;i<S.size();i+=5){
+        vector<double> tmp(S.begin()+i,S.begin()+i+4);
+        sort(tmp.begin(),tmp.end());
+        medians.push_back(tmp[2]);
+    }
+
+    //Step 3: Recursively sort "medians" to find the element p whih is the median of medians
+    //T(n/5)
+    double p = this->find_k_th_Line(medians, S.size()/2);
+
+    /** Not necessary to do Step 4 and 5 in this project, because p is the answer
+     *  But for the convenience of future porting, I finished them. **/
+    //Step 4: Partition S into S1, S2 and S3,
+    //which contain the elements less than, equal to, and greater than p, respectively.
+    //O(n)
+    vector<double> S1,S2,S3;
+
+    for(unsigned long i=0;i<S.size();i++){
+        if(S[i] < p)
+            S1.push_back(S[i]);
+        else if(fabs(S[i]-p)<1e-8)
+            S2.push_back(S[i]);
+        else
+            S3.push_back(S[i]);
+    }
+
+    //Step 5: Determine where the median located in S1, S2 or S3.
+    //        Prune the other 2 and recursively search
+    //T(4n/5)
+
+    if(S1.size() >= k){
+        return find_k_th_Line(S1,k);
+    }
+    else if(S1.size()+S2.size() >= k){
+        /** In this project, it should return here **/
+        return p;
+    }
+    else{
+        return find_k_th_Line(S3,k-S1.size()-S2.size());
+    }
 }
 
 int WingedEdge::getNumPolygons()

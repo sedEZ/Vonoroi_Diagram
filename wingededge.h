@@ -31,8 +31,8 @@ public:
     //Todo
     void merge(WingedEdge S_l,WingedEdge S_r);
 
-    //Temporary version for first demo
-    double findMedianLine();
+
+    double find_k_th_Line(vector<double> S,unsigned long k);
     int getNumPolygons();
     bool threePointsVertical();
 
