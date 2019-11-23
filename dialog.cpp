@@ -13,6 +13,7 @@ Dialog::Dialog(QWidget *parent)
     ui->graphicsView->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     ui->graphicsView->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     this->from_tx = false;
+    this->tx_finish = false;
 }
 
 Dialog::~Dialog()
@@ -25,15 +26,16 @@ void Dialog::set_a_voronoi_from_tx()
     QString str;
     do{
         str = this->tx->readLine();
-
         if(str[0] == '#' || str[0] == ' ' || str.size()==0)
             continue;
         else if(str[0] == '0'){
+            qDebug()<<"Got zero!";
             this->tx->flush();
             this->file->close();
+            this->from_tx = false;
+            this->tx_finish = true;
             break;
         }
-
         else{
             bool ok;
             int num_p = str.toInt(&ok,10);
@@ -49,7 +51,7 @@ void Dialog::set_a_voronoi_from_tx()
             }
             break;
         }
-        qDebug()<<str;
+
     }while(!this->tx->atEnd());
     qDebug()<<"Read 1 voronoi";
 }
@@ -59,16 +61,25 @@ void Dialog::on_pushButton_clicked()
 {
     //Run_vonoroi_to_the_end();
 
-    if(from_tx){
+    if(this->from_tx){
         this->scene->restart();
         this->set_a_voronoi_from_tx();
     }
 
+    if(this->tx_finish){
+        qDebug()<<"Here";
+        this->scene->restart();
+        this->tx_finish = false;
+        return;
+    }
+
     if (!this->scene->initialized()){
-       this->scene->initializeVonoroi();
+       if(!this->scene->initializeVonoroi()){
+           this->scene->restart();
+           return;
+       }
     }
     while(!this->scene->voronoiEmpty()){
-
         this->scene->runOneStep();
     }
 
@@ -78,12 +89,23 @@ void Dialog::on_pushButton_clicked()
 //Step by step
 void Dialog::on_pushButton_2_clicked()
 {
+    if(this->from_tx){
+        this->scene->restart();
+        this->set_a_voronoi_from_tx();
+    }
+
+    if(this->tx_finish){
+        qDebug()<<"Here";
+        this->scene->restart();
+        this->tx_finish = false;
+        return;
+    }
+
     if (!this->scene->initialized()){
-       if(from_tx){
+       if(!this->scene->initializeVonoroi()){
            this->scene->restart();
-           this->set_a_voronoi_from_tx();
+           return;
        }
-       this->scene->initializeVonoroi();
     }
 
     //Run_next_step();
@@ -101,11 +123,16 @@ void Dialog::on_pushButton_3_clicked()
     this->scene->restart();
 }
 
-void Dialog::on_lineEdit_editingFinished()
+void Dialog::on_pushButton_4_clicked()
 {
-    //read from file
-    QString savedText = ui->lineEdit->text();
-    QString fileName(savedText);
+    /***************/
+    QString fileName = QFileDialog::getOpenFileName(this, tr("Open File"),
+                                                    "/",
+                                                    tr("Txt (*.txt)"));
+
+    if(fileName.isEmpty() || fileName.isNull()){
+        return;
+    }
     if (!fileName.endsWith(".txt"))
         fileName = fileName.append(".txt");
     this->file = new QFile(fileName);

@@ -25,8 +25,6 @@ Voronoi::~Voronoi()
 }
 
 
-//Todo: finish the function implementations
-//會重複丟測資
 WingedEdge Voronoi::runOneStep()
 {
     if(s_stack.empty()){
@@ -34,7 +32,6 @@ WingedEdge Voronoi::runOneStep()
         exit(-1);
     }
 
-    qDebug()<<"this->s_stack.size()="<<this->s_stack.size();
     //If the next stack is not waiting for merging, then it is to be divide
     //Loop until a waiting-for-merging WingedEdge is to be run.
     while(!this->s_stack.empty() && !this->s_stack.top().IsWaitingMerge()){
@@ -43,9 +40,7 @@ WingedEdge Voronoi::runOneStep()
             exit(-1);
         }
         //Get top
-        qDebug()<<"before : s_stack.size()"<<s_stack.size();
         WingedEdge current_divide = s_stack.top(); s_stack.pop();
-        qDebug()<<"after : s_stack.size()"<<s_stack.size();
 
         if(current_divide.getNumPolygons() == 1){
             //If current_divide has just 1 point, returns
@@ -61,6 +56,9 @@ WingedEdge Voronoi::runOneStep()
         }
         else if(current_divide.getNumPolygons() == 3){
             //If current_divide has 3 points, construct directly & update the WingedEdge data structure
+            current_divide.constructThreePointsVoronoi();
+            done_stack.push(current_divide);
+            return current_divide;
         }
         else{
             WingedEdge W_l,W_r;

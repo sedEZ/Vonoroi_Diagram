@@ -62,7 +62,7 @@
     <string>Clear</string>
    </property>
   </widget>
-  <widget class="QLineEdit" name="lineEdit">
+  <widget class="QPushButton" name="pushButton_4">
    <property name="geometry">
     <rect>
      <x>210</x>
@@ -70,6 +70,9 @@
      <width>141</width>
      <height>41</height>
     </rect>
+   </property>
+   <property name="text">
+    <string>Open from file</string>
    </property>
   </widget>
  </widget>

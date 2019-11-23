@@ -34,7 +34,8 @@ private slots:
 
     void on_pushButton_3_clicked();
 
-    void on_lineEdit_editingFinished();
+    void on_pushButton_4_clicked();
+
 
 private:
     Ui::Dialog *ui;
@@ -42,5 +43,6 @@ private:
     QTextStream *tx;
     QFile* file;
     bool from_tx;
+    bool tx_finish;
 };
 #endif // DIALOG_H

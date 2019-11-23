@@ -25,6 +25,8 @@ public:
     void constructTwoPointsVoronoi();
     void constructThreePointsVoronoi();
 
+    double cross_product(double x_0,double y_0,double x_1,double y_1,double x_2,double y_2);
+
     void divide(WingedEdge &W_l,WingedEdge &W_r);
     //Todo
     void merge(WingedEdge S_l,WingedEdge S_r);
@@ -38,6 +40,8 @@ public:
     bool IsWaitingMerge();
 
     void changeArraysForEdges(int resize_size);
+    void configArraysForEdges(int edge_num,int rp,int lp,int sv,int ev,int cw_p,int ccw_p,int cw_s,int ccw_s);
+
     void getOrdinaryEdges(vector<int>&);
 
     void getOridinaryEdgesCoordinates(int i, double& x_1,double& x_2,double& y_1,double& y_2);

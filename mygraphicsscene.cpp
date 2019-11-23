@@ -47,11 +47,11 @@ void MyGraphicsScene::clearLine_p()
     }
 }
 
-void MyGraphicsScene::initializeVonoroi()
+bool MyGraphicsScene::initializeVonoroi()
 {
-
     //Create the vectors of generating points' x,y coordinates
     //in order to create vonoroi
+    //Success: return 1 ; Fail: return 0
     vector<double> x,y;
     for(int i=0;i<this->g_points.size();i++){
         x.push_back(this->g_points[i].x());
@@ -60,6 +60,7 @@ void MyGraphicsScene::initializeVonoroi()
     v = new Voronoi(x,y);
     this->setInitializedIndicator(1);
 
+    return !x.empty();
 }
 
 /*

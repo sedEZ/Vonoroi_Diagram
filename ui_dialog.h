@@ -13,7 +13,6 @@
 #include <QtWidgets/QApplication>
 #include <QtWidgets/QDialog>
 #include <QtWidgets/QGraphicsView>
-#include <QtWidgets/QLineEdit>
 #include <QtWidgets/QPushButton>
 
 QT_BEGIN_NAMESPACE
@@ -25,7 +24,7 @@ public:
     QPushButton *pushButton;
     QPushButton *pushButton_2;
     QPushButton *pushButton_3;
-    QLineEdit *lineEdit;
+    QPushButton *pushButton_4;
 
     void setupUi(QDialog *Dialog)
     {
@@ -44,9 +43,9 @@ public:
         pushButton_3 = new QPushButton(Dialog);
         pushButton_3->setObjectName(QString::fromUtf8("pushButton_3"));
         pushButton_3->setGeometry(QRect(0, 630, 161, 41));
-        lineEdit = new QLineEdit(Dialog);
-        lineEdit->setObjectName(QString::fromUtf8("lineEdit"));
-        lineEdit->setGeometry(QRect(210, 630, 141, 41));
+        pushButton_4 = new QPushButton(Dialog);
+        pushButton_4->setObjectName(QString::fromUtf8("pushButton_4"));
+        pushButton_4->setGeometry(QRect(210, 630, 141, 41));
 
         retranslateUi(Dialog);
 
@@ -59,6 +58,7 @@ public:
         pushButton->setText(QCoreApplication::translate("Dialog", "Run", nullptr));
         pushButton_2->setText(QCoreApplication::translate("Dialog", "Step_by_step", nullptr));
         pushButton_3->setText(QCoreApplication::translate("Dialog", "Clear", nullptr));
+        pushButton_4->setText(QCoreApplication::translate("Dialog", "Open from file", nullptr));
     } // retranslateUi
 
 };

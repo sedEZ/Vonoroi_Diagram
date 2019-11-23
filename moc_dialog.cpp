@@ -23,7 +23,7 @@ QT_WARNING_PUSH
 QT_WARNING_DISABLE_DEPRECATED
 struct qt_meta_stringdata_Dialog_t {
     QByteArrayData data[6];
-    char stringdata0[106];
+    char stringdata0[102];
 };
 #define QT_MOC_LITERAL(idx, ofs, len) \
     Q_STATIC_BYTE_ARRAY_DATA_HEADER_INITIALIZER_WITH_OFFSET(len, \
@@ -37,12 +37,12 @@ QT_MOC_LITERAL(1, 7, 21), // "on_pushButton_clicked"
 QT_MOC_LITERAL(2, 29, 0), // ""
 QT_MOC_LITERAL(3, 30, 23), // "on_pushButton_2_clicked"
 QT_MOC_LITERAL(4, 54, 23), // "on_pushButton_3_clicked"
-QT_MOC_LITERAL(5, 78, 27) // "on_lineEdit_editingFinished"
+QT_MOC_LITERAL(5, 78, 23) // "on_pushButton_4_clicked"
 
     },
     "Dialog\0on_pushButton_clicked\0\0"
     "on_pushButton_2_clicked\0on_pushButton_3_clicked\0"
-    "on_lineEdit_editingFinished"
+    "on_pushButton_4_clicked"
 };
 #undef QT_MOC_LITERAL
 
@@ -83,7 +83,7 @@ void Dialog::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, void
         case 0: _t->on_pushButton_clicked(); break;
         case 1: _t->on_pushButton_2_clicked(); break;
         case 2: _t->on_pushButton_3_clicked(); break;
-        case 3: _t->on_lineEdit_editingFinished(); break;
+        case 3: _t->on_pushButton_4_clicked(); break;
         default: ;
         }
     }

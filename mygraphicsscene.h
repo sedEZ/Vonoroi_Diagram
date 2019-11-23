@@ -18,7 +18,7 @@ class MyGraphicsScene : public QGraphicsScene{
 public:
     MyGraphicsScene();
 
-    void initializeVonoroi();
+    bool initializeVonoroi();
 
     //**Todo
     void runOneStep();
