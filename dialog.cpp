@@ -118,6 +118,7 @@ void Dialog::on_pushButton_2_clicked()
     this->scene->runOneStep();
 }
 
+
 //Clear
 void Dialog::on_pushButton_3_clicked()
 {
@@ -139,5 +140,51 @@ void Dialog::on_pushButton_4_clicked()
     this->file->open(QIODevice::ReadOnly);
     tx = new QTextStream(file);
     from_tx = true;
+    qDebug()<<"Read from "<<fileName<<" success!";
+}
+
+void Dialog::on_pushButton_5_clicked()
+{
+    this->scene->restart();
+    QString fileName = QFileDialog::getOpenFileName(this, tr("Open File"),
+                                                    "/",
+                                                    tr("Txt (*.txt)"));
+    if(fileName.isEmpty() || fileName.isNull()){
+        return;
+    }
+    if (!fileName.endsWith(".txt"))
+        fileName = fileName.append(".txt");
+    this->file = new QFile(fileName);
+    this->file->open(QIODevice::ReadOnly);
+    this->tx = new QTextStream(file);
+
+    QString str;
+    do{
+        str = this->tx->readLine();
+        if(str[0] == 'P'){
+            QStringList list1 = str.split(' ');
+            double x = list1[1].toDouble();
+            double y = list1[2].toDouble();
+
+            QPointF *p = new QPointF(x,y);
+            this->scene->addAGeneratingPoints(p,10,10);
+            delete p;
+        }
+        else if(str[0] == 'E'){
+            QStringList list2 = str.split(' ');
+            double x1 = list2[1].toDouble();
+            double y1 = list2[2].toDouble();
+            double x2 = list2[3].toDouble();
+            double y2 = list2[4].toDouble();
+            QGraphicsLineItem* l = new QGraphicsLineItem(x1, y1, x2, y2);
+            l->setPen(QPen(Qt::red));
+            this->scene->addItem(l);
+        }
+
+    }while(!this->tx->atEnd());
+
+
+    this->file->close();
+    this->tx_finish = false;
     qDebug()<<"Read from "<<fileName<<" success!";
 }

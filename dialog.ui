@@ -17,7 +17,7 @@
    <property name="geometry">
     <rect>
      <x>0</x>
-     <y>0</y>
+     <y>40</y>
      <width>600</width>
      <height>600</height>
     </rect>
@@ -27,7 +27,7 @@
    <property name="geometry">
     <rect>
      <x>360</x>
-     <y>630</y>
+     <y>650</y>
      <width>111</width>
      <height>41</height>
     </rect>
@@ -40,7 +40,7 @@
    <property name="geometry">
     <rect>
      <x>480</x>
-     <y>630</y>
+     <y>650</y>
      <width>111</width>
      <height>41</height>
     </rect>
@@ -53,8 +53,8 @@
    <property name="geometry">
     <rect>
      <x>0</x>
-     <y>630</y>
-     <width>161</width>
+     <y>650</y>
+     <width>131</width>
      <height>41</height>
     </rect>
    </property>
@@ -65,14 +65,27 @@
   <widget class="QPushButton" name="pushButton_4">
    <property name="geometry">
     <rect>
-     <x>210</x>
-     <y>630</y>
+     <x>0</x>
+     <y>0</y>
      <width>141</width>
      <height>41</height>
     </rect>
    </property>
    <property name="text">
-    <string>Open from file</string>
+    <string>Read input</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="pushButton_5">
+   <property name="geometry">
+    <rect>
+     <x>150</x>
+     <y>0</y>
+     <width>141</width>
+     <height>41</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Read output</string>
    </property>
   </widget>
  </widget>

@@ -697,7 +697,6 @@ void WingedEdge::constructThreePointsVoronoi()
 
             double x_cross_y_0;
             x_cross_y_0 = c_bot;
-            qDebug()<<x_cross_y_0;
 
             //points intersect with lower margin
             if(x_cross_y_0>=0 && x_cross_y_0<=600){
@@ -712,12 +711,11 @@ void WingedEdge::constructThreePointsVoronoi()
             }
             else{
                 this->x[2] = 600;
-                this->y[2] = b_bot;
+                this->y[2] = 600*m_bot+b_bot;
                 this->w[2] = 0;
             }
 
         }
-
 
         //Circumcenter, which is an ordinary vertex
         this->x[3] = (b_bot-b_top)/(m_top-m_bot);
@@ -742,6 +740,7 @@ void WingedEdge::constructThreePointsVoronoi()
 
             candidate1_x = n*0+c;
             candidate1_y = 0;
+
             candidate2_x = n*600+c;
             candidate2_y = 600;
 
@@ -749,9 +748,10 @@ void WingedEdge::constructThreePointsVoronoi()
 
         //Determine which candidate is at different side with circumcenter
         double cross_product_of_circumcenter = cross_product(this->g_x[1],this->g_y[1],this->g_x[2],this->g_y[2],this->x[3],this->y[3]);
+        double cross_product_of_left_point = cross_product(this->g_x[1],this->g_y[1],this->g_x[2],this->g_y[2],this->g_x[0],this->g_y[0]);
         double cross_product_of_candidate1 = cross_product(this->g_x[1],this->g_y[1],this->g_x[2],this->g_y[2],candidate1_x,candidate1_y);
 
-        if(cross_product_of_circumcenter*cross_product_of_candidate1 < 0){
+        if(/*cross_product_of_circumcenter*cross_product_of_candidate1 < 0 && */cross_product_of_left_point*cross_product_of_candidate1<0){
             //candidate1 is at different side with circumcenter
             if(candidate1_x>=0 && candidate1_x<=600){
                 this->x[0] = candidate1_x;

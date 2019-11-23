@@ -25,6 +25,7 @@ public:
     QPushButton *pushButton_2;
     QPushButton *pushButton_3;
     QPushButton *pushButton_4;
+    QPushButton *pushButton_5;
 
     void setupUi(QDialog *Dialog)
     {
@@ -33,19 +34,22 @@ public:
         Dialog->resize(600, 700);
         graphicsView = new QGraphicsView(Dialog);
         graphicsView->setObjectName(QString::fromUtf8("graphicsView"));
-        graphicsView->setGeometry(QRect(0, 0, 600, 600));
+        graphicsView->setGeometry(QRect(0, 40, 600, 600));
         pushButton = new QPushButton(Dialog);
         pushButton->setObjectName(QString::fromUtf8("pushButton"));
-        pushButton->setGeometry(QRect(360, 630, 111, 41));
+        pushButton->setGeometry(QRect(360, 650, 111, 41));
         pushButton_2 = new QPushButton(Dialog);
         pushButton_2->setObjectName(QString::fromUtf8("pushButton_2"));
-        pushButton_2->setGeometry(QRect(480, 630, 111, 41));
+        pushButton_2->setGeometry(QRect(480, 650, 111, 41));
         pushButton_3 = new QPushButton(Dialog);
         pushButton_3->setObjectName(QString::fromUtf8("pushButton_3"));
-        pushButton_3->setGeometry(QRect(0, 630, 161, 41));
+        pushButton_3->setGeometry(QRect(0, 650, 131, 41));
         pushButton_4 = new QPushButton(Dialog);
         pushButton_4->setObjectName(QString::fromUtf8("pushButton_4"));
-        pushButton_4->setGeometry(QRect(210, 630, 141, 41));
+        pushButton_4->setGeometry(QRect(0, 0, 141, 41));
+        pushButton_5 = new QPushButton(Dialog);
+        pushButton_5->setObjectName(QString::fromUtf8("pushButton_5"));
+        pushButton_5->setGeometry(QRect(150, 0, 141, 41));
 
         retranslateUi(Dialog);
 
@@ -58,7 +62,8 @@ public:
         pushButton->setText(QCoreApplication::translate("Dialog", "Run", nullptr));
         pushButton_2->setText(QCoreApplication::translate("Dialog", "Step_by_step", nullptr));
         pushButton_3->setText(QCoreApplication::translate("Dialog", "Clear", nullptr));
-        pushButton_4->setText(QCoreApplication::translate("Dialog", "Open from file", nullptr));
+        pushButton_4->setText(QCoreApplication::translate("Dialog", "Read input", nullptr));
+        pushButton_5->setText(QCoreApplication::translate("Dialog", "Read output", nullptr));
     } // retranslateUi
 
 };
