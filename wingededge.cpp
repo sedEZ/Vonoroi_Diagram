@@ -746,13 +746,12 @@ void WingedEdge::constructThreePointsVoronoi()
 
         }
 
-        //Determine which candidate is at different side with circumcenter
-        double cross_product_of_circumcenter = cross_product(this->g_x[1],this->g_y[1],this->g_x[2],this->g_y[2],this->x[3],this->y[3]);
+        //Determine if the generating point at left side is at different side with circumcenter
         double cross_product_of_left_point = cross_product(this->g_x[1],this->g_y[1],this->g_x[2],this->g_y[2],this->g_x[0],this->g_y[0]);
         double cross_product_of_candidate1 = cross_product(this->g_x[1],this->g_y[1],this->g_x[2],this->g_y[2],candidate1_x,candidate1_y);
 
-        if(/*cross_product_of_circumcenter*cross_product_of_candidate1 < 0 && */cross_product_of_left_point*cross_product_of_candidate1<0){
-            //candidate1 is at different side with circumcenter
+        if(cross_product_of_left_point*cross_product_of_candidate1<0){
+            //the generating point at left side is at different side with circumcenter
             if(candidate1_x>=0 && candidate1_x<=600){
                 this->x[0] = candidate1_x;
                 this->y[0] = candidate1_y;
@@ -819,68 +818,25 @@ void WingedEdge::divide(WingedEdge &W_l, WingedEdge &W_r)
 
     //Divide part
     vector<double> l_x,l_y,r_x,r_y;
-    double m ;
+    double L ;
 
-    //Deal with 3 points at the same vertical line
-    if(this->threePointsVertical()){
-        qDebug()<<"3 points at the same vertical line";
-        if(this->g_y[0]>=this->g_y[1]&&this->g_y[0]>=this->g_y[2]){
-            l_x.push_back(this->g_x[0]);
-            l_y.push_back(this->g_y[0]);
+    //Step 1 : Find a median line L perpendicular to the X-axis
+    //which divides W into W_l and W_r, with equal sizes.
+    L = this->findMedianLine();//To be modified
 
-            r_x.push_back(this->g_x[1]);
-            r_y.push_back(this->g_y[1]);
-            r_x.push_back(this->g_x[2]);
-            r_y.push_back(this->g_y[2]);
+    for(unsigned long i=0;i<this->g_x.size();i++){
+        //num_polygons should be same as g_x.size() and g_y.size()
+        //Less than m, put in left
+        if(this->g_x[i] <L){
+            l_x.push_back(g_x[i]);
+            l_y.push_back(g_y[i]);
         }
-        else if(this->g_y[1]>=this->g_y[0]&&this->g_y[1]>=this->g_y[2]){
-            l_x.push_back(this->g_x[1]);
-            l_y.push_back(this->g_y[1]);
-
-            r_x.push_back(this->g_x[0]);
-            r_y.push_back(this->g_y[0]);
-            r_x.push_back(this->g_x[2]);
-            r_y.push_back(this->g_y[2]);
-        }
-        else if(this->g_y[2]>=this->g_y[1]&&this->g_y[2]>=this->g_y[0]){
-            l_x.push_back(this->g_x[2]);
-            l_y.push_back(this->g_y[2]);
-
-            r_x.push_back(this->g_x[0]);
-            r_y.push_back(this->g_y[0]);
-            r_x.push_back(this->g_x[1]);
-            r_y.push_back(this->g_y[1]);
+        else if(this->g_x[i] >= L ){
+            r_x.push_back(g_x[i]);
+            r_y.push_back(g_y[i]);
         }
     }
-    else{
-        m = this->findMedianLine();//Three points version
-        for(unsigned long i=0;i<this->g_x.size();i++){
-            //num_polygons should be same as g_x.size() and g_y.size()
-            //Less than m, put in left
-            if(this->g_x[i] <m){
-                l_x.push_back(g_x[i]);
-                l_y.push_back(g_y[i]);
-            }
-            else if(this->g_x[i] >= m ){
-                r_x.push_back(g_x[i]);
-                r_y.push_back(g_y[i]);
-            }
-        }
-        if(r_x.size()>2){
-            if(r_x[0]==m){
-                l_x.push_back(r_x[0]);
-                l_y.push_back(r_y[0]);
-            }
-            else if(r_x[1]==m){y.push_back(r_y[0]);
-                r_x.erase(r_x.begin()+0);
-                r_y.erase(r_y.begin()+0);
-                l_x.push_back(r_x[1]);
-                l_y.push_back(r_y[1]);
-                r_x.erase(r_x.begin()+1);
-                r_y.erase(r_y.begin()+1);
-            }
-        }
-    }
+
     W_l = WingedEdge(l_x,l_y);
     W_r = WingedEdge(r_x,r_y);
     qDebug()<<"W_l.getNumPolygons()"<<W_l.getNumPolygons();
@@ -890,129 +846,48 @@ void WingedEdge::divide(WingedEdge &W_l, WingedEdge &W_r)
 
 void WingedEdge::merge(WingedEdge S_l, WingedEdge S_r)
 {
-        qDebug()<<"merge";
-        bool swapped = false;
+    /******************/
 
-        qDebug()<<"S_l.getNumPolygons()"<<S_l.getNumPolygons();
-        if(S_l.getNumPolygons()>1){
-            qDebug()<<"1";
-            WingedEdge tmp = S_l;
-            S_l = S_r;
-            S_r = tmp;
-            swapped = true;
-        }
-    //Temporary version
-        vector<double> S_l_g_x = S_l.get_g_x();
-        vector<double> S_l_g_y = S_l.get_g_y();
-        vector<double> S_r_g_x = S_r.get_g_x();
-        vector<double> S_r_g_y = S_r.get_g_y();
+    /* Construct a dividing piece-wise linear
+     * hyperplane HP which is the locus of points
+     * simultaneously closest to a point in S_l
+     * and a point in S_r.
+     */
 
-        double S_r_upper_x ,S_r_upper_y , S_r_lower_x ,S_r_lower_y;
-        double m1 = (S_r_g_y[0]-S_l_g_y[0])/(S_r_g_x[0]-S_l_g_x[0]);
-        double m2 = (S_r_g_y[1]-S_l_g_y[0])/(S_r_g_x[1]-S_l_g_x[0]);
+    /* Step 1: Find the convex hulls of SL
+     * and SR,denoted as Hull(SL) and Hull(SR),
+     * respectively.
+     */
 
-        qDebug()<<"m1 = "<<m1<<", m2 = "<<m2;
-        //Slope smaller is upper
-        if(m1 < m2){
-            S_r_upper_x = S_r_g_x[1];
-            S_r_upper_y = S_r_g_y[1];
-            S_r_lower_x = S_r_g_x[0];
-            S_r_lower_y = S_r_g_y[0];
-        }
-        else if(m1 > m2){
-            S_r_upper_x = S_r_g_x[0];
-            S_r_upper_y = S_r_g_y[0];
-            S_r_lower_x = S_r_g_x[1];
-            S_r_lower_y = S_r_g_y[1];
-        }
-        else if(m1 == m2){
-            /*double dis_0 =(S_r_g_x[0]-S_l_g_x[0])*(S_r_g_x[0]-S_l_g_x[0])
-                         +(S_r_g_y[0]-S_l_g_y[0])*(S_r_g_y[0]-S_l_g_y[0]);
-            double dis_1 =(S_r_g_x[1]-S_l_g_x[0])*(S_r_g_x[1]-S_l_g_x[0])
-                    +(S_r_g_y[1]-S_l_g_y[0])*(S_r_g_y[1]-S_l_g_y[0]);*/
-            S_r_upper_x = S_r_g_x[0];
-            S_r_upper_y = S_r_g_y[0];
-            S_r_lower_x = S_r_g_x[1];
-            S_r_lower_y = S_r_g_y[1];
-        }
+    /* Step 2: Find segments PaPb and PcPd which join
+     * HULL(SL) and HULL(SR) into a convex hull
+     * (Pa and Pc belong to SL and Pb and
+     *  Pd belong to SR).
+     * Assume that PaPb lies above PcPd.
+     * Let x = a, y = b, SG= PxPy and HP = empty
+     */
 
 
-        //upper point
-        double x_1 = S_l_g_x[0] , y_1 = S_l_g_y[0];
-        double x_2 = S_r_upper_x , y_2 = S_r_upper_y;
-        //y = mx + b
-        double m,b;
-        findPerpendicularBisector(x_1,y_1,x_2,y_2,m,b);
-        //x = ny + c
-        double n = (y_1-y_2)/(x_2-x_1);
-        double c = b*(y_2-y_1)/(x_2-x_1);
+    /* Step 3: Find the perpendicular bisector of SG.
+     * Denote it by BS. Let HP = HP∪{BS}.
+     * If SG = PcPd, go to Step 5; otherwise, go to Step 4
+     */
 
-        double x_bot = n*600+c, y_bot = 600;
+    /* Step 4: The ray from VD(SL) and VD(SR) which
+     * BS first intersects with must be a perpendicular
+     * bisector of either PxPz or PyPz for some z.
+     * If this ray is the perpendicular bisector of PyPz, then let SG = PxPz ;
+     * otherwise, let SG = PzPy. Go to Step 3.
+     */
 
-        //lower point
-        x_1 = S_l_g_x[0] , y_1 = S_l_g_y[0];
-        x_2 = S_r_lower_x , y_2 = S_r_lower_y;
-        //y = mx + b
-        findPerpendicularBisector(x_1,y_1,x_2,y_2,m,b);
-        //x = ny + c
-        n = (y_1-y_2)/(x_2-x_1);
-        c = b*(y_2-y_1)/(x_2-x_1);
-        double x_top = n*0+c, y_top = 0;
-    /***************************************************************/
-        vector<int> S_r_w = S_r.get_w();
-        vector<double> S_r_x = S_r.get_x();
-        vector<double> S_r_y = S_r.get_y();
-        double m_r = (S_r_y[1]-S_r_y[0])/(S_r_x[1]-S_r_x[0]);
-        double b_r = S_r_y[0]-m_r*S_r_x[0];
+    /* Step 5: Discard the edges of VD(SL) which extend to
+     * the right of HP and discard the edges of VD(SR) which
+     * extend to the left of HP.
+     * The resulting graph is the Voronoi diagram of S = SL ∪ SR
+     */
 
-        //Cross point
-        double x_mid = (b_r-b)/(m-m_r) ,y_mid = m*x_mid+b;
 
-        this->num_edges=3;
-        this->changeArraysForEdges(this->num_edges);
 
-        if((S_r_x[1] > S_r_x[0] && !swapped) || (S_r_x[1] < S_r_x[0] && swapped)){
-            this->x.push_back(S_r_x[1]);//right-most vertex of S_r
-            this->x.push_back(x_mid);
-            this->x.push_back(x_top);
-            this->x.push_back(x_bot);
-
-            this->y.push_back(S_r_y[1]);//right-most vertex of S_r
-            this->y.push_back(y_mid);
-            this->y.push_back(y_top);
-            this->y.push_back(y_bot);
-        }
-        else{
-            this->x.push_back(S_r_x[0]);//left-most vertex of S_r
-            this->x.push_back(x_mid);
-            this->x.push_back(x_top);
-            this->x.push_back(x_bot);
-
-            this->y.push_back(S_r_y[0]);//left-most vertex of S_r
-            this->y.push_back(y_mid);
-            this->y.push_back(y_top);
-            this->y.push_back(y_bot);
-
-        }
-        //Todo : adjust WingedEdge ds
-
-        //Man-made judgement, not general
-        this->start_vertex[0] = 0;
-        this->end_vertex[0] = 1;
-        this->start_vertex[1] = 2;
-        this->end_vertex[1] = 1;
-        this->start_vertex[2] = 1;
-        this->end_vertex[2] = 3;
-
-        //Wrong assighment, but these can help drawing
-        this->right_polygon[0]=0;
-        this->left_polygon[0]=0;
-        this->right_polygon[1]=0;
-        this->left_polygon[1]=0;
-        this->right_polygon[2]=0;
-        this->left_polygon[2]=0;
-
-   // }
 }
 
 double WingedEdge::findMedianLine()
