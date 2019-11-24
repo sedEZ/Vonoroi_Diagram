@@ -172,7 +172,7 @@ void MyGraphicsScene::mousePressEvent(QGraphicsSceneMouseEvent *e)
 {
     if(e->button() == Qt::LeftButton){
         QPointF* p = new QPointF(e->scenePos());
-        addAGeneratingPoints(p,10.0,10.0);
+        addAGeneratingPoints(p,5.0,5.0);
 
     }
 }

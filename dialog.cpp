@@ -47,7 +47,7 @@ void Dialog::set_a_voronoi_from_tx()
                 double x, y;
                 *(this->tx) >> x >> y;
                 QPointF* p = new QPointF(x,y);
-                this->scene->addAGeneratingPoints(p,10.0,10.0);
+                this->scene->addAGeneratingPoints(p,5.0,5.0);
             }
             break;
         }

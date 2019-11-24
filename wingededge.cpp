@@ -8,7 +8,7 @@ WingedEdge::WingedEdge(){
 }
 
 WingedEdge::WingedEdge(vector<double> p_x, vector<double> p_y){
-    int i=0;
+    unsigned long i=0;
     for(;i<p_x.size();i++){
         g_x.push_back(p_x[i]);
         g_y.push_back(p_y[i]);
@@ -165,7 +165,7 @@ void WingedEdge::constructThreePointsVoronoi()
     this->g_x[2] = g_p[2].x;this->g_y[2] = g_p[2].y;
 
     //Judge three points' positions to construct the voronoi
-    if( (int(this->g_y[0])==int(this->g_y[1])) && (int(this->g_y[1])==int(this->g_y[2])) ){
+    if( (fabs(this->g_y[0]-this->g_y[1])<1e-8) && (fabs(this->g_y[1]-this->g_y[2])<1e-8) ){
         /*三點共線-水平*/
 
         this->w.resize(4);
@@ -202,7 +202,7 @@ void WingedEdge::constructThreePointsVoronoi()
         this->configArraysForEdges(5,1,3,2,0,1,4,2,0);
 
     }
-    else if( (int(this->g_x[0])==int(this->g_x[1])) && (int(this->g_x[1])==int(this->g_x[2])) ){
+    else if( (fabs(this->g_x[0]-this->g_x[1])<1e-8) && (fabs(this->g_x[1]-this->g_x[2])<1e-8) ){
         /*三點共線-垂直*/
         this->w.resize(4);
         this->x.resize(4);this->y.resize(4);
@@ -427,7 +427,7 @@ void WingedEdge::constructThreePointsVoronoi()
         /** Done add vertices **/
 
     }
-    else if( (int(this->g_x[0]) == int(this->g_x[1])) || (int(this->g_x[1])==int(this->g_x[2])) ){
+    else if( (fabs(this->g_x[0]-this->g_x[1])<1e-8) || (fabs(this->g_x[1]-this->g_x[2])<1e-8) ){
         /*兩點垂直*/
         //1 oridinary vertex(circumcenter), 3 infinity vertices
         this->w.resize(4);
@@ -690,7 +690,7 @@ void WingedEdge::constructThreePointsVoronoi()
         //The coordinate of infinity vertex of left & lower-right point 's perpendicular bisector
         if(fabs(this->g_y[0] - this->g_y[1]) < 1e-8){
             this->x[2] = (this->g_x[0] + this->g_x[1])/2;
-            this->y[2] = 600;
+            this->y[2] = 0;
             this->w[2] = 0;
         }
         else{
@@ -719,11 +719,23 @@ void WingedEdge::constructThreePointsVoronoi()
 
         }
 
-        //Circumcenter, which is an ordinary vertex
-        this->x[3] = (b_bot-b_top)/(m_top-m_bot);
-        this->y[3] = m_top*this->x[3]+b_top;
-        this->w[3] = 1;
 
+        //Circumcenter, which is an ordinary vertex
+        if(fabs(this->g_y[0] - this->g_y[2]) < 1e-8){
+            this->x[3] = this->x[1];
+            this->y[3] = m_bot*this->x[3]+b_bot;
+            this->w[3] = 1;
+        }
+        else if(fabs(this->g_y[0] - this->g_y[1]) < 1e-8){
+            this->x[3] = this->x[2];
+            this->y[3] = m_top*this->x[3]+b_top;
+            this->w[3] = 1;
+        }
+        else{
+            this->x[3] = (b_bot-b_top)/(m_top-m_bot);
+            this->y[3] = m_top*this->x[3]+b_top;
+            this->w[3] = 1;
+        }
 
         //The coordinate of infinity vertex of 2 right-most-generating-points' perpendicular bisector
         double m,b,n,c;
@@ -825,7 +837,7 @@ void WingedEdge::divide(WingedEdge &W_l, WingedEdge &W_r)
     //Step 1 : Find a median line L perpendicular to the X-axis
     //which divides W into W_l and W_r, with equal sizes.
     //Use Prune-and-Search
-    L = this->find_k_th_Line(this->get_g_x(),this->g_x.size()/2);
+    L = this->find_k_th(this->get_g_x(),this->g_x.size()/2);
 
     for(unsigned long i=0;i<this->g_x.size();i++){
         //num_polygons should be same as g_x.size() and g_y.size()
@@ -860,6 +872,15 @@ void WingedEdge::merge(WingedEdge S_l, WingedEdge S_r)
     /* Step 1: Find the convex hulls of SL
      * and SR,denoted as Hull(SL) and Hull(SR),
      * respectively.
+     *
+     *******Construct a convex hull from a Voronoi diagram********
+     *      Step 1: Find an infinite ray by examining all
+     *              Voronoi edges.
+     *      Step 2: Let Pi be the point to the left of the
+     *              infinite ray. Pi is a convex hull vertex.
+     *              Examine the Voronoi polygon of Pi to find
+     *              the next infinite ray.
+     *      Step 3: Repeat Step 2 until we return to the starting ray.
      */
 
     /* Step 2: Find segments PaPb and PcPd which join
@@ -891,7 +912,7 @@ void WingedEdge::merge(WingedEdge S_l, WingedEdge S_r)
 
 }
 
-double WingedEdge::find_k_th_Line(vector<double> S,unsigned long k)
+double WingedEdge::find_k_th(vector<double> S,unsigned long k)
 {
     if(S.size() <= 20){
         //If the size is less than 20, sort it directly
@@ -908,8 +929,8 @@ double WingedEdge::find_k_th_Line(vector<double> S,unsigned long k)
     }
 
     //Step 1: Divide S into n/5 subsets
-    //Add some dummy INF points to the last subset
-    //if n is not a net multiple of 5
+    //        Add some dummy INF points to the last subset
+    //        if n is not a net multiple of 5
     if(S.size() % 5 != 0){
         //Add some dummy INF points
         //O(1)
@@ -929,12 +950,12 @@ double WingedEdge::find_k_th_Line(vector<double> S,unsigned long k)
 
     //Step 3: Recursively sort "medians" to find the element p whih is the median of medians
     //T(n/5)
-    double p = this->find_k_th_Line(medians, S.size()/2);
+    double p = this->find_k_th(medians, S.size()/2);
 
     /** Not necessary to do Step 4 and 5 in this project, because p is the answer
      *  But for the convenience of future porting, I finished them. **/
     //Step 4: Partition S into S1, S2 and S3,
-    //which contain the elements less than, equal to, and greater than p, respectively.
+    //        which contain the elements less than, equal to, and greater than p, respectively.
     //O(n)
     vector<double> S1,S2,S3;
 
@@ -952,15 +973,105 @@ double WingedEdge::find_k_th_Line(vector<double> S,unsigned long k)
     //T(4n/5)
 
     if(S1.size() >= k){
-        return find_k_th_Line(S1,k);
+        return find_k_th(S1,k);
     }
     else if(S1.size()+S2.size() >= k){
         /** In this project, it should return here **/
         return p;
     }
     else{
-        return find_k_th_Line(S3,k-S1.size()-S2.size());
+        return find_k_th(S3,k-S1.size()-S2.size());
     }
+}
+
+vector<int> WingedEdge::constructConvexHull()
+{
+    vector<int> HULL;
+    if(this->getNumPolygons() == 1 ){
+        HULL.push_back(0);
+        return HULL;
+    }
+    else if(this->getNumPolygons() == 2){
+        HULL.push_back(0);
+        HULL.push_back(1);
+        return HULL;
+    }
+    else if(this->getNumPolygons() == 3 && threePointsSameLine()){
+        //three points on the same line's convex hull is a line which conbined by the point on 2 extreame sides.
+        HULL.push_back(0);
+        HULL.push_back(2);
+        return HULL;
+    }
+
+    /*******Construct a convex hull from a Voronoi diagram********/
+
+    /* Step 1: Find an infinite ray by examining all Voronoi edges.*/
+    int infinite_ray = -1;
+    for(unsigned long i=0 ; i < this->getNum_edges(); i++){
+        //Examine if the edge is ordinary edge
+        if(this->right_polygon[i] != this->getNumPolygons()+1 && this->left_polygon[i] != this->getNumPolygons()+1){
+            //Examine if the edge is an infinite ray
+            if(this->w[this->start_vertex[i]] ==0 || this->w[this->end_vertex[i]] ==0 ){
+                infinite_ray = i;
+                break;
+            }
+        }
+    }
+
+    if(infinite_ray == -1){
+        qDebug()<<"constructConvexHull: Fail to find an infinite ray!";
+        exit(-1);
+    }
+
+    /* Step 2: Let Pi be the point to the left of the infinite ray.
+     *         Pi is a convex hull vertex.
+     *         Examine the Voronoi polygon of Pi to find the next infinite ray.
+     */
+
+    int next_infinite_ray = infinite_ray;
+    int tmp_line;
+    int current_vertex;
+
+    do{
+        if(this->w[this->start_vertex[next_infinite_ray]] == 0 ){
+            //The ray is from infinite->oridinary
+            //right generating point is a convex hull vertex
+            HULL.push_back(this->right_polygon[next_infinite_ray]);
+            current_vertex = this->end_vertex[next_infinite_ray];
+            tmp_line = this->ccw_successor[next_infinite_ray];
+
+        }
+        else if(this->w[this->end_vertex[next_infinite_ray]] == 0 ){
+            //The ray is from oridinary->infinite
+            //left generating point is a convex hull vertex
+            HULL.push_back(this->left_polygon[next_infinite_ray]);
+            current_vertex = this->start_vertex[next_infinite_ray];
+            tmp_line = this->ccw_predecessor[next_infinite_ray];
+        }
+        else{
+            qDebug()<<"constructConvexHull: Current infinite ray is not an infinite ray";
+            exit(-1);
+        }
+
+        //Find next infinite ray
+        while(this->w[this->start_vertex[tmp_line]] == 1 && this->w[this->end_vertex[tmp_line]] == 1 ){
+
+            if(current_vertex == this->start_vertex[tmp_line]){
+                tmp_line = this->ccw_successor[tmp_line];
+            }
+            else if(current_vertex == this->end_vertex[tmp_line]){
+                tmp_line = this->ccw_predecessor[tmp_line];
+            }
+            else{
+                qDebug()<<"constructConvexHull: Current tmp_line is not adjacent to previous one";
+                exit(-1);
+            }
+        }
+        next_infinite_ray = tmp_line;
+
+    /* Step 3: Repeat Step 2 until we return to the starting ray. */
+    }while(next_infinite_ray != infinite_ray);
+
 }
 
 int WingedEdge::getNumPolygons()
@@ -968,9 +1079,13 @@ int WingedEdge::getNumPolygons()
     return num_polygons-1;//Except for p_infinity
 }
 
-bool WingedEdge::threePointsVertical()
+bool WingedEdge::threePointsSameLine()
 {
-    return num_polygons==3 && (int)g_x[0]==(int)g_x[1] && (int)g_x[1]==(int)g_x[2];
+    return this->getNumPolygons()==3 &&
+         (  ((fabs(this->g_y[0]-this->g_y[1])<1e-8) && (fabs(this->g_y[1]-this->g_y[2])<1e-8)) ||
+            ((fabs(this->g_x[0]-this->g_x[1])<1e-8) && (fabs(this->g_x[1]-this->g_x[2])<1e-8)) ||
+            ((fabs((this->g_y[1]-this->g_y[0])/(this->g_x[1]-this->g_x[0]) - (this->g_y[2]-this->g_y[1])/(this->g_x[2]-this->g_x[1])) < 1e-8))
+         );
 }
 
 void WingedEdge::setWaitingMerge(bool i)
@@ -1133,6 +1248,15 @@ void WingedEdge::setCcw_successor(const vector<int> &value)
     ccw_successor = value;
 }
 
+int WingedEdge::getNum_edges() const
+{
+    return num_edges;
+}
+
+void WingedEdge::setNum_edges(int value)
+{
+    num_edges = value;
+}
 
 bool compare_g_point(const g_point a, const g_point b)
 {

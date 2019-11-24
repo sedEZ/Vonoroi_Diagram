@@ -73,6 +73,9 @@ public:
     vector<int> getCcw_successor() const;
     void setCcw_successor(const vector<int> &value);
 
+    int getNum_edges() const;
+    void setNum_edges(int value);
+    
 private:
     int num_polygons;
     int num_vertices;
