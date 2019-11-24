@@ -883,6 +883,9 @@ void WingedEdge::merge(WingedEdge S_l, WingedEdge S_r)
      *      Step 3: Repeat Step 2 until we return to the starting ray.
      */
 
+    vector<int> Hull_Sl = S_l.constructConvexHull();
+    vector<int> Hull_Sr = S_r.constructConvexHull();
+
     /* Step 2: Find segments PaPb and PcPd which join
      * HULL(SL) and HULL(SR) into a convex hull
      * (Pa and Pc belong to SL and Pb and
@@ -1011,7 +1014,7 @@ vector<int> WingedEdge::constructConvexHull()
         //Examine if the edge is ordinary edge
         if(this->right_polygon[i] != this->getNumPolygons()+1 && this->left_polygon[i] != this->getNumPolygons()+1){
             //Examine if the edge is an infinite ray
-            if(this->w[this->start_vertex[i]] ==0 || this->w[this->end_vertex[i]] ==0 ){
+            if(this->w[this->start_vertex[i]] == 0 || this->w[this->end_vertex[i]] == 0 ){
                 infinite_ray = i;
                 break;
             }
@@ -1037,14 +1040,15 @@ vector<int> WingedEdge::constructConvexHull()
             //The ray is from infinite->oridinary
             //right generating point is a convex hull vertex
             HULL.push_back(this->right_polygon[next_infinite_ray]);
+
             current_vertex = this->end_vertex[next_infinite_ray];
             tmp_line = this->ccw_successor[next_infinite_ray];
-
         }
         else if(this->w[this->end_vertex[next_infinite_ray]] == 0 ){
             //The ray is from oridinary->infinite
             //left generating point is a convex hull vertex
             HULL.push_back(this->left_polygon[next_infinite_ray]);
+
             current_vertex = this->start_vertex[next_infinite_ray];
             tmp_line = this->ccw_predecessor[next_infinite_ray];
         }
@@ -1072,6 +1076,7 @@ vector<int> WingedEdge::constructConvexHull()
     /* Step 3: Repeat Step 2 until we return to the starting ray. */
     }while(next_infinite_ray != infinite_ray);
 
+    return HULL;
 }
 
 int WingedEdge::getNumPolygons()
