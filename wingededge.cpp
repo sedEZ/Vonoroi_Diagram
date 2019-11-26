@@ -881,10 +881,13 @@ void WingedEdge::merge(WingedEdge S_l, WingedEdge S_r)
      *              Examine the Voronoi polygon of Pi to find
      *              the next infinite ray.
      *      Step 3: Repeat Step 2 until we return to the starting ray.
+     *************************************************************
      */
 
-    vector<int> Hull_Sl = S_l.constructConvexHull();
-    vector<int> Hull_Sr = S_r.constructConvexHull();
+    vector<int> *Hull_Sl,*inf_rays_Sl;
+    S_l.constructConvexHull(Hull_Sl,inf_rays_Sl);
+    vector<int> *Hull_Sr,*inf_rays_Sr;
+    S_r.constructConvexHull(Hull_Sr,inf_rays_Sr);
 
     /* Step 2: Find segments PaPb and PcPd which join
      * HULL(SL) and HULL(SR) into a convex hull
@@ -894,11 +897,15 @@ void WingedEdge::merge(WingedEdge S_l, WingedEdge S_r)
      * Let x = a, y = b, SG= PxPy and HP = empty
      */
 
+    int Pa, Pb, Pc, Pd;
+    find_outter_tangent_top(Pa,Pb,S_l,*Hull_Sl,S_r,*Hull_Sr);
+    find_outter_tangent_bot(Pc,Pd,S_l,*Hull_Sl,S_r,*Hull_Sr);
 
     /* Step 3: Find the perpendicular bisector of SG.
      * Denote it by BS. Let HP = HP∪{BS}.
      * If SG = PcPd, go to Step 5; otherwise, go to Step 4
      */
+    vector<bisector> HP;
 
     /* Step 4: The ray from VD(SL) and VD(SR) which
      * BS first intersects with must be a perpendicular
@@ -987,97 +994,344 @@ double WingedEdge::find_k_th(vector<double> S,unsigned long k)
     }
 }
 
-vector<int> WingedEdge::constructConvexHull()
+void WingedEdge::constructConvexHull(vector<int> *Hull, vector<int> *infinite_rays)
 {
-    vector<int> HULL;
+    //O(n)
+    vector<int> HULL,inf_rays;
+    //HULL is the verctor of counter clockwise order of conver hull points.
+    //inf_rays is the vector of counter clockwise order of infinite rays used when finding convex hull.
+
+
     if(this->getNumPolygons() == 1 ){
         HULL.push_back(0);
-        return HULL;
     }
     else if(this->getNumPolygons() == 2){
         HULL.push_back(0);
         HULL.push_back(1);
-        return HULL;
+        inf_rays.push_back(0);
     }
     else if(this->getNumPolygons() == 3 && threePointsSameLine()){
         //three points on the same line's convex hull is a line which conbined by the point on 2 extreame sides.
         HULL.push_back(0);
         HULL.push_back(2);
-        return HULL;
+
+        //May need to be dealt seperately when merging
+        inf_rays.push_back(0);
+        inf_rays.push_back(1);
     }
+    else{
 
-    /*******Construct a convex hull from a Voronoi diagram********/
+        /*******Construct a convex hull from a Voronoi diagram********/
 
-    /* Step 1: Find an infinite ray by examining all Voronoi edges.*/
-    int infinite_ray = -1;
-    for(unsigned long i=0 ; i < this->getNum_edges(); i++){
-        //Examine if the edge is ordinary edge
-        if(this->right_polygon[i] != this->getNumPolygons()+1 && this->left_polygon[i] != this->getNumPolygons()+1){
-            //Examine if the edge is an infinite ray
-            if(this->w[this->start_vertex[i]] == 0 || this->w[this->end_vertex[i]] == 0 ){
-                infinite_ray = i;
-                break;
+        /* Step 1: Find an infinite ray by examining all Voronoi edges.*/
+        int infinite_ray = -1;
+        for(unsigned long i=0 ; i < this->getNum_edges(); i++){
+            //Examine if the edge is ordinary edge
+            if(this->right_polygon[i] != this->getNumPolygons()+1 && this->left_polygon[i] != this->getNumPolygons()+1){
+                //Examine if the edge is an infinite ray
+                if(this->w[this->start_vertex[i]] == 0 || this->w[this->end_vertex[i]] == 0 ){
+                    infinite_ray = i;
+                    break;
+                }
             }
         }
-    }
 
-    if(infinite_ray == -1){
-        qDebug()<<"constructConvexHull: Fail to find an infinite ray!";
-        exit(-1);
-    }
 
-    /* Step 2: Let Pi be the point to the left of the infinite ray.
-     *         Pi is a convex hull vertex.
-     *         Examine the Voronoi polygon of Pi to find the next infinite ray.
-     */
-
-    int next_infinite_ray = infinite_ray;
-    int tmp_line;
-    int current_vertex;
-
-    do{
-        if(this->w[this->start_vertex[next_infinite_ray]] == 0 ){
-            //The ray is from infinite->oridinary
-            //right generating point is a convex hull vertex
-            HULL.push_back(this->right_polygon[next_infinite_ray]);
-
-            current_vertex = this->end_vertex[next_infinite_ray];
-            tmp_line = this->ccw_successor[next_infinite_ray];
-        }
-        else if(this->w[this->end_vertex[next_infinite_ray]] == 0 ){
-            //The ray is from oridinary->infinite
-            //left generating point is a convex hull vertex
-            HULL.push_back(this->left_polygon[next_infinite_ray]);
-
-            current_vertex = this->start_vertex[next_infinite_ray];
-            tmp_line = this->ccw_predecessor[next_infinite_ray];
-        }
-        else{
-            qDebug()<<"constructConvexHull: Current infinite ray is not an infinite ray";
+        if(infinite_ray == -1){
+            qDebug()<<"constructConvexHull: Fail to find an infinite ray!";
             exit(-1);
         }
 
-        //Find next infinite ray
-        while(this->w[this->start_vertex[tmp_line]] == 1 && this->w[this->end_vertex[tmp_line]] == 1 ){
 
-            if(current_vertex == this->start_vertex[tmp_line]){
-                tmp_line = this->ccw_successor[tmp_line];
+        /* Step 2: Let Pi be the point to the left of the infinite ray.
+         *         Pi is a convex hull vertex.
+         *         Examine the Voronoi polygon of Pi to find the next infinite ray.
+         */
+
+        int next_infinite_ray = infinite_ray;
+        int tmp_line;
+        int current_vertex;
+
+        do{
+            inf_rays.push_back(next_infinite_ray);
+
+            if(this->w[this->start_vertex[next_infinite_ray]] == 0 ){
+                //The ray is from infinite->oridinary
+                //right generating point is a convex hull vertex
+                HULL.push_back(this->right_polygon[next_infinite_ray]);
+
+                current_vertex = this->end_vertex[next_infinite_ray];
+                tmp_line = this->ccw_successor[next_infinite_ray];
             }
-            else if(current_vertex == this->end_vertex[tmp_line]){
-                tmp_line = this->ccw_predecessor[tmp_line];
+            else if(this->w[this->end_vertex[next_infinite_ray]] == 0 ){
+                //The ray is from oridinary->infinite
+                //left generating point is a convex hull vertex
+                HULL.push_back(this->left_polygon[next_infinite_ray]);
+
+                current_vertex = this->start_vertex[next_infinite_ray];
+                tmp_line = this->ccw_predecessor[next_infinite_ray];
             }
             else{
-                qDebug()<<"constructConvexHull: Current tmp_line is not adjacent to previous one";
+                qDebug()<<"constructConvexHull: Current infinite ray is not an infinite ray";
                 exit(-1);
             }
-        }
-        next_infinite_ray = tmp_line;
 
-    /* Step 3: Repeat Step 2 until we return to the starting ray. */
-    }while(next_infinite_ray != infinite_ray);
+            //Find next infinite ray
+            while(this->w[this->start_vertex[tmp_line]] == 1 && this->w[this->end_vertex[tmp_line]] == 1 ){
 
-    return HULL;
+                if(current_vertex == this->start_vertex[tmp_line]){
+                    tmp_line = this->ccw_successor[tmp_line];
+                }
+                else if(current_vertex == this->end_vertex[tmp_line]){
+                    tmp_line = this->ccw_predecessor[tmp_line];
+                }
+                else{
+                    qDebug()<<"constructConvexHull: Current tmp_line is not adjacent to previous one";
+                    exit(-1);
+                }
+            }
+            next_infinite_ray = tmp_line;
+
+        /* Step 3: Repeat Step 2 until we return to the starting ray. */
+        }while(next_infinite_ray != infinite_ray);
+    }
+
+    Hull = new vector<int>(HULL);
+    infinite_rays = new vector<int>(inf_rays);
 }
+
+void WingedEdge::find_outter_tangent_top(int &Pa, int &Pb, WingedEdge Sl, vector<int> Hull_Sl, WingedEdge Sr, vector<int> Hull_Sr)
+{
+    //Hull_Sl is Sl's convex hull points' numbers sort in counter clockwise. Use it as a circular list.
+    //Hull_Sr is Sr's convex hull points' numbers sort in counter clockwise. Use it as a circular list.
+
+    vector<double> g_x_l = Sl.get_g_x(), g_y_l = Sl.get_g_y();
+    vector<double> g_x_r = Sr.get_g_x(), g_y_r = Sr.get_g_y();
+
+    //Find the # of right-most point in Hull_Sl and # of left-most point in Hull_Sr
+    int right_most_Sl = 0, left_most_Sr = 0;
+    for(unsigned long i = 1; i < Hull_Sl.size(); i++){
+        if(g_x_l[Hull_Sl[i]] > g_x_l[Hull_Sl[right_most_Sl]])
+            right_most_Sl = i;
+    }
+    for(unsigned long i = 1; i < Hull_Sr.size(); i++){
+        if(g_x_r[Hull_Sr[i]] < g_x_l[Hull_Sr[left_most_Sr]])
+            left_most_Sr = i;
+    }
+
+    //Take these 2 points as a segment. Assume that these 2 points will not be vertical
+    //Determine the slope, if slope > 0, left should be moved first;
+    //                        slope < 0, right should be moved first.
+    double m = (g_y_r[Hull_Sr[left_most_Sr]] - g_y_l[Hull_Sl[right_most_Sl]]) / (g_x_r[Hull_Sr[left_most_Sr]] - g_x_l[Hull_Sl[right_most_Sl]]);
+
+    int current_left = right_most_Sl, current_right = left_most_Sr;
+    int to_be_moved;//indicate next point to be moved. 0 indicates current_left
+                    //                                 1 indicates current_right
+    if(m > 0)
+        to_be_moved = 0;
+    else
+        to_be_moved = 1;
+
+    //Move each point in turn, record if the point of tangent is reached
+    bool fixed_left = false, fixed_right = false;
+
+    while(!fixed_left && !fixed_right){
+        if(to_be_moved == 0 ){
+            if(fixed_left){
+                //left is fixed, deal with right
+                to_be_moved = 1;
+                continue;
+            }
+            //Moved current_left counter clockwise
+            int next_point = Hull_Sl[(current_left+1) % Hull_Sl.size()];
+
+            //Calculate cross product of current_right=>current_left and current_right=>next_point
+            //to determine if the outter tangent point is reached.
+            double x_0 = g_x_r[Hull_Sr[current_right]];
+            double y_0 = g_y_r[Hull_Sr[current_right]];
+
+            double x_1 = g_x_l[Hull_Sl[current_left]];
+            double y_1 = g_y_l[Hull_Sl[current_left]];
+
+            double x_2 = g_x_l[Hull_Sl[next_point]];
+            double y_2 = g_y_l[Hull_Sl[next_point]];
+
+            if(this->cross_product(x_0,y_0,x_1,y_1,x_2,y_2) >= 0){
+                //Next point is over the left outter tangent point,
+                //so left outter tangent point should be current_left & fixed_left should be true
+                to_be_moved = 1;
+                fixed_left = true;
+            }
+            else{
+                current_left = next_point;
+                m =  (g_y_r[Hull_Sr[current_right]] - g_y_l[Hull_Sl[current_left]]) / (g_x_r[Hull_Sr[current_right]] - g_x_l[Hull_Sl[current_left]]);
+                if(m > 0)
+                    to_be_moved = 0;
+                else
+                    to_be_moved = 1;
+            }
+        }
+        else if(to_be_moved == 1 ){
+            if(fixed_right){
+                //right is fixed, deal with left
+                to_be_moved = 0;
+                continue;
+            }
+
+            //Moved current_right clockwise
+            int next_point = Hull_Sl[(current_right + Hull_Sl.size() -1) % Hull_Sl.size()];
+
+            //Calculate cross product of current_left=>current_right and current_left=>next_point
+            //to determine if the outter tangent point is reached.
+            double x_0 = g_x_l[Hull_Sl[current_left]];
+            double y_0 = g_y_l[Hull_Sl[current_left]];
+
+            double x_1 = g_x_r[Hull_Sr[current_right]];
+            double y_1 = g_y_r[Hull_Sr[current_right]];
+
+
+            double x_2 = g_x_l[Hull_Sl[next_point]];
+            double y_2 = g_y_l[Hull_Sl[next_point]];
+
+            if(this->cross_product(x_0,y_0,x_1,y_1,x_2,y_2) <= 0){
+                //Next point is over the right outter tangent point,
+                //so right outter tangent point should be current_right & fixed_right should be true
+                to_be_moved = 0;
+                fixed_right = true;
+            }
+            else{
+                current_right = next_point;
+                m =  (g_y_r[Hull_Sr[current_right]] - g_y_l[Hull_Sl[current_left]]) / (g_x_r[Hull_Sr[current_right]] - g_x_l[Hull_Sl[current_left]]);
+                if(m > 0)
+                    to_be_moved = 0;
+                else
+                    to_be_moved = 1;
+            }
+        }
+
+    }
+
+    //left top outter tangent point (Pa) will be current_left
+    Pa = current_left;
+    //right top outter tangent point (Pb) will be current_right
+    Pb = current_right;
+}
+
+void WingedEdge::find_outter_tangent_bot(int &Pc, int &Pd, WingedEdge Sl, vector<int> Hull_Sl, WingedEdge Sr, vector<int> Hull_Sr)
+{
+    vector<double> g_x_l = Sl.get_g_x(), g_y_l = Sl.get_g_y();
+    vector<double> g_x_r = Sr.get_g_x(), g_y_r = Sr.get_g_y();
+
+    //Find the # of right-most point in Hull_Sl and # of left-most point in Hull_Sr
+    int right_most_Sl = 0, left_most_Sr = 0;
+    for(unsigned long i = 1; i < Hull_Sl.size(); i++){
+        if(g_x_l[Hull_Sl[i]] > g_x_l[Hull_Sl[right_most_Sl]])
+            right_most_Sl = i;
+    }
+    for(unsigned long i = 1; i < Hull_Sr.size(); i++){
+        if(g_x_r[Hull_Sr[i]] < g_x_l[Hull_Sr[left_most_Sr]])
+            left_most_Sr = i;
+    }
+
+    //Take these 2 points as a segment. Assume that these 2 points will not be vertical
+    //Determine the slope, if slope < 0, left should be moved first;
+    //                        slope > 0, right should be moved first.
+    double m = (g_y_r[Hull_Sr[left_most_Sr]] - g_y_l[Hull_Sl[right_most_Sl]]) / (g_x_r[Hull_Sr[left_most_Sr]] - g_x_l[Hull_Sl[right_most_Sl]]);
+
+    int current_left = right_most_Sl, current_right = left_most_Sr;
+    int to_be_moved;//indicate next point to be moved. 0 indicates current_left
+                    //                                 1 indicates current_right
+    if(m < 0)
+        to_be_moved = 0;
+    else
+        to_be_moved = 1;
+
+    //Move each point in turn, record if the point of tangent is reached
+    bool fixed_left = false, fixed_right = false;
+
+    while(!fixed_left && !fixed_right){
+        if(to_be_moved == 0 ){
+            if(fixed_left){
+                //left is fixed, deal with right
+                to_be_moved = 1;
+                continue;
+            }
+            //Moved current_left clockwise
+            int next_point = Hull_Sl[(current_left+ Hull_Sl.size() -1) % Hull_Sl.size()];
+
+            //Calculate cross product of current_right=>current_left and current_right=>next_point
+            //to determine if the outter tangent point is reached.
+            double x_0 = g_x_r[Hull_Sr[current_right]];
+            double y_0 = g_y_r[Hull_Sr[current_right]];
+
+            double x_1 = g_x_l[Hull_Sl[current_left]];
+            double y_1 = g_y_l[Hull_Sl[current_left]];
+
+            double x_2 = g_x_l[Hull_Sl[next_point]];
+            double y_2 = g_y_l[Hull_Sl[next_point]];
+
+            if(this->cross_product(x_0,y_0,x_1,y_1,x_2,y_2) <= 0){
+                //Next point is over the left outter tangent point,
+                //so left outter tangent point should be current_left & fixed_left should be true
+                to_be_moved = 1;
+                fixed_left = true;
+            }
+            else{
+                current_left = next_point;
+                m =  (g_y_r[Hull_Sr[current_right]] - g_y_l[Hull_Sl[current_left]]) / (g_x_r[Hull_Sr[current_right]] - g_x_l[Hull_Sl[current_left]]);
+                if(m < 0)
+                    to_be_moved = 0;
+                else
+                    to_be_moved = 1;
+            }
+        }
+        else if(to_be_moved == 1 ){
+            if(fixed_right){
+                //right is fixed, deal with left
+                to_be_moved = 0;
+                continue;
+            }
+
+            //Moved current_right counter clockwise
+            int next_point = Hull_Sl[(current_right +1) % Hull_Sl.size()];
+
+            //Calculate cross product of current_left=>current_right and current_left=>next_point
+            //to determine if the outter tangent point is reached.
+            double x_0 = g_x_l[Hull_Sl[current_left]];
+            double y_0 = g_y_l[Hull_Sl[current_left]];
+
+            double x_1 = g_x_r[Hull_Sr[current_right]];
+            double y_1 = g_y_r[Hull_Sr[current_right]];
+
+
+            double x_2 = g_x_l[Hull_Sl[next_point]];
+            double y_2 = g_y_l[Hull_Sl[next_point]];
+
+            if(this->cross_product(x_0,y_0,x_1,y_1,x_2,y_2) >= 0){
+                //Next point is over the right outter tangent point,
+                //so right outter tangent point should be current_right & fixed_right should be true
+                to_be_moved = 0;
+                fixed_right = true;
+            }
+            else{
+                current_right = next_point;
+                m =  (g_y_r[Hull_Sr[current_right]] - g_y_l[Hull_Sl[current_left]]) / (g_x_r[Hull_Sr[current_right]] - g_x_l[Hull_Sl[current_left]]);
+                if(m < 0)
+                    to_be_moved = 0;
+                else
+                    to_be_moved = 1;
+            }
+        }
+    }
+
+    //left bot outter tangent point (Pc) will be current_left
+    Pc = current_left;
+    //right bot outter tangent point (Pd) will be current_right
+    Pd = current_right;
+
+}
+
+
 
 int WingedEdge::getNumPolygons()
 {

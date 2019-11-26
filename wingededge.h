@@ -32,8 +32,12 @@ public:
     void merge(WingedEdge S_l,WingedEdge S_r);
 
     double find_k_th(vector<double> S,unsigned long k);//Find k-th element int S using Prune-and-Search
-    vector<int> constructConvexHull();//Construct convex hull of this WingedEdge ds &
+    void constructConvexHull(vector<int> *Hull, vector<int> *infinite_rays);//Construct convex hull of this WingedEdge ds &
                                         //Return the generating points numbers in counter clockwise order
+
+    //Find outter tangent line
+    void find_outter_tangent_top(int& Pa, int& Pb, WingedEdge Sl,vector<int> Hull_Sl,WingedEdge Sr, vector<int> Hull_Sr);
+    void find_outter_tangent_bot(int& Pc, int& Pd, WingedEdge Sl,vector<int> Hull_Sl,WingedEdge Sr, vector<int> Hull_Sr);
 
     int getNumPolygons();
     bool threePointsSameLine();
@@ -73,6 +77,9 @@ public:
     vector<int> getCcw_successor() const;
     void setCcw_successor(const vector<int> &value);
 
+    int getNum_edges() const;
+    void setNum_edges(int value);
+
 private:
     int num_polygons;
     int num_vertices;
@@ -108,6 +115,11 @@ private:
 
 struct g_point{
     double x,y;
+};
+
+struct bisector{
+    //DS for perpendicular pisector which belongs to hyperplane HP
+    double x1,x2,y1,y2;
 };
 
 bool compare_g_point(const g_point a, const g_point b);
