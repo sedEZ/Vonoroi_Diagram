@@ -884,10 +884,10 @@ void WingedEdge::merge(WingedEdge S_l, WingedEdge S_r)
      *************************************************************
      */
 
-    vector<int> *Hull_Sl,*inf_rays_Sl;
-    S_l.constructConvexHull(Hull_Sl,inf_rays_Sl);
-    vector<int> *Hull_Sr,*inf_rays_Sr;
-    S_r.constructConvexHull(Hull_Sr,inf_rays_Sr);
+    vector<int> Hull_Sl,inf_rays_Sl;
+    S_l.constructConvexHull(&Hull_Sl,&inf_rays_Sl);
+    vector<int> Hull_Sr,inf_rays_Sr;
+    S_r.constructConvexHull(&Hull_Sr,&inf_rays_Sr);
 
     /* Step 2: Find segments PaPb and PcPd which join
      * HULL(SL) and HULL(SR) into a convex hull
@@ -897,15 +897,67 @@ void WingedEdge::merge(WingedEdge S_l, WingedEdge S_r)
      * Let x = a, y = b, SG= PxPy and HP = empty
      */
 
+    //Here, Pa.Pb.Pc.Pd are the INDEX of convex hull points
+    //To get the number of each convex hull point,
+    //use Hull_Sl[Pa].Hull_Sl[Pb].Hull_Sr[Pc].Hull_Sr[Pd]
     int Pa, Pb, Pc, Pd;
-    find_outter_tangent_top(Pa,Pb,S_l,*Hull_Sl,S_r,*Hull_Sr);
-    find_outter_tangent_bot(Pc,Pd,S_l,*Hull_Sl,S_r,*Hull_Sr);
+    find_outter_tangent_top(Pa,Pb,S_l,Hull_Sl,S_r,Hull_Sr);
+    find_outter_tangent_bot(Pc,Pd,S_l,Hull_Sl,S_r,Hull_Sr);
+
+    vector<bisector> HP;
+    int Px = Pa, Py = Pb;
 
     /* Step 3: Find the perpendicular bisector of SG.
      * Denote it by BS. Let HP = HP∪{BS}.
      * If SG = PcPd, go to Step 5; otherwise, go to Step 4
      */
-    vector<bisector> HP;
+    vector<double> g_x_l = S_l.get_g_x(), g_y_l = S_l.get_g_y();
+    vector<double> g_x_r = S_r.get_g_x(), g_y_r = S_r.get_g_y();
+
+    vector<int> start_vertex_l =  S_l.get_start_vertex(), end_vertex_l =  S_l.get_end_vertex();
+    vector<int> start_vertex_r =  S_r.get_start_vertex(), end_vertex_r =  S_r.get_end_vertex();
+    vector<double> vertex_x_l = S_l.get_x(), vertex_y_l = S_l.get_y();
+    vector<double> vertex_x_r = S_r.get_x(), vertex_y_r = S_r.get_y();
+
+    double x1,y1,x2,y2,m,b;
+    x1 = g_x_l[Hull_Sl[Px]];     y1 = g_y_l[Hull_Sl[Px]];
+    x2 = g_x_l[Hull_Sr[Py]];     y2 = g_y_l[Hull_Sr[Py]];
+
+    bisector* BS;
+    double z_x_l,z_y_l,z_x_r,z_y_r;
+
+    while(Px != Pc && Py != Pd){
+        BS = new bisector();
+        if(fabs(y1-y2)<1e-8){
+            //Px and Py are horizontal
+            BS->x1 = (x1+x2)/2;
+
+            //Find the points which BS and PxPz . BS and PyPz intersect
+            //                     (z_x_l,z_y_l)  (z_x_r,z_y_r)
+            if(fabs((vertex_x_l[start_vertex_l[inf_rays_Sl[Px]]] - vertex_x_l[end_vertex_l[inf_rays_Sl[Px]]]))<1e-8){
+                //Todo
+            }
+            else{
+                //m_l = (y'-y)/(x'-x)
+                double m_l = (vertex_y_l[start_vertex_l[inf_rays_Sl[Px]]] - vertex_y_l[end_vertex_l[inf_rays_Sl[Px]]])
+                            /(vertex_x_l[start_vertex_l[inf_rays_Sl[Px]]] - vertex_x_l[end_vertex_l[inf_rays_Sl[Px]]]);
+                //b_l = y' - m_l * x'
+                double b_l = vertex_y_l[start_vertex_l[inf_rays_Sl[Px]]] - m_l*vertex_x_l[start_vertex_l[inf_rays_Sl[Px]]];
+            }
+
+            z_x_l = BS->x1;
+            //z_y_l = m*z_x_l +ｂ
+            z_y_l = start_vertex_l[inf_rays_Sl[Px]];
+
+
+
+        }
+        else{
+            this->findPerpendicularBisector(x1,y1,x2,y2,m,b);
+        }
+
+    }
+
 
     /* Step 4: The ray from VD(SL) and VD(SR) which
      * BS first intersects with must be a perpendicular
@@ -1326,12 +1378,10 @@ void WingedEdge::find_outter_tangent_bot(int &Pc, int &Pd, WingedEdge Sl, vector
 
     //left bot outter tangent point (Pc) will be current_left
     Pc = current_left;
-    //right bot outter tangent point (Pd) will be current_right
+    //right bot outter tangent point (Pb) will be current_right
     Pd = current_right;
 
 }
-
-
 
 int WingedEdge::getNumPolygons()
 {
