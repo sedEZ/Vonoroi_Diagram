@@ -919,52 +919,113 @@ void WingedEdge::merge(WingedEdge S_l, WingedEdge S_r)
     vector<double> vertex_x_l = S_l.get_x(), vertex_y_l = S_l.get_y();
     vector<double> vertex_x_r = S_r.get_x(), vertex_y_r = S_r.get_y();
 
-    double x1,y1,x2,y2,m,b;
-    x1 = g_x_l[Hull_Sl[Px]];     y1 = g_y_l[Hull_Sl[Px]];
-    x2 = g_x_l[Hull_Sr[Py]];     y2 = g_y_l[Hull_Sr[Py]];
 
     bisector* BS;
-    double z_x_l,z_y_l,z_x_r,z_y_r;
+    bool top = true;
 
-    while(Px != Pc && Py != Pd){
+    //(x1,y1) and (x2,y2) are the coordinates of Hull_Sl[Px] and Hull_Sl[Py]
+    double x1,y1,x2,y2;
+    //Previous bisector's intersection
+    double prev_x,prev_y;
+
+    do{
         BS = new bisector();
-        if(fabs(y1-y2)<1e-8){
-            //Px and Py are horizontal
-            BS->x1 = (x1+x2)/2;
+        //Find the line coefficients : ax+by+c=0 for BS
+        x1 = g_x_l[Hull_Sl[Px]];     y1 = g_y_l[Hull_Sl[Px]];
+        x2 = g_x_l[Hull_Sr[Py]];     y2 = g_y_l[Hull_Sr[Py]];
+        BS->line = WingedEdge::findPerpendicularBisector(x1,y1,x2,y2);
 
-            //Find the points which BS and PxPz . BS and PyPz intersect
-            //                     (z_x_l,z_y_l)  (z_x_r,z_y_r)
-            if(fabs((vertex_x_l[start_vertex_l[inf_rays_Sl[Px]]] - vertex_x_l[end_vertex_l[inf_rays_Sl[Px]]]))<1e-8){
-                //Todo
-            }
-            else{
-                //m_l = (y'-y)/(x'-x)
-                double m_l = (vertex_y_l[start_vertex_l[inf_rays_Sl[Px]]] - vertex_y_l[end_vertex_l[inf_rays_Sl[Px]]])
-                            /(vertex_x_l[start_vertex_l[inf_rays_Sl[Px]]] - vertex_x_l[end_vertex_l[inf_rays_Sl[Px]]]);
-                //b_l = y' - m_l * x'
-                double b_l = vertex_y_l[start_vertex_l[inf_rays_Sl[Px]]] - m_l*vertex_x_l[start_vertex_l[inf_rays_Sl[Px]]];
-            }
+        /* Step 4: The ray from VD(SL) and VD(SR) which
+         * BS first intersects with must be a perpendicular
+         * bisector of either PxPz or PyPz for some z.
+         * If this ray is the perpendicular bisector of PyPz, then let SG = PxPz ;
+         * otherwise, let SG = PzPy. Go to Step 3.
+         */
 
-            z_x_l = BS->x1;
-            //z_y_l = m*z_x_l +ｂ
-            z_y_l = start_vertex_l[inf_rays_Sl[Px]];
+        //PxPz, PxPz will be the infinite ray correspond to Px
+        Line left_ray(vertex_x_l[start_vertex_l[inf_rays_Sl[Px]]]  ,  vertex_y_l[start_vertex_l[inf_rays_Sl[Px]]] ,
+                      vertex_x_l[end_vertex_l[inf_rays_Sl[Px]]]    ,  vertex_y_l[end_vertex_l[inf_rays_Sl[Px]]]    );
 
+        //PyPz, PyPz will be the infinite ray correspond to Py+1
+        Line right_ray(vertex_x_r[start_vertex_r[inf_rays_Sr[(Py+1)%inf_rays_Sr.size()]]]  ,  vertex_y_r[start_vertex_r[inf_rays_Sr[(Py+1)%inf_rays_Sr.size()]]] ,
+                       vertex_x_r[end_vertex_r[inf_rays_Sr[(Py+1)%inf_rays_Sr.size()]]]    ,  vertex_y_r[end_vertex_r[inf_rays_Sr[(Py+1)%inf_rays_Sr.size()]]]    );
 
+        //BS and left_ray 's intersection point
+        double inter_l_x, inter_l_y;
 
+        //BS and right_ray 's intersection point
+        double inter_r_x, inter_r_y;
+
+        bool have_inter_l, have_inter_r;
+        have_inter_l = Line::find_intersect(BS->line, left_ray, inter_l_x, inter_l_y);
+        have_inter_r = Line::find_intersect(BS->line, right_ray, inter_r_x, inter_r_y);
+
+        //The next point BS really intersect with
+        double inter_x,inter_y;
+        if(!have_inter_r || inter_l_y >= inter_r_y){
+            //No intersection with right_ray, Must intersect with left_ray
+            //Or left_ray got the upper intersection with BS
+
+            inter_x = inter_l_x;
+            inter_y = inter_l_y;
+
+            //Px changes, clockwise
+            Px = (Px +Hull_Sl.size()-1) % Hull_Sl.size();
         }
         else{
-            this->findPerpendicularBisector(x1,y1,x2,y2,m,b);
+            //No intersection with left_ray, must intersect with right_ray
+            //Or right_ray got the upper intersection with BS
+
+            inter_x = inter_r_x;
+            inter_y = inter_r_y;
+
+            //Py changes, counter clockwise
+            Py = (Py+1) % Hull_Sr.size();
         }
 
+        if(top){
+            //First BS i.e. BS of PxPy
+            top = false;
+
+            BS->x1 = (-1)*(BS->line.b*(inter_y+600) + BS->line.c)/BS->line.a;
+            BS->y1 = inter_y+600;
+        }
+        else{
+            BS->x1 = prev_x;
+            BS->y1 = prev_y;
+        }
+        BS->x2 = inter_x;
+        BS->y2 = inter_y;
+
+        prev_x = inter_x;
+        prev_y = inter_y;
+
+        //HP = HP ∪ BS
+        HP.push_back(*BS);
+
+    }while(Px != Pc || Py != Pd);
+
+    //Add last BS
+    BS = new bisector();
+    //Find the line coefficients : ax+by+c=0 for BS
+    x1 = g_x_l[Hull_Sl[Px]];     y1 = g_y_l[Hull_Sl[Px]];
+    x2 = g_x_l[Hull_Sr[Py]];     y2 = g_y_l[Hull_Sr[Py]];
+    BS->line = WingedEdge::findPerpendicularBisector(x1,y1,x2,y2);
+
+
+    if(top){
+        //deal with the situation that Pa==Pc, Pb==Pd
+        prev_y = 600;
+        prev_x = (-1)*(BS->line.b*(prev_y) + BS->line.c)/BS->line.a;
     }
 
+    BS->x1 = prev_x;
+    BS->y1 = prev_y;
+    BS->x2 = (-1)*(BS->line.b*(prev_y-600) + BS->line.c)/BS->line.a;
+    BS->y2 = prev_y-600;
 
-    /* Step 4: The ray from VD(SL) and VD(SR) which
-     * BS first intersects with must be a perpendicular
-     * bisector of either PxPz or PyPz for some z.
-     * If this ray is the perpendicular bisector of PyPz, then let SG = PxPz ;
-     * otherwise, let SG = PzPy. Go to Step 3.
-     */
+    //HP = HP ∪ BS
+    HP.push_back(*BS);
 
     /* Step 5: Discard the edges of VD(SL) which extend to
      * the right of HP and discard the edges of VD(SR) which
@@ -1473,6 +1534,28 @@ void WingedEdge::findPerpendicularBisector(double x_1, double y_1, double x_2, d
     }
     m = (x_2-x_1)/(y_1-y_2);
     b = (x_1*x_1+y_1*y_1-x_2*x_2-y_2*y_2)/(2*(y_1-y_2));
+}
+
+Line WingedEdge::findPerpendicularBisector(double x_1, double y_1, double x_2, double y_2)
+{
+    Line result;
+
+    //ax + by + c = 0
+
+    if(fabs(y_1-y_2) < 1e-8){
+        //x = (x_1+x_2)/2
+        result.a = 1;
+        result.b = 0;
+        result.c = (-1)*(x_1+x_2)/2;
+    }
+    else{
+        result.a = (x_1-x_2);
+        result.b = (y_1-y_2);
+        result.c = (x_2*x_2+y_2*y_2-x_1*x_1-y_1*y_1)/2;
+    }
+
+    return result;
+
 }
 
 vector<double> WingedEdge::get_g_x()

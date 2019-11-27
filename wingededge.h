@@ -1,8 +1,7 @@
 #ifndef WINGEDEDGE_H
 #define WINGEDEDGE_H
-#include <algorithm>
+#include "line.h"
 #include <vector>
-#include <math.h>
 using namespace std;
 
 /*
@@ -52,7 +51,12 @@ public:
 
     void getOridinaryEdgesCoordinates(int i, double& x_1,double& x_2,double& y_1,double& y_2);
 
+    // Used in 2 & 3 points voronoi version.
+    // May want to modified constructTwoPointsVoronoi() and constructThreePointsVoronoi() using another version below.
     void findPerpendicularBisector(double x_1,double y_1,double x_2, double y_2,double& m, double& b);
+
+    //Used in general version.
+    static Line findPerpendicularBisector(double x_1,double y_1,double x_2, double y_2);
 
 
 //Variables
@@ -119,7 +123,10 @@ struct g_point{
 
 struct bisector{
     //DS for perpendicular pisector which belongs to hyperplane HP
+
+    //[(x1,y1), (x2,y2)] of line l
     double x1,x2,y1,y2;
+    Line line;
 };
 
 bool compare_g_point(const g_point a, const g_point b);
