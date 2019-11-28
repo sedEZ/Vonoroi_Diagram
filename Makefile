@@ -1295,17 +1295,6 @@ dialog.o: dialog.cpp dialog.h \
 		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtCore/qfileinfo.h \
 		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtCore/QTextStream \
 		ui_dialog.h \
-		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtCore/QVariant \
-		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtWidgets/QApplication \
-		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtWidgets/qapplication.h \
-		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtCore/qcoreapplication.h \
-		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtCore/qeventloop.h \
-		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtWidgets/qdesktopwidget.h \
-		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtGui/qguiapplication.h \
-		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtGui/qinputmethod.h \
-		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtWidgets/QPushButton \
-		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtWidgets/qpushbutton.h \
-		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtWidgets/qabstractbutton.h \
 		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtCore/QDebug
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o dialog.o dialog.cpp
 

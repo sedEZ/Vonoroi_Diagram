@@ -80,6 +80,7 @@ void Dialog::on_pushButton_clicked()
            return;
        }
     }
+
     while(!this->scene->voronoiEmpty()){
         this->scene->runOneStep();
     }

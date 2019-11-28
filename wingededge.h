@@ -31,7 +31,7 @@ public:
     void merge(WingedEdge S_l,WingedEdge S_r);
 
     double find_k_th(vector<double> S,unsigned long k);//Find k-th element int S using Prune-and-Search
-    void constructConvexHull(vector<int> *Hull, vector<int> *infinite_rays);//Construct convex hull of this WingedEdge ds &
+    void constructConvexHull(vector<int> &Hull, vector<int> &infinite_rays);//Construct convex hull of this WingedEdge ds &
                                         //Return the generating points numbers in counter clockwise order
 
     //Find outter tangent line

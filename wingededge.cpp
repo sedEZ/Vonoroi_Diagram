@@ -839,6 +839,7 @@ void WingedEdge::divide(WingedEdge &W_l, WingedEdge &W_r)
     //Use Prune-and-Search
     L = this->find_k_th(this->get_g_x(),this->g_x.size()/2);
 
+
     for(unsigned long i=0;i<this->g_x.size();i++){
         //num_polygons should be same as g_x.size() and g_y.size()
         //Less than m, put in left
@@ -890,9 +891,9 @@ void WingedEdge::merge(WingedEdge S_l, WingedEdge S_r)
      */
 
     vector<int> Hull_Sl,inf_rays_Sl;
-    S_l.constructConvexHull(&Hull_Sl,&inf_rays_Sl);
+    S_l.constructConvexHull(Hull_Sl,inf_rays_Sl);
     vector<int> Hull_Sr,inf_rays_Sr;
-    S_r.constructConvexHull(&Hull_Sr,&inf_rays_Sr);
+    S_r.constructConvexHull(Hull_Sr,inf_rays_Sr);
 
     /* Step 2: Find segments PaPb and PcPd which join
      * HULL(SL) and HULL(SR) into a convex hull
@@ -907,6 +908,7 @@ void WingedEdge::merge(WingedEdge S_l, WingedEdge S_r)
     //use Hull_Sl[Pa].Hull_Sl[Pb].Hull_Sr[Pc].Hull_Sr[Pd]
     int Pa, Pb, Pc, Pd;
     find_outter_tangent_top(Pa,Pb,S_l,Hull_Sl,S_r,Hull_Sr);
+
     find_outter_tangent_bot(Pc,Pd,S_l,Hull_Sl,S_r,Hull_Sr);
 
     vector<bisector> HP;
@@ -924,7 +926,6 @@ void WingedEdge::merge(WingedEdge S_l, WingedEdge S_r)
     vector<double> vertex_x_l = S_l.get_x(), vertex_y_l = S_l.get_y();
     vector<double> vertex_x_r = S_r.get_x(), vertex_y_r = S_r.get_y();
 
-
     bisector* BS;
     bool top = true;
 
@@ -937,13 +938,18 @@ void WingedEdge::merge(WingedEdge S_l, WingedEdge S_r)
     int num_e_l = S_l.getNum_edges();
     int num_v_l = S_l.getNum_vertices();
 
+
     do{
         BS = new bisector();
         //Find the line coefficients : ax+by+c=0 for BS
         x1 = g_x_l[Hull_Sl[Px]];     y1 = g_y_l[Hull_Sl[Px]];
-        x2 = g_x_l[Hull_Sr[Py]];     y2 = g_y_l[Hull_Sr[Py]];
+        x2 = g_x_r[Hull_Sr[Py]];     y2 = g_y_r[Hull_Sr[Py]];
+
+      //qDebug()<<"x1 = "<<x1<<" ; y1 = "<<y1<<" ; x2 = "<<x2<<" ; y2 = "<<y2;
+
         BS->line = WingedEdge::findPerpendicularBisector(x1,y1,x2,y2);
 
+      //qDebug()<<"BS->line.a = "<<BS->line.a<<" ; BS->line.b = "<<BS->line.b<<" ; BS->line.b = "<<BS->line.c;
         /* Step 4: The ray from VD(SL) and VD(SR) which
          * BS first intersects with must be a perpendicular
          * bisector of either PxPz or PyPz for some z.
@@ -954,11 +960,12 @@ void WingedEdge::merge(WingedEdge S_l, WingedEdge S_r)
         //PxPz, PxPz will be the infinite ray correspond to Px
         Line left_ray(vertex_x_l[start_vertex_l[inf_rays_Sl[Px]]]  ,  vertex_y_l[start_vertex_l[inf_rays_Sl[Px]]] ,
                       vertex_x_l[end_vertex_l[inf_rays_Sl[Px]]]    ,  vertex_y_l[end_vertex_l[inf_rays_Sl[Px]]] );
+      //qDebug()<<"left_ray.a = "<<left_ray.a<<" ; left_ray.b = "<<left_ray.b<<" ; left_ray.c = "<<left_ray.c;
 
         //PyPz, PyPz will be the infinite ray correspond to Py+1
         Line right_ray(vertex_x_r[start_vertex_r[inf_rays_Sr[(Py+1)%inf_rays_Sr.size()]]]  ,  vertex_y_r[start_vertex_r[inf_rays_Sr[(Py+1)%inf_rays_Sr.size()]]] ,
                        vertex_x_r[end_vertex_r[inf_rays_Sr[(Py+1)%inf_rays_Sr.size()]]]    ,  vertex_y_r[end_vertex_r[inf_rays_Sr[(Py+1)%inf_rays_Sr.size()]]] );
-
+      //qDebug()<<"right_ray.a = "<<right_ray.a<<" ; right_ray.b = "<<right_ray.b<<" ; right_ray.c = "<<right_ray.c;
 
         //BS and left_ray 's intersection point
         double inter_l_x, inter_l_y;
@@ -972,15 +979,69 @@ void WingedEdge::merge(WingedEdge S_l, WingedEdge S_r)
 
         //The next point BS really intersect with
         double inter_x,inter_y;
+
         if(!have_inter_r || inter_l_y >= inter_r_y){
             //No intersection with right_ray, Must intersect with left_ray
             //Or left_ray got the upper intersection with BS
-
             inter_x = inter_l_x;
             inter_y = inter_l_y;
 
-            //Px changes, clockwise
-            Px = (Px + Hull_Sl.size() - 1) % Hull_Sl.size();
+            if(!top){
+                /********* Move the infinite vertex to (inter_x,inter_y) **********/
+                if(cross_product(prev_x,prev_y,inter_x,inter_y,vertex_x_l[start_vertex_l[inf_rays_Sl[Px]]],vertex_y_l[start_vertex_l[inf_rays_Sl[Px]]]) > 0){
+                    //start_vertex of inf_rays_Sl[Px] is the infinite vertex
+                    this->x[start_vertex_l[inf_rays_Sl[Px]]] = inter_x;
+                    this->y[start_vertex_l[inf_rays_Sl[Px]]] = inter_y;
+                    this->w[start_vertex_l[inf_rays_Sl[Px]]] = 1;//Become inner vertex
+                }
+                else if(cross_product(prev_x,prev_y,inter_x,inter_y,vertex_x_l[end_vertex_l[inf_rays_Sl[Px]]],vertex_y_l[end_vertex_l[inf_rays_Sl[Px]]]) > 0){
+                    this->x[end_vertex_l[inf_rays_Sl[Px]]] = inter_x;
+                    this->y[end_vertex_l[inf_rays_Sl[Px]]] = inter_y;
+                    this->w[end_vertex_l[inf_rays_Sl[Px]]] = 1;//Become inner vertex
+                }
+                else{
+                    qDebug()<<"merge: Both start_vertex and end_vertex of left_ray are not on the left side of BS";
+                }
+                /******************************************************************/
+
+                this->x.push_back(inter_x);
+                this->y.push_back(inter_y);
+                this->w.push_back(1);
+
+                this->num_vertices++;
+                this->num_edges++;
+
+                *this->ccw_successor.end() = this->num_edges - 1;
+
+                this->right_polygon.push_back(Hull_Sl[Px]);
+                this->left_polygon.push_back(Hull_Sr[Py] + num_p_l);
+
+                this->start_vertex.push_back(*this->end_vertex.end());
+                this->end_vertex.push_back(this->num_vertices-1);
+                this->cw_predecessor.push_back(this->num_edges-2);
+                this->ccw_predecessor.push_back(inf_rays_Sr[Py] + num_e_l);
+
+                this->cw_successor.push_back(this->num_edges);
+                this->ccw_successor.push_back(inf_rays_Sl[Px]);
+
+            }
+            else{
+                prev_x = (-1)*(BS->line.b*(inter_y+600) + BS->line.c)/BS->line.a;
+                prev_y = inter_y+600;
+
+            }
+
+            if(fabs(inter_l_x-inter_r_x) < 1e-8 && fabs(inter_l_y-inter_r_y) < 1e-8){
+
+                //Px changes, clockwise
+                Px = (Px + Hull_Sl.size() - 1) % Hull_Sl.size();
+                //Py changes, counter clockwise
+                Py = (Py + 1) % Hull_Sr.size();
+            }
+            else{
+                //Px changes, clockwise
+                Px = (Px + Hull_Sl.size() - 1) % Hull_Sl.size();
+            }
         }
         else{
             //No intersection with left_ray, must intersect with right_ray
@@ -989,18 +1050,72 @@ void WingedEdge::merge(WingedEdge S_l, WingedEdge S_r)
             inter_x = inter_r_x;
             inter_y = inter_r_y;
 
-            //Py changes, counter clockwise
-            Py = (Py+1) % Hull_Sr.size();
+            if(!top){
+                /********* Move the infinite vertex to (inter_x,inter_y) **********/
+                if(cross_product(prev_x,prev_y,inter_x,inter_y,vertex_x_r[start_vertex_r[inf_rays_Sr[(Py+1)%inf_rays_Sr.size()]]],vertex_x_r[start_vertex_r[inf_rays_Sr[(Py+1)%inf_rays_Sr.size()]]]) < 0){
+                    //start_vertex of inf_rays_Sl[Px] is the infinite vertex
+                    this->x[start_vertex_r[inf_rays_Sr[(Py+1)%inf_rays_Sr.size()]] + num_v_l] = inter_x;
+                    this->y[start_vertex_r[inf_rays_Sr[(Py+1)%inf_rays_Sr.size()]] + num_v_l] = inter_y;
+                    this->w[start_vertex_r[inf_rays_Sr[(Py+1)%inf_rays_Sr.size()]] + num_v_l] = 1;//Become inner vertex
+                }
+                else if(cross_product(prev_x,prev_y,inter_x,inter_y,vertex_x_r[end_vertex_r[inf_rays_Sr[(Py+1)%inf_rays_Sr.size()]]],vertex_x_r[end_vertex_r[inf_rays_Sr[(Py+1)%inf_rays_Sr.size()]]]) < 0){
+                    this->x[end_vertex_r[inf_rays_Sr[(Py+1)%inf_rays_Sr.size()]] + num_v_l] = inter_x;
+                    this->y[end_vertex_r[inf_rays_Sr[(Py+1)%inf_rays_Sr.size()]] + num_v_l] = inter_y;
+                    this->w[end_vertex_r[inf_rays_Sr[(Py+1)%inf_rays_Sr.size()]] + num_v_l] = 1;//Become inner vertex
+                }
+                else{
+                    qDebug()<<"merge: Both start_vertex and end_vertex of right_ray are not on the right side of BS";
+                }
+                /******************************************************************/
+                this->x.push_back(inter_x);
+                this->y.push_back(inter_y);
+                this->w.push_back(1);
+
+
+                this->num_vertices++;
+                this->num_edges++;
+
+                *this->cw_successor.end()  = this->num_edges-1;
+
+                this->right_polygon.push_back(Hull_Sl[Px]);
+                this->left_polygon.push_back(Hull_Sr[Py] + num_p_l);
+
+                this->start_vertex.push_back(*this->end_vertex.end());
+                this->end_vertex.push_back(this->num_vertices-1);
+                this->cw_predecessor.push_back(inf_rays_Sl[(Px+inf_rays_Sl.size()-1)%inf_rays_Sl.size()]);
+                this->ccw_predecessor.push_back(this->num_edges-2);
+
+                this->cw_successor.push_back(inf_rays_Sr[(Py+1)%inf_rays_Sr.size()]);
+                this->ccw_successor.push_back(this->num_edges);
+
+            }
+            else{
+                prev_x = (-1)*(BS->line.b*(inter_y+600) + BS->line.c)/BS->line.a;
+                prev_y = inter_y+600;
+
+                this->x.push_back(prev_x);
+                this->y.push_back(prev_y);
+                this->w.push_back(0);
+            }
+
+
+            if(fabs(inter_l_x-inter_r_x) < 1e-8 && fabs(inter_l_y-inter_r_y) < 1e-8){
+
+                //Px changes, clockwise
+                Px = (Px + Hull_Sl.size() - 1) % Hull_Sl.size();
+                //Py changes, counter clockwise
+                Py = (Py + 1) % Hull_Sr.size();
+            }
+            else{
+                //Py changes, counter clockwise
+                Py = (Py+1) % Hull_Sr.size();
+            }
         }
+
+
         if(top){
             //First BS i.e. BS of PxPy
             top = false;
-
-            BS->x1 = (-1)*(BS->line.b*(inter_y+600) + BS->line.c)/BS->line.a;
-            BS->y1 = inter_y+600;
-
-            BS->x2 = inter_x;
-            BS->y2 = inter_y;
 
             prev_x = inter_x;
             prev_y = inter_y;
@@ -1063,18 +1178,36 @@ void WingedEdge::merge(WingedEdge S_l, WingedEdge S_r)
             }
             /**************************************************************************/
 
+            /*
+            this->x[    ] = ;
+            this->y[    ] = ;
+            this->w[    ] = ;
+
+            this->num_edges++;
+
+            this->right_polygon.push_back(  );
+            this->left_polygon.push_back(  );
+
+            this->start_vertex.push_back(  );
+            this->end_vertex.push_back(  );
+            this->cw_predecessor.push_back(  );
+            this->ccw_predecessor.push_back(  );
+
+            this->cw_successor.push_back(  );
+            this->ccw_successor.push_back(  );
+            */
+
         }
-        else{
-            BS->x1 = prev_x;
-            BS->y1 = prev_y;
 
-            BS->x2 = inter_x;
-            BS->y2 = inter_y;
 
-            prev_x = inter_x;
-            prev_y = inter_y;
+        BS->x1 = prev_x;
+        BS->y1 = prev_y;
 
-        }
+        BS->x2 = inter_x;
+        BS->y2 = inter_y;
+
+        prev_x = inter_x;
+        prev_y = inter_y;
 
         //HP = HP ∪ BS
         HP.push_back(*BS);
@@ -1087,7 +1220,6 @@ void WingedEdge::merge(WingedEdge S_l, WingedEdge S_r)
     x1 = g_x_l[Hull_Sl[Px]];     y1 = g_y_l[Hull_Sl[Px]];
     x2 = g_x_l[Hull_Sr[Py]];     y2 = g_y_l[Hull_Sr[Py]];
     BS->line = WingedEdge::findPerpendicularBisector(x1,y1,x2,y2);
-
 
     if(top){
         //deal with the situation that Pa==Pc, Pb==Pd
@@ -1166,6 +1298,24 @@ void WingedEdge::merge(WingedEdge S_l, WingedEdge S_r)
         qDebug()<<"merge:Neither start_vertex nor end_vertex of inf_rays_Sl[Pd] located on left side of BS";
     }
     /**************************************************************************/
+    /*
+    this->x[    ] = ;
+    this->y[    ] = ;
+    this->w[    ] = ;
+
+    this->num_edges++;
+
+    this->right_polygon.push_back(  );
+    this->left_polygon.push_back(  );
+
+    this->start_vertex.push_back(  );
+    this->end_vertex.push_back(  );
+    this->cw_predecessor.push_back(  );
+    this->ccw_predecessor.push_back(  );
+
+    this->cw_successor.push_back(  );
+    this->ccw_successor.push_back(  );
+    */
 
 
 }
@@ -1242,7 +1392,7 @@ double WingedEdge::find_k_th(vector<double> S,unsigned long k)
     }
 }
 
-void WingedEdge::constructConvexHull(vector<int> *Hull, vector<int> *infinite_rays)
+void WingedEdge::constructConvexHull(vector<int> &Hull, vector<int> &infinite_rays)
 {
     //O(n)
     vector<int> HULL,inf_rays;
@@ -1344,8 +1494,8 @@ void WingedEdge::constructConvexHull(vector<int> *Hull, vector<int> *infinite_ra
         }while(next_infinite_ray != infinite_ray);
     }
 
-    Hull = new vector<int>(HULL);
-    infinite_rays = new vector<int>(inf_rays);
+    Hull = HULL;
+    infinite_rays = inf_rays;
 }
 
 void WingedEdge::find_outter_tangent_top(int &Pa, int &Pb, WingedEdge Sl, vector<int> Hull_Sl, WingedEdge Sr, vector<int> Hull_Sr)
@@ -1382,6 +1532,7 @@ void WingedEdge::find_outter_tangent_top(int &Pa, int &Pb, WingedEdge Sl, vector
 
     //Move each point in turn, record if the point of tangent is reached
     bool fixed_left = false, fixed_right = false;
+
 
     while(!fixed_left && !fixed_right){
         if(to_be_moved == 0 ){

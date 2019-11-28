@@ -18,8 +18,8 @@ Line::Line(double x1, double y1, double x2, double y2)
         this->c = (-1)*x1;
     }
     else{
-        this->a = y1-y2;
-        this->b = x2-x1;
+        this->a = (y1-y2)/(x2-x1);
+        this->b = 1;
         this->c = (-1)*(a*x1+b*y1);
     }
 }
