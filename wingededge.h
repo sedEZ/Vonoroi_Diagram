@@ -84,8 +84,20 @@ public:
     int getNum_edges() const;
     void setNum_edges(int value);
 
+    int getNum_vertices() const;
+    void setNum_vertices(int value);
+
+    vector<int> getEdge_around_polygon() const;
+    void setEdge_around_polygon(const vector<int> &value);
+
+    vector<int> getEdge_around_vertex() const;
+    void setEdge_around_vertex(const vector<int> &value);
+
 private:
-    int num_polygons;
+    //Combine 2 WingedEdge ds as this
+    void combineWingedEdges(WingedEdge S_l, WingedEdge S_r );
+
+    int num_polygons;//Last polygon is the polygon at INFINITY
     int num_vertices;
     int num_edges;
 

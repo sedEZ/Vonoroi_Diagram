@@ -52,13 +52,15 @@ OBJECTS_DIR   = ./
 
 ####### Files
 
-SOURCES       = main.cpp \
+SOURCES       = line.cpp \
+		main.cpp \
 		dialog.cpp \
 		mygraphicsscene.cpp \
 		voronoi.cpp \
 		wingededge.cpp moc_dialog.cpp \
 		moc_mygraphicsscene.cpp
-OBJECTS       = main.o \
+OBJECTS       = line.o \
+		main.o \
 		dialog.o \
 		mygraphicsscene.o \
 		voronoi.o \
@@ -262,9 +264,11 @@ DIST          = /home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/mkspecs/features/spec_pre
 		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/mkspecs/features/yacc.prf \
 		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/mkspecs/features/lex.prf \
 		voronoi.pro dialog.h \
+		line.h \
 		mygraphicsscene.h \
 		voronoi.h \
-		wingededge.h main.cpp \
+		wingededge.h line.cpp \
+		main.cpp \
 		dialog.cpp \
 		mygraphicsscene.cpp \
 		voronoi.cpp \
@@ -690,8 +694,8 @@ distdir: FORCE
 	@test -d $(DISTDIR) || mkdir -p $(DISTDIR)
 	$(COPY_FILE) --parents $(DIST) $(DISTDIR)/
 	$(COPY_FILE) --parents /home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/mkspecs/features/data/dummy.cpp $(DISTDIR)/
-	$(COPY_FILE) --parents dialog.h mygraphicsscene.h voronoi.h wingededge.h $(DISTDIR)/
-	$(COPY_FILE) --parents main.cpp dialog.cpp mygraphicsscene.cpp voronoi.cpp wingededge.cpp $(DISTDIR)/
+	$(COPY_FILE) --parents dialog.h line.h mygraphicsscene.h voronoi.h wingededge.h $(DISTDIR)/
+	$(COPY_FILE) --parents line.cpp main.cpp dialog.cpp mygraphicsscene.cpp voronoi.cpp wingededge.cpp $(DISTDIR)/
 	$(COPY_FILE) --parents dialog.ui $(DISTDIR)/
 
 
@@ -735,11 +739,12 @@ compiler_moc_header_clean:
 moc_dialog.cpp: dialog.h \
 		mygraphicsscene.h \
 		wingededge.h \
+		line.h \
 		voronoi.h \
-		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtWidgets/QGraphicsScene \
-		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtWidgets/qgraphicsscene.h \
-		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtWidgets/qtwidgetsglobal.h \
-		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtGui/qtguiglobal.h \
+		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtCore/QFile \
+		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtCore/qfile.h \
+		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtCore/qfiledevice.h \
+		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtCore/qiodevice.h \
 		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtCore/qglobal.h \
 		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtCore/qconfig-bootstrapped.h \
 		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtCore/qconfig.h \
@@ -761,8 +766,6 @@ moc_dialog.cpp: dialog.h \
 		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtCore/qmutex.h \
 		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtCore/qnumeric.h \
 		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtCore/qversiontagging.h \
-		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtGui/qtgui-config.h \
-		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtWidgets/qtwidgets-config.h \
 		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtCore/qobject.h \
 		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtCore/qobjectdefs.h \
 		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtCore/qnamespace.h \
@@ -793,6 +796,12 @@ moc_dialog.cpp: dialog.h \
 		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtCore/qvarlengtharray.h \
 		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtCore/qcontainerfwd.h \
 		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtCore/qobject_impl.h \
+		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtWidgets/QGraphicsScene \
+		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtWidgets/qgraphicsscene.h \
+		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtWidgets/qtwidgetsglobal.h \
+		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtGui/qtguiglobal.h \
+		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtGui/qtgui-config.h \
+		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtWidgets/qtwidgets-config.h \
 		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtCore/qrect.h \
 		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtCore/qmargins.h \
 		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtCore/qsize.h \
@@ -806,7 +815,6 @@ moc_dialog.cpp: dialog.h \
 		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtGui/qwindowdefs.h \
 		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtGui/qwindowdefs_win.h \
 		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtCore/qdatastream.h \
-		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtCore/qiodevice.h \
 		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtCore/qline.h \
 		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtGui/qtransform.h \
 		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtGui/qpainterpath.h \
@@ -834,6 +842,7 @@ moc_dialog.cpp: dialog.h \
 		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtWidgets/QGraphicsLineItem \
 		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtCore/QPointF \
 		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtCore/QVector \
+		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtCore/QString \
 		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtWidgets/QMainWindow \
 		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtWidgets/qmainwindow.h \
 		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtWidgets/qwidget.h \
@@ -846,8 +855,6 @@ moc_dialog.cpp: dialog.h \
 		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtGui/qevent.h \
 		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtCore/qurl.h \
 		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtCore/qurlquery.h \
-		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtCore/qfile.h \
-		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtCore/qfiledevice.h \
 		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtGui/qvector2d.h \
 		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtGui/qtouchdevice.h \
 		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtWidgets/qtabwidget.h \
@@ -861,12 +868,10 @@ moc_dialog.cpp: dialog.h \
 		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtWidgets/qframe.h \
 		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtWidgets/QDialog \
 		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtWidgets/qdialog.h \
-		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtCore/QString \
 		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtWidgets/QFileDialog \
 		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtWidgets/qfiledialog.h \
 		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtCore/qdir.h \
 		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtCore/qfileinfo.h \
-		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtCore/QFile \
 		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtCore/QTextStream \
 		moc_predefs.h \
 		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/bin/moc
@@ -874,11 +879,12 @@ moc_dialog.cpp: dialog.h \
 
 moc_mygraphicsscene.cpp: mygraphicsscene.h \
 		wingededge.h \
+		line.h \
 		voronoi.h \
-		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtWidgets/QGraphicsScene \
-		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtWidgets/qgraphicsscene.h \
-		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtWidgets/qtwidgetsglobal.h \
-		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtGui/qtguiglobal.h \
+		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtCore/QFile \
+		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtCore/qfile.h \
+		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtCore/qfiledevice.h \
+		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtCore/qiodevice.h \
 		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtCore/qglobal.h \
 		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtCore/qconfig-bootstrapped.h \
 		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtCore/qconfig.h \
@@ -900,8 +906,6 @@ moc_mygraphicsscene.cpp: mygraphicsscene.h \
 		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtCore/qmutex.h \
 		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtCore/qnumeric.h \
 		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtCore/qversiontagging.h \
-		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtGui/qtgui-config.h \
-		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtWidgets/qtwidgets-config.h \
 		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtCore/qobject.h \
 		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtCore/qobjectdefs.h \
 		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtCore/qnamespace.h \
@@ -932,6 +936,12 @@ moc_mygraphicsscene.cpp: mygraphicsscene.h \
 		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtCore/qvarlengtharray.h \
 		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtCore/qcontainerfwd.h \
 		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtCore/qobject_impl.h \
+		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtWidgets/QGraphicsScene \
+		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtWidgets/qgraphicsscene.h \
+		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtWidgets/qtwidgetsglobal.h \
+		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtGui/qtguiglobal.h \
+		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtGui/qtgui-config.h \
+		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtWidgets/qtwidgets-config.h \
 		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtCore/qrect.h \
 		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtCore/qmargins.h \
 		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtCore/qsize.h \
@@ -945,7 +955,6 @@ moc_mygraphicsscene.cpp: mygraphicsscene.h \
 		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtGui/qwindowdefs.h \
 		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtGui/qwindowdefs_win.h \
 		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtCore/qdatastream.h \
-		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtCore/qiodevice.h \
 		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtCore/qline.h \
 		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtGui/qtransform.h \
 		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtGui/qpainterpath.h \
@@ -973,6 +982,7 @@ moc_mygraphicsscene.cpp: mygraphicsscene.h \
 		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtWidgets/QGraphicsLineItem \
 		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtCore/QPointF \
 		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtCore/QVector \
+		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtCore/QString \
 		moc_predefs.h \
 		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/bin/moc
 	/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/bin/moc $(DEFINES) --include /home/tl32rodan/Desktop/Course/108_1/Advance_Algorithm/voronoi/moc_predefs.h -I/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/mkspecs/linux-g++ -I/home/tl32rodan/Desktop/Course/108_1/Advance_Algorithm/voronoi -I/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include -I/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtWidgets -I/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtGui -I/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtCore -I/usr/include/c++/7 -I/usr/include/x86_64-linux-gnu/c++/7 -I/usr/include/c++/7/backward -I/usr/lib/gcc/x86_64-linux-gnu/7/include -I/usr/local/include -I/usr/lib/gcc/x86_64-linux-gnu/7/include-fixed -I/usr/include/x86_64-linux-gnu -I/usr/include mygraphicsscene.h -o moc_mygraphicsscene.cpp
@@ -998,14 +1008,18 @@ compiler_clean: compiler_moc_predefs_clean compiler_moc_header_clean compiler_ui
 
 ####### Compile
 
+line.o: line.cpp line.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o line.o line.cpp
+
 main.o: main.cpp dialog.h \
 		mygraphicsscene.h \
 		wingededge.h \
+		line.h \
 		voronoi.h \
-		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtWidgets/QGraphicsScene \
-		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtWidgets/qgraphicsscene.h \
-		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtWidgets/qtwidgetsglobal.h \
-		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtGui/qtguiglobal.h \
+		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtCore/QFile \
+		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtCore/qfile.h \
+		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtCore/qfiledevice.h \
+		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtCore/qiodevice.h \
 		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtCore/qglobal.h \
 		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtCore/qconfig-bootstrapped.h \
 		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtCore/qconfig.h \
@@ -1027,8 +1041,6 @@ main.o: main.cpp dialog.h \
 		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtCore/qmutex.h \
 		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtCore/qnumeric.h \
 		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtCore/qversiontagging.h \
-		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtGui/qtgui-config.h \
-		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtWidgets/qtwidgets-config.h \
 		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtCore/qobject.h \
 		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtCore/qobjectdefs.h \
 		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtCore/qnamespace.h \
@@ -1059,6 +1071,12 @@ main.o: main.cpp dialog.h \
 		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtCore/qvarlengtharray.h \
 		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtCore/qcontainerfwd.h \
 		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtCore/qobject_impl.h \
+		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtWidgets/QGraphicsScene \
+		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtWidgets/qgraphicsscene.h \
+		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtWidgets/qtwidgetsglobal.h \
+		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtGui/qtguiglobal.h \
+		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtGui/qtgui-config.h \
+		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtWidgets/qtwidgets-config.h \
 		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtCore/qrect.h \
 		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtCore/qmargins.h \
 		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtCore/qsize.h \
@@ -1072,7 +1090,6 @@ main.o: main.cpp dialog.h \
 		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtGui/qwindowdefs.h \
 		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtGui/qwindowdefs_win.h \
 		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtCore/qdatastream.h \
-		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtCore/qiodevice.h \
 		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtCore/qline.h \
 		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtGui/qtransform.h \
 		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtGui/qpainterpath.h \
@@ -1100,6 +1117,7 @@ main.o: main.cpp dialog.h \
 		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtWidgets/QGraphicsLineItem \
 		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtCore/QPointF \
 		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtCore/QVector \
+		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtCore/QString \
 		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtWidgets/QMainWindow \
 		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtWidgets/qmainwindow.h \
 		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtWidgets/qwidget.h \
@@ -1112,8 +1130,6 @@ main.o: main.cpp dialog.h \
 		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtGui/qevent.h \
 		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtCore/qurl.h \
 		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtCore/qurlquery.h \
-		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtCore/qfile.h \
-		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtCore/qfiledevice.h \
 		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtGui/qvector2d.h \
 		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtGui/qtouchdevice.h \
 		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtWidgets/qtabwidget.h \
@@ -1127,12 +1143,10 @@ main.o: main.cpp dialog.h \
 		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtWidgets/qframe.h \
 		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtWidgets/QDialog \
 		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtWidgets/qdialog.h \
-		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtCore/QString \
 		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtWidgets/QFileDialog \
 		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtWidgets/qfiledialog.h \
 		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtCore/qdir.h \
 		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtCore/qfileinfo.h \
-		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtCore/QFile \
 		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtCore/QTextStream \
 		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtWidgets/QApplication \
 		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtWidgets/qapplication.h \
@@ -1146,11 +1160,12 @@ main.o: main.cpp dialog.h \
 dialog.o: dialog.cpp dialog.h \
 		mygraphicsscene.h \
 		wingededge.h \
+		line.h \
 		voronoi.h \
-		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtWidgets/QGraphicsScene \
-		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtWidgets/qgraphicsscene.h \
-		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtWidgets/qtwidgetsglobal.h \
-		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtGui/qtguiglobal.h \
+		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtCore/QFile \
+		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtCore/qfile.h \
+		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtCore/qfiledevice.h \
+		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtCore/qiodevice.h \
 		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtCore/qglobal.h \
 		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtCore/qconfig-bootstrapped.h \
 		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtCore/qconfig.h \
@@ -1172,8 +1187,6 @@ dialog.o: dialog.cpp dialog.h \
 		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtCore/qmutex.h \
 		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtCore/qnumeric.h \
 		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtCore/qversiontagging.h \
-		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtGui/qtgui-config.h \
-		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtWidgets/qtwidgets-config.h \
 		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtCore/qobject.h \
 		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtCore/qobjectdefs.h \
 		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtCore/qnamespace.h \
@@ -1204,6 +1217,12 @@ dialog.o: dialog.cpp dialog.h \
 		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtCore/qvarlengtharray.h \
 		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtCore/qcontainerfwd.h \
 		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtCore/qobject_impl.h \
+		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtWidgets/QGraphicsScene \
+		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtWidgets/qgraphicsscene.h \
+		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtWidgets/qtwidgetsglobal.h \
+		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtGui/qtguiglobal.h \
+		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtGui/qtgui-config.h \
+		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtWidgets/qtwidgets-config.h \
 		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtCore/qrect.h \
 		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtCore/qmargins.h \
 		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtCore/qsize.h \
@@ -1217,7 +1236,6 @@ dialog.o: dialog.cpp dialog.h \
 		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtGui/qwindowdefs.h \
 		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtGui/qwindowdefs_win.h \
 		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtCore/qdatastream.h \
-		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtCore/qiodevice.h \
 		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtCore/qline.h \
 		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtGui/qtransform.h \
 		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtGui/qpainterpath.h \
@@ -1245,6 +1263,7 @@ dialog.o: dialog.cpp dialog.h \
 		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtWidgets/QGraphicsLineItem \
 		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtCore/QPointF \
 		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtCore/QVector \
+		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtCore/QString \
 		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtWidgets/QMainWindow \
 		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtWidgets/qmainwindow.h \
 		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtWidgets/qwidget.h \
@@ -1257,8 +1276,6 @@ dialog.o: dialog.cpp dialog.h \
 		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtGui/qevent.h \
 		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtCore/qurl.h \
 		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtCore/qurlquery.h \
-		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtCore/qfile.h \
-		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtCore/qfiledevice.h \
 		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtGui/qvector2d.h \
 		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtGui/qtouchdevice.h \
 		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtWidgets/qtabwidget.h \
@@ -1272,24 +1289,34 @@ dialog.o: dialog.cpp dialog.h \
 		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtWidgets/qframe.h \
 		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtWidgets/QDialog \
 		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtWidgets/qdialog.h \
-		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtCore/QString \
 		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtWidgets/QFileDialog \
 		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtWidgets/qfiledialog.h \
 		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtCore/qdir.h \
 		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtCore/qfileinfo.h \
-		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtCore/QFile \
 		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtCore/QTextStream \
 		ui_dialog.h \
+		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtCore/QVariant \
+		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtWidgets/QApplication \
+		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtWidgets/qapplication.h \
+		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtCore/qcoreapplication.h \
+		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtCore/qeventloop.h \
+		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtWidgets/qdesktopwidget.h \
+		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtGui/qguiapplication.h \
+		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtGui/qinputmethod.h \
+		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtWidgets/QPushButton \
+		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtWidgets/qpushbutton.h \
+		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtWidgets/qabstractbutton.h \
 		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtCore/QDebug
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o dialog.o dialog.cpp
 
 mygraphicsscene.o: mygraphicsscene.cpp mygraphicsscene.h \
 		wingededge.h \
+		line.h \
 		voronoi.h \
-		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtWidgets/QGraphicsScene \
-		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtWidgets/qgraphicsscene.h \
-		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtWidgets/qtwidgetsglobal.h \
-		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtGui/qtguiglobal.h \
+		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtCore/QFile \
+		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtCore/qfile.h \
+		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtCore/qfiledevice.h \
+		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtCore/qiodevice.h \
 		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtCore/qglobal.h \
 		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtCore/qconfig-bootstrapped.h \
 		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtCore/qconfig.h \
@@ -1311,8 +1338,6 @@ mygraphicsscene.o: mygraphicsscene.cpp mygraphicsscene.h \
 		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtCore/qmutex.h \
 		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtCore/qnumeric.h \
 		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtCore/qversiontagging.h \
-		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtGui/qtgui-config.h \
-		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtWidgets/qtwidgets-config.h \
 		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtCore/qobject.h \
 		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtCore/qobjectdefs.h \
 		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtCore/qnamespace.h \
@@ -1343,6 +1368,12 @@ mygraphicsscene.o: mygraphicsscene.cpp mygraphicsscene.h \
 		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtCore/qvarlengtharray.h \
 		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtCore/qcontainerfwd.h \
 		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtCore/qobject_impl.h \
+		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtWidgets/QGraphicsScene \
+		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtWidgets/qgraphicsscene.h \
+		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtWidgets/qtwidgetsglobal.h \
+		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtGui/qtguiglobal.h \
+		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtGui/qtgui-config.h \
+		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtWidgets/qtwidgets-config.h \
 		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtCore/qrect.h \
 		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtCore/qmargins.h \
 		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtCore/qsize.h \
@@ -1356,7 +1387,6 @@ mygraphicsscene.o: mygraphicsscene.cpp mygraphicsscene.h \
 		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtGui/qwindowdefs.h \
 		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtGui/qwindowdefs_win.h \
 		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtCore/qdatastream.h \
-		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtCore/qiodevice.h \
 		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtCore/qline.h \
 		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtGui/qtransform.h \
 		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtGui/qpainterpath.h \
@@ -1384,12 +1414,14 @@ mygraphicsscene.o: mygraphicsscene.cpp mygraphicsscene.h \
 		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtWidgets/QGraphicsLineItem \
 		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtCore/QPointF \
 		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtCore/QVector \
+		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtCore/QString \
 		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtCore/QDebug \
 		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtGui/QPen
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o mygraphicsscene.o mygraphicsscene.cpp
 
 voronoi.o: voronoi.cpp voronoi.h \
 		wingededge.h \
+		line.h \
 		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtCore/QDebug \
 		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtCore/qdebug.h \
 		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtCore/qalgorithms.h \
@@ -1457,6 +1489,7 @@ voronoi.o: voronoi.cpp voronoi.h \
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o voronoi.o voronoi.cpp
 
 wingededge.o: wingededge.cpp wingededge.h \
+		line.h \
 		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtCore/QDebug \
 		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtCore/qdebug.h \
 		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtCore/qalgorithms.h \

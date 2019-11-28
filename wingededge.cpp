@@ -21,7 +21,7 @@ void WingedEdge::constructOnePointVoronoi()
 {
     num_vertices = 0;
     num_edges = 0;
-    w.push_back(0); //infinity
+
 }
 
 void WingedEdge::constructTwoPointsVoronoi()
@@ -869,6 +869,11 @@ void WingedEdge::merge(WingedEdge S_l, WingedEdge S_r)
      * and a point in S_r.
      */
 
+    /* Step 0: Combine the 2 WingedEdge data structure into 1
+     * which S_l be the first half and S_r be the last half
+     */
+    this->combineWingedEdges(S_l,S_r);
+
     /* Step 1: Find the convex hulls of SL
      * and SR,denoted as Hull(SL) and Hull(SR),
      * respectively.
@@ -928,6 +933,10 @@ void WingedEdge::merge(WingedEdge S_l, WingedEdge S_r)
     //Previous bisector's intersection
     double prev_x,prev_y;
 
+    int num_p_l = S_l.getNumPolygons();
+    int num_e_l = S_l.getNum_edges();
+    int num_v_l = S_l.getNum_vertices();
+
     do{
         BS = new bisector();
         //Find the line coefficients : ax+by+c=0 for BS
@@ -944,11 +953,12 @@ void WingedEdge::merge(WingedEdge S_l, WingedEdge S_r)
 
         //PxPz, PxPz will be the infinite ray correspond to Px
         Line left_ray(vertex_x_l[start_vertex_l[inf_rays_Sl[Px]]]  ,  vertex_y_l[start_vertex_l[inf_rays_Sl[Px]]] ,
-                      vertex_x_l[end_vertex_l[inf_rays_Sl[Px]]]    ,  vertex_y_l[end_vertex_l[inf_rays_Sl[Px]]]    );
+                      vertex_x_l[end_vertex_l[inf_rays_Sl[Px]]]    ,  vertex_y_l[end_vertex_l[inf_rays_Sl[Px]]] );
 
         //PyPz, PyPz will be the infinite ray correspond to Py+1
         Line right_ray(vertex_x_r[start_vertex_r[inf_rays_Sr[(Py+1)%inf_rays_Sr.size()]]]  ,  vertex_y_r[start_vertex_r[inf_rays_Sr[(Py+1)%inf_rays_Sr.size()]]] ,
-                       vertex_x_r[end_vertex_r[inf_rays_Sr[(Py+1)%inf_rays_Sr.size()]]]    ,  vertex_y_r[end_vertex_r[inf_rays_Sr[(Py+1)%inf_rays_Sr.size()]]]    );
+                       vertex_x_r[end_vertex_r[inf_rays_Sr[(Py+1)%inf_rays_Sr.size()]]]    ,  vertex_y_r[end_vertex_r[inf_rays_Sr[(Py+1)%inf_rays_Sr.size()]]] );
+
 
         //BS and left_ray 's intersection point
         double inter_l_x, inter_l_y;
@@ -970,7 +980,7 @@ void WingedEdge::merge(WingedEdge S_l, WingedEdge S_r)
             inter_y = inter_l_y;
 
             //Px changes, clockwise
-            Px = (Px +Hull_Sl.size()-1) % Hull_Sl.size();
+            Px = (Px + Hull_Sl.size() - 1) % Hull_Sl.size();
         }
         else{
             //No intersection with left_ray, must intersect with right_ray
@@ -982,23 +992,89 @@ void WingedEdge::merge(WingedEdge S_l, WingedEdge S_r)
             //Py changes, counter clockwise
             Py = (Py+1) % Hull_Sr.size();
         }
-
         if(top){
             //First BS i.e. BS of PxPy
             top = false;
 
             BS->x1 = (-1)*(BS->line.b*(inter_y+600) + BS->line.c)/BS->line.a;
             BS->y1 = inter_y+600;
+
+            BS->x2 = inter_x;
+            BS->y2 = inter_y;
+
+            prev_x = inter_x;
+            prev_y = inter_y;
+
+            /****** First time: Config the edges that are going to be with (BS->x1,BS->y1) ******/
+            //left_ray first, find the point located on left side of BS
+            int edge_to_be_config;
+            //To find out the edge, we sholud check whether left_ray's direction to determine cw or ccw finding order
+            if(this->w[start_vertex_l[inf_rays_Sl[(Px + inf_rays_Sl.size() - 1)%inf_rays_Sl.size()]]] == 0 ){
+                //left_ray is pointing in to voronoi
+                edge_to_be_config = this->ccw_predecessor[inf_rays_Sl[(Px + inf_rays_Sl.size() - 1)%inf_rays_Sl.size()]];
+            }
+            else{
+                //left_ray is pointing out from voronoi
+                edge_to_be_config = this->ccw_successor[inf_rays_Sl[(Px + inf_rays_Sl.size() - 1)%inf_rays_Sl.size()]];
+            }
+
+            if(cross_product(BS->x1,BS->y1,BS->x2,BS->y2,this->x[this->start_vertex[edge_to_be_config]],this->y[start_vertex[edge_to_be_config]]) > 0){
+                //start_vertex of left_ray is the one to be config
+                this->x[this->start_vertex[edge_to_be_config]] = BS->x1;
+                this->y[this->start_vertex[edge_to_be_config]] = BS->y1;
+                this->w[this->start_vertex[edge_to_be_config]] = 0;
+            }
+            else if(cross_product(BS->x1,BS->y1,BS->x2,BS->y2,this->x[end_vertex[edge_to_be_config]],this->y[end_vertex[edge_to_be_config]]) > 0){
+                //end_vertex of left_ray is the one to be config
+                this->x[this->end_vertex[edge_to_be_config]] = BS->x1;
+                this->y[this->end_vertex[edge_to_be_config]] = BS->y1;
+                this->w[this->end_vertex[edge_to_be_config]] = 0;
+            }
+            else{
+                //For debug
+                qDebug()<<"merge:Neither start_vertex nor end_vertex of left_ray located on left side of BS";
+            }
+
+            //Then right_ray.
+            if(this->w[start_vertex_r[inf_rays_Sr[Py]] + num_v_l] == 0 ){
+                //right_ray is pointing in to voronoi
+                edge_to_be_config = this->cw_predecessor[inf_rays_Sr[Py]+ num_e_l];
+            }
+            else{
+                //right_ray is pointing out from voronoi
+                edge_to_be_config = this->cw_successor[inf_rays_Sr[Py]+ num_e_l];
+            }
+
+            if(cross_product(BS->x1,BS->y1,BS->x2,BS->y2,this->x[this->start_vertex[edge_to_be_config]],this->y[this->start_vertex[edge_to_be_config] ]) < 0){
+                //start_vertex of right_ray is the one to be config
+                this->x[this->start_vertex[edge_to_be_config]] = BS->x1;
+                this->y[this->start_vertex[edge_to_be_config]] = BS->y1;
+                this->w[this->start_vertex[edge_to_be_config]] = 0;
+            }
+            else if(cross_product(BS->x1,BS->y1,BS->x2,BS->y2,this->x[this->end_vertex[edge_to_be_config]],this->y[this->end_vertex[edge_to_be_config]]) < 0){
+                //end_vertex of right_ray is the one to be config
+                this->x[this->end_vertex[edge_to_be_config]] = BS->x1;
+                this->y[this->end_vertex[edge_to_be_config]] = BS->y1;
+                this->w[this->end_vertex[edge_to_be_config]] = 0;
+            }
+            else{
+                //For debug
+                qDebug()<<"merge:Neither start_vertex nor end_vertex of right_ray located on right side of BS";
+            }
+            /**************************************************************************/
+
         }
         else{
             BS->x1 = prev_x;
             BS->y1 = prev_y;
-        }
-        BS->x2 = inter_x;
-        BS->y2 = inter_y;
 
-        prev_x = inter_x;
-        prev_y = inter_y;
+            BS->x2 = inter_x;
+            BS->y2 = inter_y;
+
+            prev_x = inter_x;
+            prev_y = inter_y;
+
+        }
 
         //HP = HP ∪ BS
         HP.push_back(*BS);
@@ -1032,6 +1108,65 @@ void WingedEdge::merge(WingedEdge S_l, WingedEdge S_r)
      * extend to the left of HP.
      * The resulting graph is the Voronoi diagram of S = SL ∪ SR
      */
+
+    /****** Last time: Config the edges that are going to be with (BS->x2,BS->y2) ******/
+    //inf_rays_Sl[Pc] first, find the point located on left side of BS
+
+    int edge_to_be_config;
+
+    if(this->w[start_vertex_l[inf_rays_Sl[Pc]]] == 0 ){
+        edge_to_be_config = this->cw_predecessor[inf_rays_Sl[Pc]];
+    }
+    else{
+        //inf_rays_Sl[Pc] is pointing out from voronoi
+        edge_to_be_config = this->cw_successor[inf_rays_Sl[Pc]];
+    }
+
+    if(cross_product(BS->x2,BS->y2,BS->x1,BS->y1,this->x[this->start_vertex[edge_to_be_config]],this->y[start_vertex[edge_to_be_config]]) < 0){
+        //start_vertex of inf_rays_Sl[Pc] is the one to be config
+        this->x[this->start_vertex[edge_to_be_config]] = BS->x2;
+        this->y[this->start_vertex[edge_to_be_config]] = BS->y2;
+        this->w[this->start_vertex[edge_to_be_config]] = 0;
+    }
+    else if(cross_product(BS->x2,BS->y2,BS->x1,BS->y1,this->x[end_vertex[edge_to_be_config]],this->y[end_vertex[edge_to_be_config]]) < 0){
+        //end_vertex of inf_rays_Sl[Pc] is the one to be config
+        this->x[this->end_vertex[edge_to_be_config]] = BS->x2;
+        this->y[this->end_vertex[edge_to_be_config]] = BS->y2;
+        this->w[this->end_vertex[edge_to_be_config]] = 0;
+    }
+    else{
+        //For debug
+        qDebug()<<"merge:Neither start_vertex nor end_vertex of inf_rays_Sl[Pc] located on right side of BS";
+    }
+
+    //Then inf_rays_Sl[Pd].
+    if(this->w[start_vertex_r[inf_rays_Sr[(Pd+1)%inf_rays_Sr.size()] + num_v_l] ] == 0 ){
+        //inf_rays_Sl[Pd] is pointing in to voronoi
+        edge_to_be_config = this->ccw_predecessor[inf_rays_Sr[(Pd+1)%inf_rays_Sr.size()]+ num_e_l];
+    }
+    else{
+        //inf_rays_Sl[Pd] is pointing out from voronoi
+        edge_to_be_config = this->ccw_successor[inf_rays_Sr[(Pd+1)%inf_rays_Sr.size()]+ num_e_l];
+    }
+
+    if(cross_product(BS->x2,BS->y2,BS->x1,BS->y1,this->x[this->start_vertex[edge_to_be_config]],this->y[this->start_vertex[edge_to_be_config] ]) > 0){
+        //start_vertex of inf_rays_Sl[Pd] is the one to be config
+        this->x[this->start_vertex[edge_to_be_config]] = BS->x2;
+        this->y[this->start_vertex[edge_to_be_config]] = BS->y2;
+        this->w[this->start_vertex[edge_to_be_config]] = 0;
+    }
+    else if(cross_product(BS->x2,BS->y2,BS->x1,BS->y1,this->x[this->end_vertex[edge_to_be_config]],this->y[this->end_vertex[edge_to_be_config]]) > 0){
+        //end_vertex of inf_rays_Sl[Pd] is the one to be config
+        this->x[this->end_vertex[edge_to_be_config]] = BS->x2;
+        this->y[this->end_vertex[edge_to_be_config]] = BS->y2;
+        this->w[this->end_vertex[edge_to_be_config]] = 0;
+    }
+    else{
+        //For debug
+        qDebug()<<"merge:Neither start_vertex nor end_vertex of inf_rays_Sl[Pd] located on left side of BS";
+    }
+    /**************************************************************************/
+
 
 }
 
@@ -1556,6 +1691,132 @@ Line WingedEdge::findPerpendicularBisector(double x_1, double y_1, double x_2, d
 
     return result;
 
+}
+
+void WingedEdge::combineWingedEdges(WingedEdge S_l, WingedEdge S_r)
+{
+    this->num_polygons = S_l.getNumPolygons() + S_r.getNumPolygons() + 1;
+    this->num_vertices = S_l.getNum_vertices() + S_r.getNum_vertices();
+    this->num_edges = S_l.getNum_edges() + S_r.getNum_edges();
+
+    //Concatenate data structures
+
+    //generating points' data structures
+    vector<double> g_x_r = S_r.get_g_x(), g_y_r = S_r.get_g_y();
+    this->g_x = S_l.get_g_x();
+    this->g_y = S_l.get_g_y();
+
+    for(unsigned long i=0; i<g_x_r.size();i++){
+        this->g_x.push_back(g_x_r[i]);
+        this->g_y.push_back(g_y_r[i]);
+    }
+
+    //arrays for edges
+    vector<int> right_polygon_r = S_r.get_right_polygon();
+    vector<int> left_polygon_r = S_r.get_left_polygon();
+    vector<int> start_vertex_r = S_r.get_start_vertex();
+    vector<int> end_vertex_r = S_r.get_end_vertex();
+    vector<int> cw_predecessor_r = S_r.getCw_predecessor();
+    vector<int> ccw_predecessor_r = S_r.getCcw_predecessor();
+    vector<int> cw_successor_r = S_r.getCw_successor();
+    vector<int> ccw_successor_r = S_r.getCcw_successor();
+
+
+    this->right_polygon     = S_l.get_right_polygon();
+    this->left_polygon      = S_l.get_left_polygon();
+    this->start_vertex      = S_l.get_start_vertex();
+    this->end_vertex        = S_l.get_end_vertex();
+    this->cw_predecessor    = S_l.getCw_predecessor();
+    this->ccw_predecessor   = S_l.getCcw_predecessor();
+    this->cw_successor      = S_l.getCw_successor();
+    this->ccw_successor     = S_l.getCcw_successor();
+
+    for(unsigned long i=0,p_num = S_l.getNumPolygons();
+                                                        i < S_l.getNum_edges() ; i++){
+        //Adjust the numbering of polygon at INF
+        if(this->right_polygon[i] == p_num){
+            this->right_polygon[i] = this->getNumPolygons()+1;
+        }
+        if(this->left_polygon[i] == p_num){
+            this->left_polygon[i] = this->getNumPolygons()+1;
+        }
+    }
+
+    //Adjust S_r edges' numbering
+    for(unsigned long i=0,p_num = S_l.getNumPolygons(), e_num = S_l.getNum_edges(), v_num = S_l.getNum_vertices() ;
+                                                        i < S_r.getNum_edges() ; i++){
+        this->right_polygon.push_back(right_polygon_r[i] + p_num);
+        this->left_polygon.push_back(left_polygon_r[i] + p_num);
+
+        this->start_vertex.push_back(start_vertex_r[i] + v_num);
+        this->end_vertex.push_back(end_vertex_r[i] + v_num);
+
+        this->cw_predecessor.push_back(cw_predecessor_r[i] + e_num);
+        this->ccw_predecessor.push_back(ccw_predecessor_r[i] + e_num);
+        this->cw_successor.push_back(cw_successor_r[i] + e_num);
+        this->ccw_successor.push_back(ccw_successor_r[i] + e_num);
+    }
+
+    /*
+     * temperorily not used
+    vector<int> edge_around_polygon_r = S_r.getEdge_around_polygon();
+    this->edge_around_polygon = S_l.getEdge_around_polygon();
+
+    for(unsigned long i=0, e_num = S_l.getNum_edges(); i < S_r.getNumPolygons() ; i++){
+        this->edge_around_polygon.push_back(edge_around_polygon_r[i] + e_num);
+    }
+    vector<int> edge_around_vertex_r = S_r.getEdge_around_vertex();
+    this->edge_around_vertex = S_l.getEdge_around_vertex();
+
+    for(unsigned long i=0, e_num = S_l.getNum_edges(); i < S_r.getNum_vertices() ; i++){
+        this->edge_around_vertex.push_back(edge_around_vertex_r[i] + e_num);
+    }
+    */
+
+    vector<int> w_r =  S_r.get_w();
+    vector<double> x_r = S_r.get_x();
+    vector<double> y_r = S_r.get_y();
+
+    this->w = S_l.get_w();
+    this->x = S_l.get_x();
+    this->y = S_l.get_y();
+
+    for(unsigned long i=0; i<S_r.getNum_vertices(); i++){
+        this->w.push_back(w_r[i]);
+        this->x.push_back(x_r[i]);
+        this->y.push_back(y_r[i]);
+    }
+
+}
+
+vector<int> WingedEdge::getEdge_around_vertex() const
+{
+    return edge_around_vertex;
+}
+
+void WingedEdge::setEdge_around_vertex(const vector<int> &value)
+{
+    edge_around_vertex = value;
+}
+
+vector<int> WingedEdge::getEdge_around_polygon() const
+{
+    return edge_around_polygon;
+}
+
+void WingedEdge::setEdge_around_polygon(const vector<int> &value)
+{
+    edge_around_polygon = value;
+}
+
+int WingedEdge::getNum_vertices() const
+{
+    return num_vertices;
+}
+
+void WingedEdge::setNum_vertices(int value)
+{
+    num_vertices = value;
 }
 
 vector<double> WingedEdge::get_g_x()
