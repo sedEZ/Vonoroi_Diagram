@@ -14,6 +14,7 @@ Dialog::Dialog(QWidget *parent)
     ui->graphicsView->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     this->from_tx = false;
     this->tx_finish = false;
+    this->current_finish = true;
 }
 
 Dialog::~Dialog()
@@ -49,10 +50,13 @@ void Dialog::set_a_voronoi_from_tx()
                 QPointF* p = new QPointF(x,y);
                 this->scene->addAGeneratingPoints(p,5.0,5.0);
             }
+
+            current_finish = false;
             break;
         }
 
     }while(!this->tx->atEnd());
+
 
     qDebug()<<"Read 1 voronoi";
 }
@@ -62,7 +66,7 @@ void Dialog::on_pushButton_clicked()
 {
     //Run_vonoroi_to_the_end();
 
-    if(this->from_tx){
+    if(this->from_tx && current_finish){
         this->scene->restart();
         this->set_a_voronoi_from_tx();
     }
@@ -84,6 +88,7 @@ void Dialog::on_pushButton_clicked()
     while(!this->scene->voronoiEmpty()){
         this->scene->runOneStep();
     }
+    current_finish = true;
     this->scene->writeOutputTxt("./result.txt");
     qDebug()<<"Finish running all steps";
 }
@@ -91,7 +96,7 @@ void Dialog::on_pushButton_clicked()
 //Step by step
 void Dialog::on_pushButton_2_clicked()
 {
-    if(this->from_tx){
+    if(this->from_tx && current_finish){
         this->scene->restart();
         this->set_a_voronoi_from_tx();
     }
@@ -113,6 +118,7 @@ void Dialog::on_pushButton_2_clicked()
     //Run_next_step();
     qDebug()<<"Run next step";
     if(this->scene->voronoiEmpty()){
+        current_finish = true;
         return;
     }
 

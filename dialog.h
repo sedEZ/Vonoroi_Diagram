@@ -46,5 +46,6 @@ private:
     QFile* file;
     bool from_tx;
     bool tx_finish;
+    bool current_finish;
 };
 #endif // DIALOG_H
