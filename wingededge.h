@@ -47,6 +47,8 @@ public:
     void changeArraysForEdges(int resize_size);
     void configArraysForEdges(int edge_num,int rp,int lp,int sv,int ev,int cw_p,int ccw_p,int cw_s,int ccw_s);
 
+    void output_all_data_structures();
+
     vector<int> getOrdinaryEdges();
 
     void getOridinaryEdgesCoordinates(int i, double& x_1,double& x_2,double& y_1,double& y_2);
