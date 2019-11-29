@@ -149,14 +149,14 @@ void WingedEdge::constructTwoPointsVoronoi()
 
 
     //Set edge[1], edge[1] is the ordinary edge of 2 points from vertex[1]->vertex[2]
-    this->configArraysForEdges(1,1,0,1,2,1,1,2,3);
+    this->configArraysForEdges(1,1,0,1,2,0,0,2,3);
 
 
     //Set edge[2], edge[2] is on the outer side of generating_point[0] from edge[0]
-    this->configArraysForEdges(2,0,2,0,2,1,2,2,1);
+    this->configArraysForEdges(2,0,2,0,2,0,3,3,1);
 
     //Set edge[3], edge[3] is on the outer side of generating_point[1] from edge[0]
-    this->configArraysForEdges(3,2,0,0,2,2,1,1,2);
+    this->configArraysForEdges(3,2,0,0,2,2,0,1,2);
 }
 
 void WingedEdge::constructThreePointsVoronoi()
@@ -972,8 +972,7 @@ void WingedEdge::merge(WingedEdge S_l, WingedEdge S_r)
      */
     this->combineWingedEdges(S_l,S_r);
 
-
-    this->output_all_data_structures();
+  //this->output_all_data_structures();
 
     /* Step 1: Find the convex hulls of SL
      * and SR,denoted as Hull(SL) and Hull(SR),
@@ -1008,8 +1007,8 @@ void WingedEdge::merge(WingedEdge S_l, WingedEdge S_r)
     //use Hull_Sl[Pa].Hull_Sl[Pb].Hull_Sr[Pc].Hull_Sr[Pd]
     int Pa, Pb, Pc, Pd;
     find_outter_tangent_top(Pa,Pb,S_l,Hull_Sl,S_r,Hull_Sr);
-
     find_outter_tangent_bot(Pc,Pd,S_l,Hull_Sl,S_r,Hull_Sr);
+
 
     vector<bisector> HP;
     int Px = Pa, Py = Pb;
@@ -2172,10 +2171,10 @@ void WingedEdge::combineWingedEdges(WingedEdge S_l, WingedEdge S_r)
         this->start_vertex.push_back(start_vertex_r[i] + v_num);
         this->end_vertex.push_back(end_vertex_r[i] + v_num);
 
-        this->cw_predecessor.push_back(cw_predecessor_r[i] + e_num);
-        this->ccw_predecessor.push_back(ccw_predecessor_r[i] + e_num);
-        this->cw_successor.push_back(cw_successor_r[i] + e_num);
-        this->ccw_successor.push_back(ccw_successor_r[i] + e_num);
+        this->cw_predecessor.push_back(cw_predecessor_r[i] + e_num -1);
+        this->ccw_predecessor.push_back(ccw_predecessor_r[i] + e_num -1);
+        this->cw_successor.push_back(cw_successor_r[i] + e_num -1) ;
+        this->ccw_successor.push_back(ccw_successor_r[i] + e_num -1);
     }
 
     /*
