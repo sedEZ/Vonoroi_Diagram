@@ -1018,7 +1018,71 @@ compiler_clean: compiler_moc_predefs_clean compiler_moc_header_clean compiler_ui
 
 ####### Compile
 
-line.o: line.cpp line.h
+line.o: line.cpp line.h \
+		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtCore/QDebug \
+		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtCore/qdebug.h \
+		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtCore/qalgorithms.h \
+		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtCore/qglobal.h \
+		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtCore/qconfig-bootstrapped.h \
+		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtCore/qconfig.h \
+		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtCore/qtcore-config.h \
+		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtCore/qsystemdetection.h \
+		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtCore/qprocessordetection.h \
+		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtCore/qcompilerdetection.h \
+		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtCore/qtypeinfo.h \
+		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtCore/qsysinfo.h \
+		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtCore/qlogging.h \
+		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtCore/qflags.h \
+		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtCore/qatomic.h \
+		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtCore/qbasicatomic.h \
+		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtCore/qatomic_bootstrap.h \
+		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtCore/qgenericatomic.h \
+		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtCore/qatomic_cxx11.h \
+		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtCore/qatomic_msvc.h \
+		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtCore/qglobalstatic.h \
+		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtCore/qmutex.h \
+		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtCore/qnumeric.h \
+		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtCore/qversiontagging.h \
+		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtCore/qhash.h \
+		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtCore/qchar.h \
+		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtCore/qiterator.h \
+		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtCore/qlist.h \
+		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtCore/qrefcount.h \
+		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtCore/qarraydata.h \
+		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtCore/qhashfunctions.h \
+		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtCore/qstring.h \
+		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtCore/qbytearray.h \
+		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtCore/qnamespace.h \
+		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtCore/qstringliteral.h \
+		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtCore/qstringalgorithms.h \
+		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtCore/qstringview.h \
+		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtCore/qstringbuilder.h \
+		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtCore/qpair.h \
+		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtCore/qvector.h \
+		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtCore/qpoint.h \
+		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtCore/qbytearraylist.h \
+		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtCore/qstringlist.h \
+		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtCore/qregexp.h \
+		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtCore/qstringmatcher.h \
+		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtCore/qmap.h \
+		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtCore/qtextstream.h \
+		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtCore/qiodevice.h \
+		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtCore/qobject.h \
+		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtCore/qobjectdefs.h \
+		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtCore/qobjectdefs_impl.h \
+		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtCore/qcoreevent.h \
+		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtCore/qscopedpointer.h \
+		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtCore/qmetatype.h \
+		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtCore/qvarlengtharray.h \
+		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtCore/qcontainerfwd.h \
+		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtCore/qobject_impl.h \
+		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtCore/qlocale.h \
+		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtCore/qvariant.h \
+		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtCore/qshareddata.h \
+		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtCore/qset.h \
+		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtCore/qcontiguouscache.h \
+		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtCore/qsharedpointer.h \
+		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtCore/qsharedpointer_impl.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o line.o line.cpp
 
 main.o: main.cpp dialog.h \
@@ -1305,17 +1369,6 @@ dialog.o: dialog.cpp dialog.h \
 		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtCore/qfileinfo.h \
 		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtCore/QTextStream \
 		ui_dialog.h \
-		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtCore/QVariant \
-		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtWidgets/QApplication \
-		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtWidgets/qapplication.h \
-		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtCore/qcoreapplication.h \
-		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtCore/qeventloop.h \
-		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtWidgets/qdesktopwidget.h \
-		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtGui/qguiapplication.h \
-		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtGui/qinputmethod.h \
-		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtWidgets/QPushButton \
-		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtWidgets/qpushbutton.h \
-		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtWidgets/qabstractbutton.h \
 		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtCore/QDebug
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o dialog.o dialog.cpp
 

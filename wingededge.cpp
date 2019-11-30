@@ -1161,6 +1161,11 @@ void WingedEdge::merge(WingedEdge S_l, WingedEdge S_r)
             inter_x = inter_l_x;
             inter_y = inter_l_y;
 
+            if(top){
+                prev_x = (-1)*(BS->line.b*(inter_y+600) + BS->line.c)/BS->line.a;
+                prev_y = inter_y+600;
+            }
+
             /********* Move the infinite vertex to (inter_x,inter_y) **********/
             if(cross_product(prev_x,prev_y,inter_x,inter_y,vertex_x_l[start_vertex_l[inf_rays_Sl[Px]]],vertex_y_l[start_vertex_l[inf_rays_Sl[Px]]]) > 0){
                 //start_vertex of inf_rays_Sl[Px] is the infinite vertex
@@ -1211,22 +1216,31 @@ void WingedEdge::merge(WingedEdge S_l, WingedEdge S_r)
 
             inter_x = inter_r_x;
             inter_y = inter_r_y;
+
+            if(top){
+                prev_x = (-1)*(BS->line.b*(inter_y+600) + BS->line.c)/BS->line.a;
+                prev_y = inter_y+600;
+            }
+
+            /*
             qDebug()<<"Hull_Sr[Py] = "<<Hull_Sr[Py];
             qDebug()<<"inf_rays_Sr[Py] = "<<inf_rays_Sr[Py];
             qDebug()<<"vertex_x_r[start_vertex_r[inf_rays_Sr[Py]]] = "<<vertex_x_r[start_vertex_r[inf_rays_Sr[Py]]];
             qDebug()<<"vertex_y_r[start_vertex_r[inf_rays_Sr[Py]]] = "<<vertex_y_r[start_vertex_r[inf_rays_Sr[Py]]];
             qDebug()<<"prev_x = "<<prev_x<<"; prev_y = "<<prev_y;
             qDebug()<<"inter_x = "<<inter_x<<"; inter_y = "<<inter_y;
-
+            */
 
             /********* Move the infinite vertex to (inter_x,inter_y) **********/
             if(cross_product(prev_x,prev_y,inter_x,inter_y,vertex_x_r[start_vertex_r[inf_rays_Sr[(Py+1)%inf_rays_Sr.size()]]],vertex_x_r[start_vertex_r[inf_rays_Sr[(Py+1)%inf_rays_Sr.size()]]]) < 0){
-                //start_vertex of inf_rays_S[Pr] is the infinite vertex
+                //start_vertex of inf_rays_S[Py] is the infinite vertex
+                qDebug()<<"start";
                 this->x[start_vertex_r[inf_rays_Sr[(Py+1)%inf_rays_Sr.size()]] + num_v_l] = inter_x;
                 this->y[start_vertex_r[inf_rays_Sr[(Py+1)%inf_rays_Sr.size()]] + num_v_l] = inter_y;
                 this->w[start_vertex_r[inf_rays_Sr[(Py+1)%inf_rays_Sr.size()]] + num_v_l] = 1;//Become inner vertex
             }
             else if(cross_product(prev_x,prev_y,inter_x,inter_y,vertex_x_r[end_vertex_r[inf_rays_Sr[(Py+1)%inf_rays_Sr.size()]]],vertex_x_r[end_vertex_r[inf_rays_Sr[(Py+1)%inf_rays_Sr.size()]]]) < 0){
+                qDebug()<<"end";
                 this->x[end_vertex_r[inf_rays_Sr[(Py+1)%inf_rays_Sr.size()]] + num_v_l] = inter_x;
                 this->y[end_vertex_r[inf_rays_Sr[(Py+1)%inf_rays_Sr.size()]] + num_v_l] = inter_y;
                 this->w[end_vertex_r[inf_rays_Sr[(Py+1)%inf_rays_Sr.size()]] + num_v_l] = 1;//Become inner vertex
@@ -1258,8 +1272,6 @@ void WingedEdge::merge(WingedEdge S_l, WingedEdge S_r)
                 prev_x = (-1)*(BS->line.b*(inter_y+600) + BS->line.c)/BS->line.a;
                 prev_y = inter_y+600;
             }
-
-
 
             //Py changes, counter clockwise
             Py = (Py+1) % Hull_Sr.size();
@@ -1317,6 +1329,11 @@ void WingedEdge::merge(WingedEdge S_l, WingedEdge S_r)
                 //end_vertex of edge_to_be_config is the one to be config
                 this->end_vertex[edge_to_be_config_l] = vertex_to_be_config;
             }
+            else if(fabs(this->x[this->start_vertex[edge_to_be_config_l]] - this->x[this->end_vertex[edge_to_be_config_l]] < 1e-8) &&
+                    fabs(this->y[this->start_vertex[edge_to_be_config_l]] - this->y[this->end_vertex[edge_to_be_config_l]] < 1e-8)){
+                //When left voronoi has only 1 point
+                this->start_vertex[edge_to_be_config_l] = vertex_to_be_config;
+            }
             else{
                 //For debug
                 qDebug()<<"merge:Neither start_vertex nor end_vertex of edge_to_be_config_l located on left side of BS";
@@ -1351,6 +1368,11 @@ void WingedEdge::merge(WingedEdge S_l, WingedEdge S_r)
                 //start_vertex of right_ray is the one to be config
               //qDebug()<<"Here";
                 this->start_vertex[edge_to_be_config_r] = vertex_to_be_config;
+            }
+            else if(fabs(this->x[this->start_vertex[edge_to_be_config_r]] - this->x[this->end_vertex[edge_to_be_config_r]] < 1e-8) &&
+                    fabs(this->y[this->start_vertex[edge_to_be_config_r]] - this->y[this->end_vertex[edge_to_be_config_r]] < 1e-8)){
+                //When left voronoi has only 1 point
+                this->end_vertex[edge_to_be_config_r] = vertex_to_be_config;
             }
             else{
                 //For debug
@@ -1472,6 +1494,11 @@ void WingedEdge::merge(WingedEdge S_l, WingedEdge S_r)
         //end_vertex of inf_rays_Sr[Pd] is the one to be config
         this->end_vertex[edge_to_be_config_r] = vertex_to_be_config;
     }
+    else if(fabs(this->x[this->start_vertex[edge_to_be_config_r]] - this->x[this->end_vertex[edge_to_be_config_r]] < 1e-8) &&
+            fabs(this->y[this->start_vertex[edge_to_be_config_r]] - this->y[this->end_vertex[edge_to_be_config_r]] < 1e-8)){
+        //When left voronoi has only 1 point
+        this->start_vertex[edge_to_be_config_r] = vertex_to_be_config;
+    }
     else{
         //For debug
         qDebug()<<"merge:Neither start_vertex nor end_vertex of inf_rays_Sl[Pd] located on left side of BS";
@@ -1507,6 +1534,11 @@ void WingedEdge::merge(WingedEdge S_l, WingedEdge S_r)
     else if(cross_product(BS->x2,BS->y2,BS->x1,BS->y1,this->x[end_vertex[edge_to_be_config_l]],this->y[end_vertex[edge_to_be_config_l]]) <= 0){
         //end_vertex of inf_rays_Sl[Pc] is the one to be config
 
+        this->end_vertex[edge_to_be_config_l] = vertex_to_be_config;
+    }    
+    else if(fabs(this->x[this->start_vertex[edge_to_be_config_l]] - this->x[this->end_vertex[edge_to_be_config_l]] < 1e-8) &&
+            fabs(this->y[this->start_vertex[edge_to_be_config_l]] - this->y[this->end_vertex[edge_to_be_config_l]] < 1e-8)){
+        //When left voronoi has only 1 point
         this->end_vertex[edge_to_be_config_l] = vertex_to_be_config;
     }
     else{
