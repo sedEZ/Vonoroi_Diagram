@@ -1040,6 +1040,9 @@ void WingedEdge::merge(WingedEdge S_l, WingedEdge S_r)
     //BS and right_ray 's intersection point
     double inter_r_x, inter_r_y;
 
+    //
+    int cw_pred, ccw_pred;
+
     bool have_inter_l, have_inter_r;
     do{
         BS = new bisector();
@@ -1069,25 +1072,27 @@ void WingedEdge::merge(WingedEdge S_l, WingedEdge S_r)
                 vertex_x_l[end_vertex_l[inf_rays_Sl[Px]]]    ,  vertex_y_l[end_vertex_l[inf_rays_Sl[Px]]] );
         Line left_ray_2(vertex_x_l[start_vertex_l[inf_rays_Sl[(Px+1)%inf_rays_Sl.size()]]]  ,  vertex_y_l[start_vertex_l[inf_rays_Sl[(Px+1)%inf_rays_Sl.size()]]] ,
                 vertex_x_l[end_vertex_l[inf_rays_Sl[(Px+1)%inf_rays_Sl.size()]]]    ,  vertex_y_l[end_vertex_l[inf_rays_Sl[(Px+1)%inf_rays_Sl.size()]]] );
-        if(Px == (Px+1)%inf_rays_Sl.size()){
+        if(Px == ((Px+1)%inf_rays_Sl.size())){
             //only 1 candidate
             left_ray = left_ray_1;
-
+            have_inter_l = Line::find_intersect(BS->line, left_ray_1, inter_l_x, inter_l_y);
+            //qDebug()<<"have_inter_l = "<<have_inter_l;
             left_edge = inf_rays_Sl[Px];
         }
         else{
+            qDebug()<<"Here";
             double inter_l_x_1, inter_l_y_1;
             double inter_l_x_2, inter_l_y_2;
             bool have_inter_l_1 = Line::find_intersect(BS->line, left_ray_1, inter_l_x_1, inter_l_y_1);
             bool have_inter_l_2 = Line::find_intersect(BS->line, left_ray_2, inter_l_x_2, inter_l_y_2);
-            if(!have_inter_l_2 || inter_l_y_1 > inter_l_y_2){
+            if(!have_inter_l_2 || inter_l_y_1 >= inter_l_y_2){
                 inter_l_x = inter_l_x_1;
                 inter_l_y = inter_l_y_1;
                 have_inter_l = have_inter_l_1;
 
                 left_edge = inf_rays_Sl[Px];
             }
-            else if(!have_inter_l_1 || inter_l_y_2 > inter_l_y_1){
+            else if(!have_inter_l_1 || inter_l_y_2 >= inter_l_y_1){
                 inter_l_x = inter_l_x_2;
                 inter_l_y = inter_l_y_2;
                 have_inter_l = have_inter_l_2;
@@ -1096,6 +1101,7 @@ void WingedEdge::merge(WingedEdge S_l, WingedEdge S_r)
             }
             else{
                 qDebug()<<"Failed when finding left_ray";
+                qDebug()<<"have_inter_l_1 = "<<have_inter_l_1<<"; have_inter_l_2 = "<<have_inter_l_2;
                 //exit(-1);
             }
         }
@@ -1110,34 +1116,37 @@ void WingedEdge::merge(WingedEdge S_l, WingedEdge S_r)
             //only 1 candidate
             right_ray = right_ray_1;
 
+            have_inter_r = Line::find_intersect(BS->line, right_ray, inter_r_x, inter_r_y);
+
             right_edge = inf_rays_Sr[Py];
         }
         else{
             double inter_r_x_1, inter_r_y_1;
             double inter_r_x_2, inter_r_y_2;
-            bool have_inter_r_1 = Line::find_intersect(BS->line, left_ray_1, inter_r_x_1, inter_r_y_1);
-            bool have_inter_r_2 = Line::find_intersect(BS->line, left_ray_2, inter_r_x_2, inter_r_y_2);
-            if(!have_inter_r_2 || inter_r_y_1 > inter_r_y_2){
-                inter_r_x = inter_r_x_1;
-                inter_r_y = inter_r_y_1;
-                have_inter_r = have_inter_r_1;
-
-                right_edge = inf_rays_Sr[Py];
-            }
-            else if(!have_inter_r_1 || inter_r_y_2 > inter_r_y_1){
+            bool have_inter_r_1 = Line::find_intersect(BS->line, right_ray_1, inter_r_x_1, inter_r_y_1);
+            bool have_inter_r_2 = Line::find_intersect(BS->line, right_ray_2, inter_r_x_2, inter_r_y_2);
+            if(!have_inter_r_1 || inter_r_y_2 >= inter_r_y_1){
                 inter_r_x = inter_r_x_2;
                 inter_r_y = inter_r_y_2;
                 have_inter_r = have_inter_r_2;
 
                 right_edge = inf_rays_Sr[(Py+1)%inf_rays_Sr.size()];
             }
+            else if(!have_inter_r_2 || inter_r_y_1 >= inter_r_y_2){
+                inter_r_x = inter_r_x_1;
+                inter_r_y = inter_r_y_1;
+                have_inter_r = have_inter_r_1;
+
+                right_edge = inf_rays_Sr[Py];
+            }
             else{
-                qDebug()<<"Failed when finding left_ray";
+                qDebug()<<"Failed when finding right_ray";
+                qDebug()<<"have_inter_r_1 = "<<have_inter_r_1<<"; have_inter_r_2 = "<<have_inter_r_2;
                 //exit(-1);
             }
         }
         //qDebug()<<"right_ray.a = "<<right_ray.a<<" ; right_ray.b = "<<right_ray.b<<" ; right_ray.c = "<<right_ray.c;
-        //qDebug()<<"have_inter_l = "<<have_inter_l<<"; have_inter_r = "<<have_inter_r;
+        qDebug()<<"have_inter_l = "<<have_inter_l<<"; have_inter_r = "<<have_inter_r;
 
         //The next point BS really intersect with
         double inter_x,inter_y;
@@ -1207,8 +1216,8 @@ void WingedEdge::merge(WingedEdge S_l, WingedEdge S_r)
 
                 this->start_vertex.push_back(*this->end_vertex.end());
                 this->end_vertex.push_back(this->num_vertices-1);
-                this->cw_predecessor.push_back(this->num_edges-2);
-                this->ccw_predecessor.push_back(right_edge + num_e_l);
+                this->cw_predecessor.push_back(cw_pred);
+                this->ccw_predecessor.push_back(ccw_pred);
 
                 this->cw_successor.push_back(right_edge + num_e_l);
                 this->ccw_successor.push_back(left_edge);
@@ -1259,8 +1268,8 @@ void WingedEdge::merge(WingedEdge S_l, WingedEdge S_r)
 
                 this->start_vertex.push_back(*this->end_vertex.end());
                 this->end_vertex.push_back(this->num_vertices-1);
-                this->cw_predecessor.push_back(this->num_edges-2);
-                this->ccw_predecessor.push_back(inf_rays_Sr[Py] + num_e_l);
+                this->cw_predecessor.push_back(cw_pred);
+                this->ccw_predecessor.push_back(ccw_pred);
 
                 this->cw_successor.push_back(this->num_edges);
                 this->ccw_successor.push_back(left_edge);
@@ -1326,8 +1335,8 @@ void WingedEdge::merge(WingedEdge S_l, WingedEdge S_r)
 
                 this->start_vertex.push_back(*this->end_vertex.end());
                 this->end_vertex.push_back(this->num_vertices-1);
-                this->cw_predecessor.push_back(inf_rays_Sl[(Px+inf_rays_Sl.size()-1)%inf_rays_Sl.size()]);
-                this->ccw_predecessor.push_back(this->num_edges-2);
+                this->cw_predecessor.push_back(cw_pred);
+                this->ccw_predecessor.push_back(ccw_pred);
 
                 this->cw_successor.push_back(right_edge);
                 this->ccw_successor.push_back(this->num_edges);
@@ -1356,7 +1365,6 @@ void WingedEdge::merge(WingedEdge S_l, WingedEdge S_r)
         if(top){
             //First BS i.e. BS of PaPb
             top = false;
-
 
             int edge_to_be_config_l, edge_to_be_config_r;
             int vertex_to_be_config;
@@ -1465,18 +1473,26 @@ void WingedEdge::merge(WingedEdge S_l, WingedEdge S_r)
             this->ccw_predecessor.push_back(edge_to_be_config_r);
 
             if(have_inter_l && have_inter_r && fabs(inter_l_x-inter_r_x) < 1e-8 && fabs(inter_l_y-inter_r_y) < 1e-8){
-                this->cw_successor.push_back(inf_rays_Sr[(Pb+1)%inf_rays_Sr.size()] + num_e_l);
-                this->ccw_successor.push_back(inf_rays_Sl[Pa]);
+                this->cw_successor.push_back(right_edge + num_e_l);
+                this->ccw_successor.push_back(left_edge);
+                cw_pred = left_edge;
+                ccw_pred = right_edge;
             }
             else if(!have_inter_r || inter_l_y >= inter_r_y){
                 //Left_ray is (inter_x,inter_y)
                 this->cw_successor.push_back(this->num_edges);
-                this->ccw_successor.push_back(inf_rays_Sl[Pa]);
+                this->ccw_successor.push_back(left_edge);
+
+                cw_pred = left_edge;
+                ccw_pred = this->num_edges-1;
             }
             else{
                 //Right_ray is (inter_x,inter_y)
-                this->cw_successor.push_back(inf_rays_Sr[(Pb+1)%inf_rays_Sr.size()] + num_e_l);
+                this->cw_successor.push_back(right_edge + num_e_l);
                 this->ccw_successor.push_back(this->num_edges);
+
+                cw_pred = this->num_edges-1;
+                ccw_pred = right_edge + num_e_l;
             }
             /*
             qDebug()<<"*(this->right_polygon.end()-1) = "<<*(this->right_polygon.end()-1);
