@@ -1005,7 +1005,7 @@ void WingedEdge::merge(WingedEdge S_l, WingedEdge S_r)
     find_outter_tangent_top(Pa,Pb,S_l,Hull_Sl,S_r,Hull_Sr);
     find_outter_tangent_bot(Pc,Pd,S_l,Hull_Sl,S_r,Hull_Sr);
 
-    qDebug()<<"Pa = "<<Pa<<"; Pb = "<<Pb<<"; Pc = "<<Pc<<"; Pd = "<<Pd;
+    //qDebug()<<"Pa = "<<Pa<<"; Pb = "<<Pb<<"; Pc = "<<Pc<<"; Pd = "<<Pd;
 
     vector<bisector> HP;
     int Px = Pa, Py = Pb;
@@ -1051,7 +1051,7 @@ void WingedEdge::merge(WingedEdge S_l, WingedEdge S_r)
 
         BS->line = WingedEdge::findPerpendicularBisector(x1,y1,x2,y2);
 
-        //qDebug()<<"BS->line.a = "<<BS->line.a<<" ; BS->line.b = "<<BS->line.b<<" ; BS->line.b = "<<BS->line.c;
+        qDebug()<<"BS->line.a = "<<BS->line.a<<" ; BS->line.b = "<<BS->line.b<<" ; BS->line.b = "<<BS->line.c;
         /* Step 4: The ray from VD(SL) and VD(SR) which
          * BS first intersects with must be a perpendicular
          * bisector of either PxPz or PyPz for some z.
@@ -1067,14 +1067,16 @@ void WingedEdge::merge(WingedEdge S_l, WingedEdge S_r)
         //PyPz, PyPz will be the infinite ray correspond to Py+1
         Line right_ray(vertex_x_r[start_vertex_r[inf_rays_Sr[(Py+1)%inf_rays_Sr.size()]]]  ,  vertex_y_r[start_vertex_r[inf_rays_Sr[(Py+1)%inf_rays_Sr.size()]]] ,
                        vertex_x_r[end_vertex_r[inf_rays_Sr[(Py+1)%inf_rays_Sr.size()]]]    ,  vertex_y_r[end_vertex_r[inf_rays_Sr[(Py+1)%inf_rays_Sr.size()]]] );
-        //qDebug()<<"right_ray.a = "<<right_ray.a<<" ; right_ray.b = "<<right_ray.b<<" ; right_ray.c = "<<right_ray.c;
+        qDebug()<<"right_ray.a = "<<right_ray.a<<" ; right_ray.b = "<<right_ray.b<<" ; right_ray.c = "<<right_ray.c;
 
 
         have_inter_l = Line::find_intersect(BS->line, left_ray, inter_l_x, inter_l_y);
         have_inter_r = Line::find_intersect(BS->line, right_ray, inter_r_x, inter_r_y);
+        qDebug()<<"have_inter_l = "<<have_inter_l<<"; have_inter_r = "<<have_inter_r;
 
         //The next point BS really intersect with
         double inter_x,inter_y;
+
         if(have_inter_l && have_inter_r &&fabs(inter_l_x-inter_r_x) < 1e-8 && fabs(inter_l_y-inter_r_y) < 1e-8){
             inter_x = inter_l_x;
             inter_y = inter_l_y;
@@ -1810,7 +1812,7 @@ void WingedEdge::find_outter_tangent_top(int &Pa, int &Pb, WingedEdge Sl, vector
                 to_be_moved = 0;
                 continue;
             }
-            qDebug()<<"current_right = "<<current_right<<"; next_point = "<<next_point;
+            //qDebug()<<"current_right = "<<current_right<<"; next_point = "<<next_point;
             //Calculate cross product of current_left=>current_right and current_left=>next_point
             //to determine if the outter tangent point is reached.
             double x_0 = g_x_l[Hull_Sl[current_left]];
@@ -2192,11 +2194,21 @@ Line WingedEdge::findPerpendicularBisector(double x_1, double y_1, double x_2, d
         result.a = 1;
         result.b = 0;
         result.c = (-1)*(x_1+x_2)/2;
+
+        result.x1 = (x_1+x_2)/2;
+        result.y1 = 0;
+        result.x2 = (x_1+x_2)/2;
+        result.y2 = 600;
     }
     else{
-        result.a = (x_1-x_2);
-        result.b = (y_1-y_2);
-        result.c = (x_2*x_2+y_2*y_2-x_1*x_1-y_1*y_1)/2;
+        result.a = (x_1-x_2)/(y_1-y_2);
+        result.b = 1;
+        result.c = (x_2*x_2+y_2*y_2-x_1*x_1-y_1*y_1)/(2*(y_1-y_2));
+
+        result.x1 = 0;
+        result.y1 = (-1)*result.c;
+        result.x2 = 600;
+        result.y2 = (-1)*(result.a*600+result.c);
     }
 
     return result;

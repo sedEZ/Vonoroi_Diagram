@@ -19,6 +19,9 @@ public:
 //Variables
     //ax + by + c = 0
     double a,b,c;
+
+    //the value of points' coordinates when setting the line
+    double x1,y1,x2,y2;
 };
 
 #endif // LINE_H
