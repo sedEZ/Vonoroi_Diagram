@@ -19,8 +19,15 @@ WingedEdge::WingedEdge(vector<double> p_x, vector<double> p_y){
 
 void WingedEdge::constructOnePointVoronoi()
 {
-    num_vertices = 0;
-    num_edges = 0;
+    this->num_vertices = 1;
+    this->num_edges = 1;
+    this->w.push_back(0);
+    this->x.push_back(this->g_x[0]);
+    this->y.push_back(this->g_y[0]);
+    this->changeArraysForEdges(this->num_edges);
+
+    this->configArraysForEdges(0,0,1,0,0,0,0,0,0);
+
 }
 
 void WingedEdge::constructTwoPointsVoronoi()
@@ -431,6 +438,7 @@ void WingedEdge::constructThreePointsVoronoi()
             }
             /******************************************************************/
 
+            this->num_vertices = 4;
             //Setting edges
             this->num_edges=6;//2 oridinary edges, 4 augumented edges
             this->changeArraysForEdges(this->num_edges);
@@ -527,25 +535,7 @@ void WingedEdge::constructThreePointsVoronoi()
                         this->w[1] = 0;
                     }
                 }
-/*
-                //point intersect with upper margin
-                if(x_cross_y_600>=0 && x_cross_y_600<=600){
-                    this->x[1] = x_cross_y_600;
-                    this->y[1] = 600;
-                    this->w[1] = 0;
-                }
-                else if(x_cross_y_600 <0){
-                    this->x[1] = 0;
-                    this->y[1] = b_top;
-                    this->w[1] = 0;
-                }
-                else{
-                    this->x[1] = 600;
-                    this->y[1] = m_top*600+b_top;
-                    this->w[1] = 0;
-                }
 
-*/
                 //Circumcenter
                 this->x[3] = (b_bot-b_top)/(m_top-m_bot);
                 this->y[3] = m_top * (this->y[3]) +b_top;
@@ -624,6 +614,7 @@ void WingedEdge::constructThreePointsVoronoi()
             }
             /******************************************************************/
 
+            this->num_vertices = 4;
             //Setting edges
             this->num_edges=6;//3 oridinary edges, 3 augumented edges
             this->changeArraysForEdges(this->num_edges);
@@ -716,6 +707,7 @@ void WingedEdge::constructThreePointsVoronoi()
 
             /******************************************************************/
 
+            this->num_vertices = 4;
             //Setting edges
             this->num_edges=6;//3 oridinary edges, 3 augumented edges
             this->changeArraysForEdges(this->num_edges);
@@ -902,6 +894,7 @@ void WingedEdge::constructThreePointsVoronoi()
 
         /******************************************************************/
 
+        this->num_vertices = 4;
         //Setting edges
         this->num_edges=6;//3 oridinary edges, 3 augumented edges
         this->changeArraysForEdges(this->num_edges);
@@ -972,8 +965,9 @@ void WingedEdge::merge(WingedEdge S_l, WingedEdge S_r)
      */
     this->combineWingedEdges(S_l,S_r);
 
+    //qDebug()<<"S_r.getNum_vertices() = "<<S_r.getNum_vertices();
     //this->output_all_data_structures();
-
+    //S_l.output_all_data_structures();
     /* Step 1: Find the convex hulls of SL
      * and SR,denoted as Hull(SL) and Hull(SR),
      * respectively.
@@ -994,6 +988,8 @@ void WingedEdge::merge(WingedEdge S_l, WingedEdge S_r)
     vector<int> Hull_Sr,inf_rays_Sr;
     S_r.constructConvexHull(Hull_Sr,inf_rays_Sr);
 
+    //qDebug()<<"Hull_Sr[0] = "<<Hull_Sr[0]<<"; Hull_Sr[1] = "<<Hull_Sr[1]<<"; Hull_Sr[2] = "<<Hull_Sr[2];
+
     /* Step 2: Find segments PaPb and PcPd which join
      * HULL(SL) and HULL(SR) into a convex hull
      * (Pa and Pc belong to SL and Pb and
@@ -1009,6 +1005,7 @@ void WingedEdge::merge(WingedEdge S_l, WingedEdge S_r)
     find_outter_tangent_top(Pa,Pb,S_l,Hull_Sl,S_r,Hull_Sr);
     find_outter_tangent_bot(Pc,Pd,S_l,Hull_Sl,S_r,Hull_Sr);
 
+    qDebug()<<"Pa = "<<Pa<<"; Pb = "<<Pb<<"; Pc = "<<Pc<<"; Pd = "<<Pd;
 
     vector<bisector> HP;
     int Px = Pa, Py = Pb;
@@ -1078,7 +1075,6 @@ void WingedEdge::merge(WingedEdge S_l, WingedEdge S_r)
 
         //The next point BS really intersect with
         double inter_x,inter_y;
-
         if(have_inter_l && have_inter_r &&fabs(inter_l_x-inter_r_x) < 1e-8 && fabs(inter_l_y-inter_r_y) < 1e-8){
             inter_x = inter_l_x;
             inter_y = inter_l_y;
@@ -1177,6 +1173,7 @@ void WingedEdge::merge(WingedEdge S_l, WingedEdge S_r)
             }
             else{
                 qDebug()<<"merge: Both start_vertex and end_vertex of left_ray are not on the left side of BS";
+                exit(-1);
             }
             /******************************************************************/
 
@@ -1212,6 +1209,13 @@ void WingedEdge::merge(WingedEdge S_l, WingedEdge S_r)
 
             inter_x = inter_r_x;
             inter_y = inter_r_y;
+            qDebug()<<"Hull_Sr[Py] = "<<Hull_Sr[Py];
+            qDebug()<<"inf_rays_Sr[Py] = "<<inf_rays_Sr[Py];
+            qDebug()<<"vertex_x_r[start_vertex_r[inf_rays_Sr[Py]]] = "<<vertex_x_r[start_vertex_r[inf_rays_Sr[Py]]];
+            qDebug()<<"vertex_y_r[start_vertex_r[inf_rays_Sr[Py]]] = "<<vertex_y_r[start_vertex_r[inf_rays_Sr[Py]]];
+            qDebug()<<"prev_x = "<<prev_x<<"; prev_y = "<<prev_y;
+            qDebug()<<"inter_x = "<<inter_x<<"; inter_y = "<<inter_y;
+
 
             /********* Move the infinite vertex to (inter_x,inter_y) **********/
             if(cross_product(prev_x,prev_y,inter_x,inter_y,vertex_x_r[start_vertex_r[inf_rays_Sr[(Py+1)%inf_rays_Sr.size()]]],vertex_x_r[start_vertex_r[inf_rays_Sr[(Py+1)%inf_rays_Sr.size()]]]) < 0){
@@ -1227,6 +1231,7 @@ void WingedEdge::merge(WingedEdge S_l, WingedEdge S_r)
             }
             else{
                 qDebug()<<"merge: Both start_vertex and end_vertex of right_ray are not on the right side of BS";
+
             }
             /******************************************************************/
 
@@ -1623,6 +1628,7 @@ void WingedEdge::constructConvexHull(vector<int> &Hull, vector<int> &infinite_ra
 
     if(this->getNumPolygons() == 1 ){
         HULL.push_back(0);
+        inf_rays.push_back(0);
     }
     else if(this->getNumPolygons() == 2){
         HULL.push_back(0);
@@ -1754,17 +1760,19 @@ void WingedEdge::find_outter_tangent_top(int &Pa, int &Pb, WingedEdge Sl, vector
 
     //Move each point in turn, record if the point of tangent is reached
     bool fixed_left = false, fixed_right = false;
-
+    //qDebug()<<"to_be_moved = "<<to_be_moved;
 
     while(!fixed_left && !fixed_right){
         if(to_be_moved == 0 ){
-            if(fixed_left){
+            //Moved current_left counter clockwise
+            int next_point = (current_left+1) % Hull_Sl.size();
+
+            if(fixed_left || next_point == current_left){
                 //left is fixed, deal with right
+                fixed_left = true;
                 to_be_moved = 1;
                 continue;
             }
-            //Moved current_left counter clockwise
-            int next_point = Hull_Sl[(current_left+1) % Hull_Sl.size()];
 
             //Calculate cross product of current_right=>current_left and current_right=>next_point
             //to determine if the outter tangent point is reached.
@@ -1793,15 +1801,16 @@ void WingedEdge::find_outter_tangent_top(int &Pa, int &Pb, WingedEdge Sl, vector
             }
         }
         else if(to_be_moved == 1 ){
-            if(fixed_right){
+
+            //Moved current_right clockwise
+            int next_point = (current_right + Hull_Sr.size() -1) % Hull_Sr.size();
+            if(fixed_right || next_point==current_right){
                 //right is fixed, deal with left
+                fixed_right = true;
                 to_be_moved = 0;
                 continue;
             }
-
-            //Moved current_right clockwise
-            int next_point = Hull_Sl[(current_right + Hull_Sl.size() -1) % Hull_Sl.size()];
-
+            qDebug()<<"current_right = "<<current_right<<"; next_point = "<<next_point;
             //Calculate cross product of current_left=>current_right and current_left=>next_point
             //to determine if the outter tangent point is reached.
             double x_0 = g_x_l[Hull_Sl[current_left]];
@@ -1811,8 +1820,8 @@ void WingedEdge::find_outter_tangent_top(int &Pa, int &Pb, WingedEdge Sl, vector
             double y_1 = g_y_r[Hull_Sr[current_right]];
 
 
-            double x_2 = g_x_l[Hull_Sl[next_point]];
-            double y_2 = g_y_l[Hull_Sl[next_point]];
+            double x_2 = g_x_r[Hull_Sr[next_point]];
+            double y_2 = g_y_r[Hull_Sr[next_point]];
 
             if(this->cross_product(x_0,y_0,x_1,y_1,x_2,y_2) <= 0){
                 //Next point is over the right outter tangent point,
@@ -1872,13 +1881,14 @@ void WingedEdge::find_outter_tangent_bot(int &Pc, int &Pd, WingedEdge Sl, vector
 
     while(!fixed_left && !fixed_right){
         if(to_be_moved == 0 ){
-            if(fixed_left){
+            //Moved current_left clockwise
+            int next_point = (current_left+ Hull_Sl.size() -1) % Hull_Sl.size();
+            if(fixed_left || next_point==current_left){
                 //left is fixed, deal with right
+                fixed_left = true;
                 to_be_moved = 1;
                 continue;
             }
-            //Moved current_left clockwise
-            int next_point = Hull_Sl[(current_left+ Hull_Sl.size() -1) % Hull_Sl.size()];
 
             //Calculate cross product of current_right=>current_left and current_right=>next_point
             //to determine if the outter tangent point is reached.
@@ -1907,14 +1917,16 @@ void WingedEdge::find_outter_tangent_bot(int &Pc, int &Pd, WingedEdge Sl, vector
             }
         }
         else if(to_be_moved == 1 ){
-            if(fixed_right){
+
+            //Moved current_right counter clockwise
+            int next_point = (current_right +1) % Hull_Sl.size();
+
+            if(fixed_right || next_point == current_right){
                 //right is fixed, deal with left
+                fixed_right = true;
                 to_be_moved = 0;
                 continue;
             }
-
-            //Moved current_right counter clockwise
-            int next_point = Hull_Sl[(current_right +1) % Hull_Sl.size()];
 
             //Calculate cross product of current_left=>current_right and current_left=>next_point
             //to determine if the outter tangent point is reached.

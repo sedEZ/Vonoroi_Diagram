@@ -81,7 +81,6 @@ WingedEdge Voronoi::runOneStep()
     //Right WingedEdge
     WingedEdge S_r = done_stack.top(); done_stack.pop();
 
-    //Temporary function for first time demo
     current_merge.merge(S_l,S_r);
 
     //Done merge, put current_merge into done_stack
