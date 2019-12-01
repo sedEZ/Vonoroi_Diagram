@@ -38,6 +38,8 @@ public:
     void find_outter_tangent_top(int& Pa, int& Pb, WingedEdge Sl,vector<int> Hull_Sl,WingedEdge Sr, vector<int> Hull_Sr);
     void find_outter_tangent_bot(int& Pc, int& Pd, WingedEdge Sl,vector<int> Hull_Sl,WingedEdge Sr, vector<int> Hull_Sr);
 
+    void erase_edges_by_HP(vector<struct bisector> HP, WingedEdge Sl,WingedEdge Sr);
+
     int getNumPolygons();
     bool threePointsSameLine();
 
@@ -127,6 +129,7 @@ private:
     vector<double> x;
     vector<double> y;
 
+    vector<struct bisector> HP;
     //For storing : Check if the WingedEdge object is waiting merging.
     bool waiting_merge;
 };

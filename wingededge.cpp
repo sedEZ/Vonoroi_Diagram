@@ -537,8 +537,8 @@ void WingedEdge::constructThreePointsVoronoi()
                 }
 
                 //Circumcenter
-                this->x[3] = (b_bot-b_top)/(m_top-m_bot);
-                this->y[3] = m_top * (this->y[3]) +b_top;
+                this->x[3] = n_top*y[0] + c_top;
+                this->y[3] = this->y[0];
                 this->w[3] = 1;
 
             }
@@ -608,8 +608,8 @@ void WingedEdge::constructThreePointsVoronoi()
 
 
                 //Circumcenter
-                this->x[3] = (b_bot-b_top)/(m_top-m_bot);
-                this->y[3] = m_top * (this->y[3]) +b_top;
+                this->x[3] = n_bot*y[0] + c_bot;
+                this->y[3] = this->y[0];
                 this->w[3] = 1;
             }
             /******************************************************************/
@@ -668,6 +668,10 @@ void WingedEdge::constructThreePointsVoronoi()
                     this->y[1] = m_top*600+b_top;
                     this->w[1] = 0;
                 }
+                //Circumcenter
+                this->x[3] = n_top*y[0] + b_top;
+                this->y[3] = this->y[0];
+                this->w[3] = 1;
             }
 
             if(fabs(this->g_y[0] - this->g_y[1]) < 1e-8){
@@ -698,12 +702,12 @@ void WingedEdge::constructThreePointsVoronoi()
                     this->y[2] = b_bot;
                     this->w[2] = 0;
                 }
+                //Circumcenter
+                this->x[3] = n_top*y[0] + b_top;
+                this->y[3] = this->y[0];
+                this->w[3] = 1;
 
             }
-            //Circumcenter
-            this->x[3] = (b_bot-b_top)/(m_top-m_bot);
-            this->y[3] = m_top*this->x[3]+b_top;
-            this->w[3] = 1;
 
             /******************************************************************/
 
@@ -1007,7 +1011,7 @@ void WingedEdge::merge(WingedEdge S_l, WingedEdge S_r)
 
     //qDebug()<<"Pa = "<<Pa<<"; Pb = "<<Pb<<"; Pc = "<<Pc<<"; Pd = "<<Pd;
 
-    vector<bisector> HP;
+
     int Px = Pa, Py = Pb;
 
     /* Step 3: Find the perpendicular bisector of SG.
@@ -1056,11 +1060,11 @@ void WingedEdge::merge(WingedEdge S_l, WingedEdge S_r)
         x1 = g_x_l[Hull_Sl[Px]];     y1 = g_y_l[Hull_Sl[Px]];
         x2 = g_x_r[Hull_Sr[Py]];     y2 = g_y_r[Hull_Sr[Py]];
 
-        //qDebug()<<"x1 = "<<x1<<" ; y1 = "<<y1<<" ; x2 = "<<x2<<" ; y2 = "<<y2;
+        qDebug()<<"x1 = "<<x1<<" ; y1 = "<<y1<<" ; x2 = "<<x2<<" ; y2 = "<<y2;
 
         BS->line = WingedEdge::findPerpendicularBisector(x1,y1,x2,y2);
 
-        //qDebug()<<"BS->line.a = "<<BS->line.a<<" ; BS->line.b = "<<BS->line.b<<" ; BS->line.b = "<<BS->line.c;
+        qDebug()<<"BS->line.a = "<<BS->line.a<<" ; BS->line.b = "<<BS->line.b<<" ; BS->line.b = "<<BS->line.c;
 
 
         /* Step 4: The ray from VD(SL) and VD(SR) which
@@ -1200,6 +1204,7 @@ void WingedEdge::merge(WingedEdge S_l, WingedEdge S_r)
                     this->num_vertices++;
 
                     vertex_to_move = this->num_vertices -1;
+                    this->start_vertex[left_edge] = vertex_to_move;
                 }
                 else{
                     this->x[start_vertex_l[left_edge]] = inter_x;
@@ -1225,6 +1230,7 @@ void WingedEdge::merge(WingedEdge S_l, WingedEdge S_r)
                     this->num_vertices++;
 
                     vertex_to_move = this->num_vertices -1;
+                    this->end_vertex[left_edge] = vertex_to_move;
                 }
                 else{
                     this->x[end_vertex_l[left_edge]] = inter_x;
@@ -1300,6 +1306,7 @@ void WingedEdge::merge(WingedEdge S_l, WingedEdge S_r)
                     this->num_vertices++;
 
                     vertex_to_move = this->num_vertices -1;
+                    this->start_vertex[left_edge] = vertex_to_move;
                 }
                 else{
                     this->x[start_vertex_l[left_edge]] = inter_x;
@@ -1318,6 +1325,7 @@ void WingedEdge::merge(WingedEdge S_l, WingedEdge S_r)
                     this->num_vertices++;
 
                     vertex_to_move = this->num_vertices -1;
+                    this->end_vertex[left_edge] = vertex_to_move;
                 }
                 else{
                     this->x[end_vertex_l[left_edge]] = inter_x;
@@ -1328,7 +1336,7 @@ void WingedEdge::merge(WingedEdge S_l, WingedEdge S_r)
             }
             else{
                 qDebug()<<"merge: Both start_vertex and end_vertex of left_ray are not on the left side of BS";
-                exit(-1);
+                //exit(-1);
             }
             /******************************************************************/
 
@@ -1392,6 +1400,7 @@ void WingedEdge::merge(WingedEdge S_l, WingedEdge S_r)
                     this->num_vertices++;
 
                     vertex_to_move = this->num_vertices -1;
+                    this->start_vertex[right_edge + num_e_l] = vertex_to_move;
                 }
                 else{
                     this->x[start_vertex_r[right_edge] + num_v_l] = inter_x;
@@ -1403,6 +1412,7 @@ void WingedEdge::merge(WingedEdge S_l, WingedEdge S_r)
             }
             else if(cross_product(prev_x,prev_y,inter_x,inter_y,vertex_x_r[end_vertex_r[right_edge]],vertex_x_r[end_vertex_r[right_edge]]) < 0){
                 //qDebug()<<"end";
+                qDebug()<<"this->end_vertex.back() ="<<this->end_vertex.back()<<"; (end_vertex_r[right_edge] + num_v_l) ="<<(end_vertex_r[right_edge] + num_v_l);
                 if(this->end_vertex.back() == (end_vertex_r[right_edge] + num_v_l)){
                     //Under some scenerio, the vertex to be configed has been configed in previous iteration
                     this->x.push_back(inter_x);
@@ -1411,6 +1421,7 @@ void WingedEdge::merge(WingedEdge S_l, WingedEdge S_r)
                     this->num_vertices++;
 
                     vertex_to_move = this->num_vertices -1;
+                    this->end_vertex[right_edge + num_e_l] = vertex_to_move;
                 }
                 else{
                     this->x[end_vertex_r[right_edge] + num_v_l] = inter_x;
@@ -1563,8 +1574,8 @@ void WingedEdge::merge(WingedEdge S_l, WingedEdge S_r)
 
             //config of first BS
 
-            qDebug()<<"vertex_to_be_config = "<<vertex_to_be_config
-                   <<"; this->num_vertices-1 = "<<this->num_vertices-1;
+            //qDebug()<<"vertex_to_be_config = "<<vertex_to_be_config
+                   //<<"; this->num_vertices-1 = "<<this->num_vertices-1;
             this->num_edges++;
 
             this->right_polygon.push_back(Hull_Sl[Pa]);
@@ -1612,7 +1623,7 @@ void WingedEdge::merge(WingedEdge S_l, WingedEdge S_r)
         }
 
         //HP = HP ∪ BS
-        HP.push_back(*BS);
+        this->HP.push_back(*BS);
 
 
     }while(Px != Pc || Py != Pd);
@@ -1640,13 +1651,14 @@ void WingedEdge::merge(WingedEdge S_l, WingedEdge S_r)
     //qDebug()<<"BS->x1 = "<<BS->x1<<"; BS->y1 = "<<BS->y1<<"; BS->x2 = "<<BS->x2<<"; BS->y2 = "<<BS->y2;
 
     //HP = HP ∪ BS
-    HP.push_back(*BS);
+    this->HP.push_back(*BS);
 
     /* Step 5: Discard the edges of VD(SL) which extend to
      * the right of HP and discard the edges of VD(SR) which
      * extend to the left of HP.
      * The resulting graph is the Voronoi diagram of S = SL ∪ SR
      */
+    this->erase_edges_by_HP(this->HP, S_l, S_r);
 
     /****** Last time: Config the edges that are going to be with (BS->x2,BS->y2) ******/
     //inf_rays_Sr[Pd] first, find the point located on left side of BS
@@ -1746,7 +1758,7 @@ void WingedEdge::merge(WingedEdge S_l, WingedEdge S_r)
     this->right_polygon.push_back(Hull_Sl[Pc]);
     this->left_polygon.push_back(Hull_Sr[Pd] + num_p_l);
 
-    this->start_vertex.push_back(*(this->end_vertex.end()-1));
+    this->start_vertex.push_back(this->end_vertex.back());
     this->end_vertex.push_back(vertex_to_be_config);
 
     if(!have_inter_r || inter_l_y >= inter_r_y){
@@ -2183,6 +2195,83 @@ void WingedEdge::find_outter_tangent_bot(int &Pc, int &Pd, WingedEdge Sl, vector
 
 }
 
+void WingedEdge::erase_edges_by_HP(vector<bisector> HP, WingedEdge Sl, WingedEdge Sr)
+{
+    vector<int> start_vetex_l = Sl.get_start_vertex(), start_vetex_r = Sr.get_start_vertex();
+    vector<int> end_vetex_l = Sl.get_end_vertex(), end_vetex_r = Sr.get_end_vertex();
+    vector<int> right_polygon_l = Sl.get_right_polygon(), right_polygon_r = Sr.get_right_polygon();
+    vector<int> left_polygon_l = Sl.get_left_polygon(), left_polygon_r = Sr.get_left_polygon();
+    vector<double> l_x = Sl.get_x(),l_y = Sl.get_y();
+    vector<double> r_x = Sr.get_x(),r_y = Sr.get_y();
+    vector<int> l_w = Sl.get_w(),r_w = Sr.get_w();
+
+    int num_e_l = Sl.getNum_edges();
+    int num_p_l = Sl.getNumPolygons(), num_p_r = Sr.getNumPolygons();
+
+    for(unsigned long i=0;i<start_vetex_l.size();i++){
+        //Erase the edges that in the right region which belongs to left S_l
+        if(right_polygon_l[i] == num_p_l || left_polygon_l[i] == num_p_l){
+            // Augumented edges need not to be deleted
+            continue;
+        }
+        bool to_be_delete = true;
+        for(unsigned long j=0;j<HP.size();j++){
+            if(cross_product(HP[j].x1,HP[j].y1,HP[j].x2,HP[j].y2,l_x[start_vetex_l[i]],l_y[start_vetex_l[i]]) > 0
+            && cross_product(HP[j].x1,HP[j].y1,HP[j].x2,HP[j].y2,l_x[end_vetex_l[i]],l_y[end_vetex_l[i]]) > 0){
+                continue;
+            }
+            else{
+                to_be_delete = false;
+                break;
+            }
+        }
+
+        //Delete the edge if to_be_delete remains true
+        if(to_be_delete){
+            //Set it to infinite
+            this->right_polygon[i] = this->getNumPolygons();
+            this->left_polygon[i] = this->getNumPolygons();
+
+            //Adjust the predecessors and successors to make sure their relations are correct.
+            this->ccw_successor[this->cw_predecessor[i]] = this->ccw_predecessor[i];
+            this->cw_successor[this->ccw_predecessor[i]] = this->cw_predecessor[i];
+            this->ccw_predecessor[this->cw_successor[i]] = this->ccw_successor[i];
+            this->cw_predecessor[this->ccw_successor[i]] = this->cw_successor[i];
+        }
+    }
+
+    for(unsigned long i=0;i<start_vetex_r.size();i++){
+        //Erase the edges that in the right region which belongs to left S_l
+        if(right_polygon_r[i] == num_p_r || left_polygon_r[i] == num_p_r){
+            // Augumented edges need not to be deleted
+            continue;
+        }
+        bool to_be_delete = true;
+        for(unsigned long j=0;j<HP.size();j++){
+            if(cross_product(HP[j].x1,HP[j].y1,HP[j].x2,HP[j].y2,r_x[start_vetex_r[i]],r_y[start_vetex_r[i]]) < 0
+            && cross_product(HP[j].x1,HP[j].y1,HP[j].x2,HP[j].y2,r_x[end_vetex_r[i]],r_y[end_vetex_r[i]]) < 0){
+                continue;
+            }
+            else{
+                to_be_delete = false;
+                break;
+            }
+        }
+
+        //Delete the edge if to_be_delete remains true
+        if(to_be_delete){
+            //Set it to infinite
+            this->right_polygon[i + num_e_l] = this->getNumPolygons();
+            this->left_polygon[i + num_e_l] = this->getNumPolygons();
+
+            //Adjust the predecessors and successors to make sure their relations are correct.
+            this->ccw_successor[this->cw_predecessor[i + num_e_l]] = this->ccw_predecessor[i + num_e_l];
+            this->cw_successor[this->ccw_predecessor[i + num_e_l]] = this->cw_predecessor[i + num_e_l];
+            this->ccw_predecessor[this->cw_successor[i + num_e_l]] = this->ccw_successor[i + num_e_l];
+            this->cw_predecessor[this->ccw_successor[i + num_e_l]] = this->cw_successor[i + num_e_l];
+        }
+    }
+}
 int WingedEdge::getNumPolygons()
 {
     return num_polygons-1;//Except for p_infinity
