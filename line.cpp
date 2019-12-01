@@ -53,12 +53,33 @@ bool Line::find_intersect(Line m, Line n, double &inter_x, double &inter_y)
 
     inter_x = (n.c*m.b - m.c*n.b) / determinant;
     inter_y = (n.a*m.c - m.a*n.c) / determinant;
-
+/*
     if(m.w1 || m.w2){
-        if(m.w1){
+        double side_of_point_1 = Line::cross_product(n.x1,n.y1,n.x2,n.y2,m.x1,m.y1);
+        double side_of_point_2 = Line::cross_product(n.x1,n.y1,n.x2,n.y2,m.x2,m.y2);
 
+        //same side => intersrction is not on m
+        if(side_of_point_1*side_of_point_2 > 0){
+            return false;
         }
     }
 
+    if(n.w1 || n.w2){
+        double side_of_point_1 = Line::cross_product(m.x1,m.y1,m.x2,m.y2,n.x1,n.y1);
+        double side_of_point_2 = Line::cross_product(m.x1,m.y1,m.x2,m.y2,n.x2,n.y2);
+
+        //same side => intersrction is not on n
+        if(side_of_point_1*side_of_point_2 > 0){
+            return false;
+        }
+    }
+*/
     return true;
+}
+
+double Line::cross_product(double x_0, double y_0, double x_1, double y_1, double x_2, double y_2)
+{
+
+    return (x_1-x_0)*(y_2-y_0) - (x_2-x_0)*(y_1-y_0);
+
 }

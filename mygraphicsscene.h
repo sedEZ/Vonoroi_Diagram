@@ -8,6 +8,7 @@
 #include <QGraphicsSceneMouseEvent>
 #include <QGraphicsEllipseItem>
 #include <QGraphicsLineItem>
+#include <QGraphicsItemGroup>
 #include <QPointF>
 #include <QVector>
 #include <QString>
@@ -23,7 +24,6 @@ public:
     MyGraphicsScene();
 
     bool initializeVonoroi();
-
 
     void addAGeneratingPoints(QPointF* pos, qreal width, qreal height );
     void runOneStep();
@@ -52,6 +52,10 @@ private:
 
     //Storing pointers to QGraphicsLineItem
     QVector<QGraphicsLineItem*> line_p;
+    QVector<QGraphicsLineItem*> hp;
+    QVector<QGraphicsLineItem*> Hull_Sl;
+    QVector<QGraphicsLineItem*> Hull_Sr;
+
 
     //If initialized_indicator == 0, initilize the vonoroi's diagram,
     //then adjust initialized_indicator to 1;

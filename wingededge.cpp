@@ -996,6 +996,11 @@ void WingedEdge::merge(WingedEdge S_l, WingedEdge S_r)
     vector<int> Hull_Sr,inf_rays_Sr;
     S_r.constructConvexHull(Hull_Sr,inf_rays_Sr);
 
+    this->HULL_Sl = Hull_Sl;
+    for(unsigned long i=0;i<Hull_Sr.size();i++){
+        this->HULL_Sr.push_back(Hull_Sr[i] + S_l.getNumPolygons());
+    }
+
     //qDebug()<<"Hull_Sr[0] = "<<Hull_Sr[0]<<"; Hull_Sr[1] = "<<Hull_Sr[1]<<"; Hull_Sr[2] = "<<Hull_Sr[2];
 
     /* Step 2: Find segments PaPb and PcPd which join
@@ -1065,7 +1070,7 @@ void WingedEdge::merge(WingedEdge S_l, WingedEdge S_r)
         x1 = g_x_l[Hull_Sl[Px]];     y1 = g_y_l[Hull_Sl[Px]];
         x2 = g_x_r[Hull_Sr[Py]];     y2 = g_y_r[Hull_Sr[Py]];
 
-        //qDebug()<<"x1 = "<<x1<<" ; y1 = "<<y1<<" ; x2 = "<<x2<<" ; y2 = "<<y2;
+        qDebug()<<"x1 = "<<x1<<" ; y1 = "<<y1<<" ; x2 = "<<x2<<" ; y2 = "<<y2;
 
         BS->line = WingedEdge::findPerpendicularBisector(x1,y1,x2,y2);
         BS->line.w1 = 0;
@@ -1087,10 +1092,12 @@ void WingedEdge::merge(WingedEdge S_l, WingedEdge S_r)
                 vertex_x_l[end_vertex_l[inf_rays_Sl[Px]]]    ,  vertex_y_l[end_vertex_l[inf_rays_Sl[Px]]] );
         left_ray_1.w1 = vertex_w_l[start_vertex_l[inf_rays_Sl[Px]]];
         left_ray_1.w2 = vertex_w_l[end_vertex_l[inf_rays_Sl[Px]]];
+        //qDebug()<<"left_ray_1.w1 = "<<left_ray_1.w1<<"; left_ray_1.w2 = "<<left_ray_1.w2;
         Line left_ray_2(vertex_x_l[start_vertex_l[inf_rays_Sl[(Px+1)%inf_rays_Sl.size()]]]  ,  vertex_y_l[start_vertex_l[inf_rays_Sl[(Px+1)%inf_rays_Sl.size()]]] ,
                 vertex_x_l[end_vertex_l[inf_rays_Sl[(Px+1)%inf_rays_Sl.size()]]]    ,  vertex_y_l[end_vertex_l[inf_rays_Sl[(Px+1)%inf_rays_Sl.size()]]] );
         left_ray_2.w1 = vertex_w_l[start_vertex_l[inf_rays_Sl[(Px+1)%inf_rays_Sl.size()]]];
         left_ray_2.w2 = vertex_w_l[end_vertex_l[inf_rays_Sl[(Px+1)%inf_rays_Sl.size()]]];
+        //qDebug()<<"left_ray_2.w1 = "<<left_ray_2.w1<<"; left_ray_2.w2 = "<<left_ray_2.w2;
 
         if(Px == ((Px+1)%inf_rays_Sl.size())){
             //only 1 candidate
@@ -1168,7 +1175,7 @@ void WingedEdge::merge(WingedEdge S_l, WingedEdge S_r)
                 have_inter_r = have_inter_r_2;
 
                 right_edge = inf_rays_Sr[(Py+1)%inf_rays_Sr.size()];
-
+                qDebug()<<"Here";
                 next_Py = (Py + 1) % Hull_Sr.size();
                 //qDebug()<<"have_inter_r_1 = "<<have_inter_r_1<<"; inter_r_y_2 = "<<inter_r_y_2<<"; inter_r_y_1 = "<<inter_r_y_1
                         //<<"; (Py+1)%inf_rays_Sr.size() ="<<(Py+1)%inf_rays_Sr.size()<<"; prev_Py = "<<prev_Py;
@@ -1199,6 +1206,7 @@ void WingedEdge::merge(WingedEdge S_l, WingedEdge S_r)
         //The next point BS really intersect with
         double inter_x,inter_y;
 
+        qDebug()<<"Px = "<<Px<<"; Py = "<<Py;
         int vertex_to_move;
         if(have_inter_l && have_inter_r &&fabs(inter_l_x-inter_r_x) < 1e-8 && fabs(inter_l_y-inter_r_y) < 1e-8){
             inter_x = inter_l_x;
@@ -1216,7 +1224,7 @@ void WingedEdge::merge(WingedEdge S_l, WingedEdge S_r)
                 if(this->end_vertex.back() == start_vertex_l[left_edge]){
                     //Under some scenerio, the vertex to be configed has been configed in previous iteration
                     this->x.push_back(inter_x);
-                    this->y.push_back(inter_x);
+                    this->y.push_back(inter_y);
                     this->w.push_back(1);
                     this->num_vertices++;
 
@@ -1242,7 +1250,7 @@ void WingedEdge::merge(WingedEdge S_l, WingedEdge S_r)
                 if(this->end_vertex.back() == end_vertex_l[left_edge]){
                     //Under some scenerio, the vertex to be configed has been configed in previous iteration
                     this->x.push_back(inter_x);
-                    this->y.push_back(inter_x);
+                    this->y.push_back(inter_y);
                     this->w.push_back(1);
                     this->num_vertices++;
 
@@ -1318,7 +1326,7 @@ void WingedEdge::merge(WingedEdge S_l, WingedEdge S_r)
                 if(this->end_vertex.back() == start_vertex_l[left_edge]){
                     //Under some scenerio, the vertex to be configed has been configed in previous iteration
                     this->x.push_back(inter_x);
-                    this->y.push_back(inter_x);
+                    this->y.push_back(inter_y);
                     this->w.push_back(1);
                     this->num_vertices++;
 
@@ -1386,7 +1394,7 @@ void WingedEdge::merge(WingedEdge S_l, WingedEdge S_r)
                 prev_y = inter_y+600;
             }
 
-            qDebug()<<"Here";
+            //qDebug()<<"Here";
             //Px changes, clockwise
             Px = next_Px;
 
@@ -1420,7 +1428,7 @@ void WingedEdge::merge(WingedEdge S_l, WingedEdge S_r)
                 if(this->end_vertex.back() == (start_vertex_r[right_edge] + num_v_l)){
                     //Under some scenerio, the vertex to be configed has been configed in previous iteration
                     this->x.push_back(inter_x);
-                    this->y.push_back(inter_x);
+                    this->y.push_back(inter_y);
                     this->w.push_back(1);
                     this->num_vertices++;
 
@@ -1441,7 +1449,7 @@ void WingedEdge::merge(WingedEdge S_l, WingedEdge S_r)
                 if(this->end_vertex.back() == (end_vertex_r[right_edge] + num_v_l)){
                     //Under some scenerio, the vertex to be configed has been configed in previous iteration
                     this->x.push_back(inter_x);
-                    this->y.push_back(inter_x);
+                    this->y.push_back(inter_y);
                     this->w.push_back(1);
                     this->num_vertices++;
 
@@ -1650,7 +1658,7 @@ void WingedEdge::merge(WingedEdge S_l, WingedEdge S_r)
         //HP = HP ∪ BS
         this->HP.push_back(*BS);
 
-        qDebug()<<"Px = "<<Px<<"; Py = "<<Py;
+        //qDebug()<<"Px = "<<Px<<"; Py = "<<Py;
     }while(Px != Pc || Py != Pd);
 /*******************************       End of while      ************************************/
 
@@ -2643,6 +2651,36 @@ void WingedEdge::combineWingedEdges(WingedEdge S_l, WingedEdge S_r)
         this->y.push_back(y_r[i]);
     }
 
+}
+
+vector<int> WingedEdge::getHULL_Sr() const
+{
+    return HULL_Sr;
+}
+
+void WingedEdge::setHULL_Sr(const vector<int> &value)
+{
+    HULL_Sr = value;
+}
+
+vector<int> WingedEdge::getHULL_Sl() const
+{
+    return HULL_Sl;
+}
+
+void WingedEdge::setHULL_Sl(const vector<int> &value)
+{
+    HULL_Sl = value;
+}
+
+vector<bisector> WingedEdge::getHP() const
+{
+    return HP;
+}
+
+void WingedEdge::setHP(const vector<bisector> &value)
+{
+    HP = value;
 }
 
 vector<int> WingedEdge::getEdge_around_vertex() const

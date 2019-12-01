@@ -15,6 +15,7 @@ public:
     //                      false if 2 lines intersect at infinity
     static bool find_intersect(Line m, Line n, double &inter_x, double &inter_y );
 
+    static double cross_product(double x_0, double y_0, double x_1, double y_1, double x_2, double y_2);
 
 //Variables
     //ax + by + c = 0

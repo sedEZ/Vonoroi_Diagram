@@ -16,6 +16,7 @@ bool compare_point_lexical(const struct point a, const struct point b){
 //Constructor
 MyGraphicsScene::MyGraphicsScene(){
     QGraphicsScene();
+
 }
 
 void MyGraphicsScene::restart()
@@ -49,10 +50,28 @@ bool MyGraphicsScene::voronoiEmpty()
 void MyGraphicsScene::clearLine_p()
 {
     if(!line_p.empty()){
-        qDebug()<<"line_p is not empty";
+        //qDebug()<<"line_p is not empty";
         for(unsigned long i=0;i<line_p.size();i++)
             this->removeItem(line_p[i]);
         line_p.clear();
+    }
+    if(!hp.empty()){
+        //qDebug()<<"line_p is not empty";
+        for(unsigned long i=0;i<hp.size();i++)
+            this->removeItem(hp[i]);
+        hp.clear();
+    }
+    if(!Hull_Sl.empty()){
+        //qDebug()<<"line_p is not empty";
+        for(unsigned long i=0;i<Hull_Sl.size();i++)
+            this->removeItem(Hull_Sl[i]);
+        Hull_Sl.clear();
+    }
+    if(!Hull_Sr.empty()){
+        //qDebug()<<"line_p is not empty";
+        for(unsigned long i=0;i<Hull_Sr.size();i++)
+            this->removeItem(Hull_Sr[i]);
+        Hull_Sr.clear();
     }
 }
 
@@ -82,7 +101,6 @@ void MyGraphicsScene::runOneStep()
         exit(-1);
     }
 
-
     WingedEdge current_vonoroi = this->v->runOneStep();
     this->clearLine_p();
 
@@ -90,6 +108,11 @@ void MyGraphicsScene::runOneStep()
     //Check if reaching result
 
     vector<int> e = current_vonoroi.getOrdinaryEdges();
+    vector<struct bisector> HP = current_vonoroi.getHP();
+    vector<int> hull_Sl = current_vonoroi.getHULL_Sl();
+    vector<int> hull_Sr = current_vonoroi.getHULL_Sr();
+    vector<double> g_x = current_vonoroi.get_g_x();
+    vector<double> g_y = current_vonoroi.get_g_y();
 
     for(int i=0;i<e.size();i++){
         double x_1,x_2,y_1,y_2;
@@ -100,6 +123,29 @@ void MyGraphicsScene::runOneStep()
         this->line_p.append(l);
     }
 
+    for(unsigned long i=0;i<HP.size();i++){
+        QGraphicsLineItem* l = new QGraphicsLineItem(HP[i].x1, HP[i].y1, HP[i].x2, HP[i].y2);
+        qDebug()<<"HP[i].x1 = "<<HP[i].x1<<"; HP[i].y1 = "<<HP[i].y1;
+        qDebug()<<"HP[i].x2 = "<<HP[i].x2<<"; HP[i].y2 = "<<HP[i].y2;
+        l->setPen(QPen(Qt::black));
+        this->addItem(l);
+        this->hp.append(l);
+    }
+
+    if(hull_Sl.size() >1)
+        for(unsigned long i=0;i<hull_Sl.size();i++){
+            QGraphicsLineItem* l = new QGraphicsLineItem(g_x[hull_Sl[i]], g_y[hull_Sl[i]], g_x[hull_Sl[(i+1)%hull_Sl.size()]], g_y[hull_Sl[(i+1)%hull_Sl.size()]]);
+            l->setPen(QPen(Qt::blue));
+            this->addItem(l);
+            this->Hull_Sl.append(l);
+        }
+    if(hull_Sr.size() >1)
+        for(unsigned long i=0;i<hull_Sr.size();i++){
+            QGraphicsLineItem* l = new QGraphicsLineItem(g_x[hull_Sr[i]], g_y[hull_Sr[i]], g_x[hull_Sr[(i+1)%hull_Sr.size()]], g_y[hull_Sr[(i+1)%hull_Sr.size()]]);
+            l->setPen(QPen(Qt::blue));
+            this->addItem(l);
+            this->Hull_Sr.append(l);
+        }
 }
 
 void MyGraphicsScene::writeOutputTxt(QString dir)
