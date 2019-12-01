@@ -22,6 +22,8 @@ public:
 
     //the value of points' coordinates when setting the line
     double x1,y1,x2,y2;
+
+    int w1,w2;//if w is 0, the point is at infinity i.e. the line is a ray to (x,y)
 };
 
 #endif // LINE_H

@@ -54,5 +54,11 @@ bool Line::find_intersect(Line m, Line n, double &inter_x, double &inter_y)
     inter_x = (n.c*m.b - m.c*n.b) / determinant;
     inter_y = (n.a*m.c - m.a*n.c) / determinant;
 
+    if(m.w1 || m.w2){
+        if(m.w1){
+
+        }
+    }
+
     return true;
 }
