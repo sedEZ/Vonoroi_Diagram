@@ -53,7 +53,7 @@ void WingedEdge::constructTwoPointsVoronoi()
 
     if(fabs(y_1 - y_2)< 1e-8){//Vertical median line
         //x = b
-        double b = (x_1+x_2)/2;
+        double b = (x_1+x_2)/2.0;
 
         //(x[0],y[0]) = (b,0)
         x.push_back(b);
@@ -105,28 +105,28 @@ void WingedEdge::constructTwoPointsVoronoi()
         double y_0,y_600,x_0,x_600;
 
         //x=0
-        y_0 = m*0+b;
+        y_0 = m*0.0+b;
         //x=600.0
         y_600 = m*600.0+b;
         //y=0
-        x_0 =n*0 + c;
+        x_0 =n*0.0 + c;
         //y=600.0
         x_600 = n*600.0 + c;
 
         //Put 2 vertices into vector
-        if(y_0 >=0 && y_0 <=600){
-            x.push_back(0);
+        if(y_0 >=0.0 && y_0 <=600.0){
+            x.push_back(0.0);
             y.push_back(y_0);
         }
-        if(y_600 >=0 && y_600 <=600){
+        if(y_600 >=0.0 && y_600 <=600.0){
             x.push_back(600.0);
             y.push_back(y_600);
         }
-        if(x_0 >=0 && x_0 <=600){
+        if(x_0 >=0.0 && x_0 <=600.0){
             x.push_back(x_0);
-            y.push_back(0);
+            y.push_back(0.0);
         }
-        if(x_600 >=0 && x_600 <=600){
+        if(x_600 >=0.0 && x_600 <=600.0){
             x.push_back(x_600);
             y.push_back(600.0);
         }
@@ -142,8 +142,8 @@ void WingedEdge::constructTwoPointsVoronoi()
         }
 
         //Add middle vertex
-        x.push_back((x_1+x_2)/2);
-        y.push_back((y_1+y_2)/2);
+        x.push_back((x_1+x_2)/2.0);
+        y.push_back((y_1+y_2)/2.0);
 
         iter_swap(x.begin()+1,x.begin()+2);
         iter_swap(y.begin()+1,y.begin()+2);
@@ -205,18 +205,18 @@ void WingedEdge::constructThreePointsVoronoi()
         this->x.resize(4);this->y.resize(4);
         //畫兩條垂直edge
         //First edge : (x[0],y[0])~(x[1],y[1])
-        this->x[0] = (this->g_x[0]+this->g_x[1])/2;
-        this->y[0] = 0;     this->w[0] = 0;//points at infinity
+        this->x[0] = (this->g_x[0]+this->g_x[1])/2.0;
+        this->y[0] = 0.0;     this->w[0] = 0;//points at infinity
 
-        this->x[1] = (this->g_x[0]+this->g_x[1])/2;
-        this->y[1] = 600;   this->w[1] = 0;//points at infinity
+        this->x[1] = (this->g_x[0]+this->g_x[1])/2.0;
+        this->y[1] = 600.0;   this->w[1] = 0;//points at infinity
 
         //Second edge : (x[2],y[2])~(x[3],y[3])
-        this->x[2] = (this->g_x[1]+this->g_x[2])/2;
-        this->y[2] = 0;     this->w[2] = 0;//points at infinity
+        this->x[2] = (this->g_x[1]+this->g_x[2])/2.0;
+        this->y[2] = 0.0;     this->w[2] = 0;//points at infinity
 
-        this->x[3] = (this->g_x[1]+this->g_x[2])/2;
-        this->y[3] = 600;   this->w[3] = 0;//points at infinity
+        this->x[3] = (this->g_x[1]+this->g_x[2])/2.0;
+        this->y[3] = 600.0;   this->w[3] = 0;//points at infinity
 
         this->num_vertices = 4;
 
@@ -241,21 +241,21 @@ void WingedEdge::constructThreePointsVoronoi()
         this->x.resize(4);this->y.resize(4);
         //畫兩條水平edge
         //First edge : (x[0],y[0])~(x[1],y[1])
-        this->x[0] = 0;
-        this->y[0] = (this->g_y[0]+this->g_y[1])/2;
+        this->x[0] = 0.0;
+        this->y[0] = (this->g_y[0]+this->g_y[1])/2.0;
         this->w[0] = 0;//points at infinity
 
-        this->x[1] = 600;
-        this->y[1] = (this->g_y[0]+this->g_y[1])/2;
+        this->x[1] = 600.0;
+        this->y[1] = (this->g_y[0]+this->g_y[1])/2.0;
         this->w[1] = 0;//points at infinity
 
         //Second edge : (x[2],y[2])~(x[3],y[3])
-        this->x[2] = 0;
-        this->y[2] = (this->g_y[1]+this->g_y[2])/2;
+        this->x[2] = 0.0;
+        this->y[2] = (this->g_y[1]+this->g_y[2])/2.0;
         this->w[2] = 0;//points at infinity
 
-        this->x[3] = 600;
-        this->y[3] = (this->g_y[1]+this->g_y[2])/2;
+        this->x[3] = 600.0;
+        this->y[3] = (this->g_y[1]+this->g_y[2])/2.0;
         this->w[3] = 0;//points at infinity
 
         this->num_vertices = 4;
@@ -288,38 +288,38 @@ void WingedEdge::constructThreePointsVoronoi()
         //y = mx + b , x = ny + c
         double m,b,n,c;
         this->findPerpendicularBisector(x_1,y_1,x_2,y_2,m,b);
-        n = 1/m;        c = (-1)*b/m;
+        n = 1.0/m;        c = (-1.0)*b/m;
 
         /** Start adding vertices **/
 
         //Judge where the vertices should be.
-        if(m>=0){
+        if(m>=0.0){
             //Line of (x[0],y[0]),(x[1],y[1])
-            if(b >= 0 && b<= 600){
+            if(b >= 0.0 && b<= 600.0){
                 //first vertix is (0,b)
-                this->x[0] = 0;
+                this->x[0] = 0.0;
                 this->y[0] = b;
                 this->w[0] = 0;
             }
             else{
                 //first vertix is (c,0)
                 this->x[0] = c;
-                this->y[0] = 0;
+                this->y[0] = 0.0;
                 this->w[0] = 0;
             }
 
             //x_cross_y_600 is the x-coordinate of the point that intersect with y=600
-            double x_cross_y_600 = n*600+c;
-            if(x_cross_y_600 >=0 && x_cross_y_600 <=600){
+            double x_cross_y_600 = n*600.0+c;
+            if(x_cross_y_600 >=0.0 && x_cross_y_600 <=600.0){
                 //second vertex is at the bound of y=600
                 this->x[1] = x_cross_y_600;
-                this->y[1] = 600;
+                this->y[1] = 600.0;
                 this->w[1] = 0;
             }
             else{
                 //second vertex is at the bound of x=600
-                this->x[1] = 600;
-                this->y[1] = m*600+b;
+                this->x[1] = 600.0;
+                this->y[1] = m*600.0+b;
                 this->w[1] = 0;
             }
 
@@ -331,33 +331,33 @@ void WingedEdge::constructThreePointsVoronoi()
             x_2 = this->g_x[2];
             y_2 = this->g_y[2];
             this->findPerpendicularBisector(x_1,y_1,x_2,y_2,m,b);
-            n = 1/m;        c = (-1)*b/m;
+            n = 1.0/m;        c = (-1.0)*b/m;
 
-            if(b >= 0 && b<= 600){
+            if(b >= 0.0 && b<= 600.0){
                 //first vertix is (0,b)
-                this->x[2] = 0;
+                this->x[2] = 0.0;
                 this->y[2] = b;
                 this->w[2] = 0;
             }
             else{
                 //first vertix is (c,0)
                 this->x[2] = c;
-                this->y[2] = 0;
+                this->y[2] = 0.0;
                 this->w[2] = 0;
             }
 
             //x_cross_y_600 is the x-coordinate of the point that intersect with y=600
-            x_cross_y_600 = n*600+c;
-            if(x_cross_y_600 >=0 && x_cross_y_600 <=600){
+            x_cross_y_600 = n*600.0+c;
+            if(x_cross_y_600 >=0.0 && x_cross_y_600 <=600.0){
                 //second vertex is at the bound of y=600
                 this->x[3] = x_cross_y_600;
-                this->y[3] = 600;
+                this->y[3] = 600.0;
                 this->w[3] = 0;
             }
             else{
                 //second vertex is at the bound of x=600
-                this->x[3] = 600;
-                this->y[3] = m*600+b;
+                this->x[3] = 600.0;
+                this->y[3] = m*600.0+b;
                 this->w[3] = 0;
             }
             /******************************************************************/
@@ -374,32 +374,32 @@ void WingedEdge::constructThreePointsVoronoi()
             /******************************************************************/
         }
         else{//m<0
-            if(b >= 0 && b<= 600){
+            if(b >= 0.0 && b<= 600.0){
                 //first vertix is (0,b)
-                this->x[0] = 0;
+                this->x[0] = 0.0;
                 this->y[0] = b;
                 this->w[0] = 0;
             }
             else{
                 //first vertix is (n*600+c,600)
-                this->x[0] = n*600+c;
-                this->y[0] = 600;
+                this->x[0] = n*600.0+c;
+                this->y[0] = 600.0;
                 this->w[0] = 0;
             }
 
             //x_cross_y_0 is the x-coordinate of the point that intersect with y=0
-            double x_cross_y_0 = n*0+c;
+            double x_cross_y_0 = n*0.0+c;
 
-            if(x_cross_y_0 >0 && x_cross_y_0 <600){
+            if(x_cross_y_0 >0.0 && x_cross_y_0 <600.0){
                 //second vertex is at the bound of y=0
                 this->x[1] = x_cross_y_0;
-                this->y[1] = 0;
+                this->y[1] = 0.0;
                 this->w[1] = 0;
             }
             else{
                 //second vertex is at the bound of x=600
-                this->x[1] = 600;
-                this->y[1] = m*600+b;
+                this->x[1] = 600.0;
+                this->y[1] = m*600.0+b;
                 this->w[1] = 0;
             }
 
@@ -410,7 +410,7 @@ void WingedEdge::constructThreePointsVoronoi()
             x_2 = this->g_x[2];
             y_2 = this->g_y[2];
             this->findPerpendicularBisector(x_1,y_1,x_2,y_2,m,b);
-            n = 1/m;        c = (-1)*b/m;
+            n = 1.0/m;        c = (-1.0)*b/m;
 
             if(b >= 0 && b<= 600){
                 //first vertix is (0,b)
@@ -426,18 +426,18 @@ void WingedEdge::constructThreePointsVoronoi()
             }
 
             //x_cross_y_0 is the x-coordinate of the point that intersect with y=0
-            x_cross_y_0 = n*0+c;
+            x_cross_y_0 = n*0.0+c;
 
-            if(x_cross_y_0 >0 && x_cross_y_0 <600){
+            if(x_cross_y_0 >0.0 && x_cross_y_0 <600.0){
                 //second vertex is at the bound of y=0
                 this->x[3] = x_cross_y_0;
-                this->y[3] = 0;
+                this->y[3] = 0.0;
                 this->w[3] = 0;
             }
             else{
                 //second vertex is at the bound of x=600
-                this->x[3] = 600;
-                this->y[3] = m*600+b;
+                this->x[3] = 600.0;
+                this->y[3] = m*600.0+b;
                 this->w[3] = 0;
             }
             /******************************************************************/
@@ -470,33 +470,33 @@ void WingedEdge::constructThreePointsVoronoi()
         if(fabs(this->g_x[0] - this->g_x[1]) < 1e-8){
             //2 points on left, 1 point on right
             this->x[0] = 0;
-            this->y[0] = (this->g_y[0]+this->g_y[1])/2;
+            this->y[0] = (this->g_y[0]+this->g_y[1])/2.0;
             this->w[0] = 0;
 
             double m_top,m_bot,b_top,b_bot;
             double n_top,n_bot,c_top,c_bot;
 
             if(fabs(this->g_y[1] - this->g_y[2]) < 1e-8){
-                this->x[1] = (this->g_x[1] + this->g_x[2])/2;
-                this->y[1] = 600;
+                this->x[1] = (this->g_x[1] + this->g_x[2])/2.0;
+                this->y[1] = 600.0;
                 this->w[1] = 0;
 
                 //Circumcenter
-                this->x[3] = (this->g_x[1] + this->g_x[2])/2;
-                this->y[3] = (this->g_y[0] + this->g_y[1])/2;
+                this->x[3] = (this->g_x[1] + this->g_x[2])/2.0;
+                this->y[3] = (this->g_y[0] + this->g_y[1])/2.0;
                 this->w[3] = 1;
             }
             else{
                 this->findPerpendicularBisector(this->g_x[1],this->g_y[1],this->g_x[2],this->g_y[2],m_top,b_top);
-                n_top = 1/m_top;    c_top = (-1)*b_top/m_top;
+                n_top = 1.0/m_top;    c_top = (-1.0)*b_top/m_top;
 
                 double candidate1_x,candidate1_y,candidate2_x,candidate2_y;
 
-                candidate1_x = n_top*0+c_top;
+                candidate1_x = n_top*0.0+c_top;
                 candidate1_y = 0;
 
-                candidate2_x = n_top*600+c_top;
-                candidate2_y = 600;
+                candidate2_x = n_top*600.0+c_top;
+                candidate2_y = 600.0;
 
                 //Determine if the generating point at left side is at different side with circumcenter
                 double cross_product_of_left_point = cross_product(this->g_x[1],this->g_y[1],this->g_x[2],this->g_y[2],this->g_x[0],this->g_y[0]);
@@ -504,38 +504,38 @@ void WingedEdge::constructThreePointsVoronoi()
 
                 if(cross_product_of_left_point*cross_product_of_candidate1<0){
                     //the generating point at left side is at different side with circumcenter
-                    if(candidate1_x>=0 && candidate1_x<=600){
+                    if(candidate1_x>=0.0 && candidate1_x<=600.0){
                         this->x[1] = candidate1_x;
                         this->y[1] = candidate1_y;
-                        this->w[1] = 0;
+                        this->w[1] = 0.0;
                     }
-                    else if(candidate1_x < 0){
-                        this->x[1] = 0;
-                        this->y[1] = m_top*0+b_top;
+                    else if(candidate1_x < 0.0){
+                        this->x[1] = 0.0;
+                        this->y[1] = m_top*0.0+b_top;
                         this->w[1] = 0;
                     }
                     else{
-                        this->x[1] = 600;
-                        this->y[1] = m_top*600+b_top;
+                        this->x[1] = 600.0;
+                        this->y[1] = m_top*600.0+b_top;
                         this->w[1] = 0;
                     }
                 }
                 else{
                     //candidate1 is at different side with circumcenter
 
-                    if(candidate2_x>=0 && candidate2_x<=600){
+                    if(candidate2_x>=0.0 && candidate2_x<=600.0){
                         this->x[1] = candidate2_x;
                         this->y[1] = candidate2_y;
                         this->w[1] = 0;
                     }
-                    else if(candidate2_x < 0){
+                    else if(candidate2_x < 0.0){
                         this->x[1] = 0;
                         this->y[1] = m_top*0+b_top;
                         this->w[1] = 0;
                     }
                     else{
-                        this->x[1] = 600;
-                        this->y[1] = m_top*600+b_top;
+                        this->x[1] = 600.0;
+                        this->y[1] = m_top*600.0+b_top;
                         this->w[1] = 0;
                     }
                 }
@@ -548,64 +548,64 @@ void WingedEdge::constructThreePointsVoronoi()
             }
 
             if(fabs(this->g_y[0] - this->g_y[2]) < 1e-8){
-                this->x[2] = (this->g_x[0] + this->g_x[2])/2;
+                this->x[2] = (this->g_x[0] + this->g_x[2])/2.0;
                 this->y[2] = 0;
                 this->w[2] = 0;
 
                 //Circumcenter
-                this->x[3] = (this->g_x[0] + this->g_x[2])/2;
-                this->y[3] = (this->g_y[0] + this->g_y[1])/2;
+                this->x[3] = (this->g_x[0] + this->g_x[2])/2.0;
+                this->y[3] = (this->g_y[0] + this->g_y[1])/2.0;
                 this->w[3] = 1;
             }
             else{
                 this->findPerpendicularBisector(this->g_x[0],this->g_y[0],this->g_x[2],this->g_y[2],m_bot,b_bot);
-                n_bot = 1/m_bot;    c_bot = (-1)*b_bot/m_bot;
+                n_bot = 1.0/m_bot;    c_bot = (-1.0)*b_bot/m_bot;
 
                 double candidate1_x,candidate1_y,candidate2_x,candidate2_y;
 
-                candidate1_x = n_bot*0+c_bot;
-                candidate1_y = 0;
+                candidate1_x = n_bot*0.0+c_bot;
+                candidate1_y = 0.0;
 
-                candidate2_x = n_bot*600+c_bot;
-                candidate2_y = 600;
+                candidate2_x = n_bot*600.0+c_bot;
+                candidate2_y = 600.0;
 
 
                 double cross_product_of_left_point = cross_product(this->g_x[0],this->g_y[0],this->g_x[2],this->g_y[2],this->g_x[1],this->g_y[1]);
                 double cross_product_of_candidate1 = cross_product(this->g_x[0],this->g_y[0],this->g_x[2],this->g_y[2],candidate1_x,candidate1_y);
 
                 if(cross_product_of_left_point*cross_product_of_candidate1<0){
-                    if(candidate1_x>=0 && candidate1_x<=600){
+                    if(candidate1_x>=0.0 && candidate1_x<=600.0){
                         this->x[2] = candidate1_x;
                         this->y[2] = candidate1_y;
                         this->w[2] = 0;
                     }
                     else if(candidate1_x < 0){
-                        this->x[2] = 0;
-                        this->y[2] = m_bot*0+b_bot;
+                        this->x[2] = 0.0;
+                        this->y[2] = m_bot*0.0+b_bot;
                         this->w[2] = 0;
                     }
                     else{
-                        this->x[2] = 600;
-                        this->y[2] = m_bot*600+b_bot;
+                        this->x[2] = 600.0;
+                        this->y[2] = m_bot*600.0+b_bot;
                         this->w[2] = 0;
                     }
                 }
                 else{
                     //candidate1 is at different side with circumcenter
 
-                    if(candidate2_x>=0 && candidate2_x<=600){
+                    if(candidate2_x>=0.0 && candidate2_x<=600.0){
                         this->x[2] = candidate2_x;
                         this->y[2] = candidate2_y;
                         this->w[2] = 0;
                     }
-                    else if(candidate2_x < 0){
-                        this->x[2] = 0;
-                        this->y[2] = m_bot*0+b_bot;
+                    else if(candidate2_x < 0.0){
+                        this->x[2] = 0.0;
+                        this->y[2] = m_bot*0.0+b_bot;
                         this->w[2] = 0;
                     }
                     else{
-                        this->x[2] = 600;
-                        this->y[2] = m_bot*600+b_bot;
+                        this->x[2] = 600.0;
+                        this->y[2] = m_bot*600.0+b_bot;
                         this->w[2] = 0;
                     }
                 }
@@ -638,38 +638,38 @@ void WingedEdge::constructThreePointsVoronoi()
         else{
             //2 points on right, 1 point on left
             this->x[0] = 600;
-            this->y[0] = (this->g_y[1]+this->g_y[2])/2;
+            this->y[0] = (this->g_y[1]+this->g_y[2])/2.0;
             this->w[0] = 0;
 
             double m_top,m_bot,b_top,b_bot;
             double n_top,n_bot,c_top,c_bot;
 
             if(fabs(this->g_y[0] - this->g_y[2]) < 1e-8){
-                this->x[1] = (this->g_x[0] + this->g_x[2])/2;
-                this->y[1] = 600;
+                this->x[1] = (this->g_x[0] + this->g_x[2])/2.0;
+                this->y[1] = 600.0;
                 this->w[1] = 0;
             }
             else{
                 this->findPerpendicularBisector(this->g_x[0],this->g_y[0],this->g_x[2],this->g_y[2],m_top,b_top);
-                n_top = 1/m_top;
-                c_top = (-1)*b_top/m_top;
+                n_top = 1.0/m_top;
+                c_top = (-1.0)*b_top/m_top;
                 double x_cross_y_600;
-                x_cross_y_600 = n_top*600+c_top;
+                x_cross_y_600 = n_top*600.0+c_top;
 
                 //point intersect with upper margin
-                if(x_cross_y_600>=0 && x_cross_y_600<=600){
+                if(x_cross_y_600>=0.0 && x_cross_y_600<=600.0){
                     this->x[1] = x_cross_y_600;
-                    this->y[1] = 600;
+                    this->y[1] = 600.0;
                     this->w[1] = 0;
                 }
-                else if(x_cross_y_600 <0){
-                    this->x[1] = 0;
+                else if(x_cross_y_600 < 0.0){
+                    this->x[1] = 0.0;
                     this->y[1] = b_top;
                     this->w[1] = 0;
                 }
                 else{
-                    this->x[1] = 600;
-                    this->y[1] = m_top*600+b_top;
+                    this->x[1] = 600.0;
+                    this->y[1] = m_top*600.0+b_top;
                     this->w[1] = 0;
                 }
                 //Circumcenter
@@ -679,30 +679,30 @@ void WingedEdge::constructThreePointsVoronoi()
             }
 
             if(fabs(this->g_y[0] - this->g_y[1]) < 1e-8){
-                this->x[2] = (this->g_x[0] + this->g_x[1])/2;
+                this->x[2] = (this->g_x[0] + this->g_x[1])/2.0;
                 this->y[2] = 600;
                 this->w[2] = 0;
             }
             else{
                 this->findPerpendicularBisector(this->g_x[0],this->g_y[0],this->g_x[1],this->g_y[1],m_bot,b_bot);
-                n_bot = 1/m_bot;    c_bot = (-1)*b_bot/m_bot;
+                n_bot = 1.0/m_bot;    c_bot = (-1.0)*b_bot/m_bot;
 
                 double x_cross_y_0;
-                x_cross_y_0 = n_bot*600+c_bot;
+                x_cross_y_0 = n_bot*600.0+c_bot;
 
                 //points intersect with lower margin
-                if(x_cross_y_0>=0 && x_cross_y_0<=600){
+                if(x_cross_y_0>=0.0 && x_cross_y_0<=600.0){
                     this->x[2] = x_cross_y_0;
-                    this->y[2] = 0;
+                    this->y[2] = 0.0;
                     this->w[2] = 0;
                 }
-                else if(x_cross_y_0 <0){
-                    this->x[2] = 0;
+                else if(x_cross_y_0 < 0.0){
+                    this->x[2] = 0.0;
                     this->y[2] = b_bot;
                     this->w[2] = 0;
                 }
                 else{
-                    this->x[2] = 600;
+                    this->x[2] = 600.0;
                     this->y[2] = b_bot;
                     this->w[2] = 0;
                 }
@@ -757,50 +757,50 @@ void WingedEdge::constructThreePointsVoronoi()
 
         //The coordinate of infinity vertex of left & upper-right point 's perpendicular bisector
         if(fabs(this->g_y[0] - this->g_y[2]) < 1e-8){
-            this->x[1] = (this->g_x[0] + this->g_x[2])/2;
-            this->y[1] = 600;
+            this->x[1] = (this->g_x[0] + this->g_x[2])/2.0;
+            this->y[1] = 600.0;
             this->w[1] = 0;
         }
         else{
             this->findPerpendicularBisector(this->g_x[0],this->g_y[0],this->g_x[2],this->g_y[2],m_top,b_top);
-            n_top = 1/m_top;
-            c_top = (-1)*b_top/m_top;
+            n_top = 1.0/m_top;
+            c_top = (-1.0)*b_top/m_top;
             double x_cross_y_600;
             x_cross_y_600 = n_top*600+c_top;
 
             //point intersect with upper margin
-            if(x_cross_y_600>=0 && x_cross_y_600<=600){
+            if(x_cross_y_600>=0 && x_cross_y_600<=600.0){
                 this->x[1] = x_cross_y_600;
-                this->y[1] = 600;
+                this->y[1] = 600.0;
                 this->w[1] = 0;
             }
-            else if(x_cross_y_600 <0){
+            else if(x_cross_y_600 <0.0){
                 this->x[1] = 0;
                 this->y[1] = b_top;
                 this->w[1] = 0;
             }
             else{
-                this->x[1] = 600;
-                this->y[1] = m_top*600+b_top;
+                this->x[1] = 600.0;
+                this->y[1] = m_top*600.0+b_top;
                 this->w[1] = 0;
             }
         }
 
         //The coordinate of infinity vertex of left & lower-right point 's perpendicular bisector
         if(fabs(this->g_y[0] - this->g_y[1]) < 1e-8){
-            this->x[2] = (this->g_x[0] + this->g_x[1])/2;
+            this->x[2] = (this->g_x[0] + this->g_x[1])/2.0;
             this->y[2] = 0;
             this->w[2] = 0;
         }
         else{
             this->findPerpendicularBisector(this->g_x[0],this->g_y[0],this->g_x[1],this->g_y[1],m_bot,b_bot);
-            n_bot = 1/m_bot;    c_bot = (-1)*b_bot/m_bot;
+            n_bot = 1.0/m_bot;    c_bot = (-1.0)*b_bot/m_bot;
 
             double x_cross_y_0;
             x_cross_y_0 = c_bot;
 
             //points intersect with lower margin
-            if(x_cross_y_0>=0 && x_cross_y_0<=600){
+            if(x_cross_y_0>=0 && x_cross_y_0<=600.0){
                 this->x[2] = x_cross_y_0;
                 this->y[2] = 0;
                 this->w[2] = 0;
@@ -840,22 +840,21 @@ void WingedEdge::constructThreePointsVoronoi()
         double candidate1_x,candidate1_y,candidate2_x,candidate2_y;
 
         if(fabs(this->g_y[1]-this->g_y[2]) < 1e-8){
-            candidate1_x = (this->g_x[1]+this->g_x[2])/2;
+            candidate1_x = (this->g_x[1]+this->g_x[2])/2.0;
             candidate1_y = 0;
-            candidate2_x = (this->g_x[1]+this->g_x[2])/2;
-            candidate2_y = 600;
+            candidate2_x = (this->g_x[1]+this->g_x[2])/2.0;
+            candidate2_y = 600.0;
         }
         else{
             this->findPerpendicularBisector(this->g_x[1],this->g_y[1],this->g_x[2],this->g_y[2],m,b);
-            n = 1/m;
-            c = (-1)*b/m;
+            n = 1.0/m;
+            c = (-1.0)*b/m;
 
             candidate1_x = n*0+c;
             candidate1_y = 0;
 
             candidate2_x = n*600+c;
             candidate2_y = 600;
-
         }
 
         //Determine if the generating point at left side is at different side with circumcenter
@@ -864,26 +863,26 @@ void WingedEdge::constructThreePointsVoronoi()
 
         if(cross_product_of_left_point*cross_product_of_candidate1<0){
             //the generating point at left side is at different side with circumcenter
-            if(candidate1_x>=0 && candidate1_x<=600){
+            if(candidate1_x>=0 && candidate1_x<=600.0){
                 this->x[0] = candidate1_x;
                 this->y[0] = candidate1_y;
                 this->w[0] = 0;
             }
             else if(candidate1_x < 0){
-                this->x[0] = 0;
-                this->y[0] = m*0+b;
+                this->x[0] = 0.0;
+                this->y[0] = m*0.0+b;
                 this->w[0] = 0;
             }
             else{
-                this->x[0] = 600;
-                this->y[0] = m*600+b;
+                this->x[0] = 600.0;
+                this->y[0] = m*600.0+b;
                 this->w[0] = 0;
             }
         }
         else{
             //candidate1 is at different side with circumcenter
 
-            if(candidate2_x>=0 && candidate2_x<=600){
+            if(candidate2_x>=0 && candidate2_x<=600.0){
                 this->x[0] = candidate2_x;
                 this->y[0] = candidate2_y;
                 this->w[0] = 0;
@@ -894,8 +893,8 @@ void WingedEdge::constructThreePointsVoronoi()
                 this->w[0] = 0;
             }
             else{
-                this->x[0] = 600;
-                this->y[0] = m*600+b;
+                this->x[0] = 600.0;
+                this->y[0] = m*600.0+b;
                 this->w[0] = 0;
             }
         }
@@ -1064,13 +1063,15 @@ void WingedEdge::merge(WingedEdge S_l, WingedEdge S_r)
 
     bool have_inter_l, have_inter_r;
     do{
+        qDebug()<<"****************************";
+        //qDebug()<<"Px = "<<Px<<"; Py = "<<Py;
         //qDebug()<<"prev_Px = "<<prev_Px<<"; prev_Py = "<<prev_Py;
         BS = new bisector();
         //Find the line coefficients : ax+by+c=0 for BS
         x1 = g_x_l[Hull_Sl[Px]];     y1 = g_y_l[Hull_Sl[Px]];
         x2 = g_x_r[Hull_Sr[Py]];     y2 = g_y_r[Hull_Sr[Py]];
 
-        qDebug()<<"x1 = "<<x1<<" ; y1 = "<<y1<<" ; x2 = "<<x2<<" ; y2 = "<<y2;
+        //qDebug()<<"x1 = "<<x1<<" ; y1 = "<<y1<<" ; x2 = "<<x2<<" ; y2 = "<<y2;
 
         BS->line = WingedEdge::findPerpendicularBisector(x1,y1,x2,y2);
         BS->line.w1 = 0;
@@ -1107,6 +1108,7 @@ void WingedEdge::merge(WingedEdge S_l, WingedEdge S_r)
             left_edge = inf_rays_Sl[Px];
 
             next_Px = (Px + Hull_Sl.size() - 1) % Hull_Sl.size();
+            prev_Px = Px;
         }
         else{
             //qDebug()<<"Here";
@@ -1115,9 +1117,10 @@ void WingedEdge::merge(WingedEdge S_l, WingedEdge S_r)
             bool have_inter_l_1 = Line::find_intersect(BS->line, left_ray_1, inter_l_x_1, inter_l_y_1);
             bool have_inter_l_2 = Line::find_intersect(BS->line, left_ray_2, inter_l_x_2, inter_l_y_2);
             //qDebug()<<"inter_l_y_1 = "<<inter_l_y_1<<"; inter_l_y_2 = "<<inter_l_y_2;
-            //qDebug()<<"have_inter_l_1 = "<<have_inter_l_1<<"; have_inter_l_2 = "<<have_inter_l_2;
+            qDebug()<<"have_inter_l_1 = "<<have_inter_l_1<<"; have_inter_l_2 = "<<have_inter_l_2;
+            qDebug()<<"Px = "<<Px<<"; prev_Px = "<<prev_Px;
             //qDebug()<<"(fabs(inter_l_y_1 - inter_l_y_2)< 1e-8 && (Px != prev_Px)) = "<<((fabs(inter_l_y_1 - inter_l_y_2)< 1e-8 )&& (Px != prev_Px) );
-            if(!have_inter_l_2 || ((fabs(inter_l_y_1 - inter_l_y_2)< 1e-8 ) && (Px != prev_Px)) ){
+            if((have_inter_l_1&&(Px != prev_Px)) || ( have_inter_l_1&&(fabs(inter_l_y_1 - inter_l_y_2)< 1e-8 ) && (Px != prev_Px) ) ){
                 inter_l_x = inter_l_x_1;
                 inter_l_y = inter_l_y_1;
                 have_inter_l = have_inter_l_1;
@@ -1125,35 +1128,45 @@ void WingedEdge::merge(WingedEdge S_l, WingedEdge S_r)
                 left_edge = inf_rays_Sl[Px];
 
                 next_Px = (Px + Hull_Sl.size() - 1) % Hull_Sl.size();
+                prev_Px = Px;
 
             }
-            else if(!have_inter_l_1 || (Px+1)%inf_rays_Sl.size() != prev_Px){
+            else if((have_inter_l_2&& ((Px+1)%inf_rays_Sl.size() != prev_Px))){
                 inter_l_x = inter_l_x_2;
                 inter_l_y = inter_l_y_2;
                 have_inter_l = have_inter_l_2;
+                //qDebug()<<"(Px+1)%inf_rays_Sl.size() = "<<(Px+1)%inf_rays_Sl.size()<<"; prev_Px = "<<prev_Px;
 
                 left_edge = inf_rays_Sl[(Px+1)%inf_rays_Sl.size()];
-
                 next_Px = (Px + 1) % Hull_Sl.size();
+
+                prev_Px = (Px+1)%inf_rays_Sl.size();
             }
             else{
-                qDebug()<<"Failed when finding left_ray";
-                qDebug()<<"have_inter_l_1 = "<<have_inter_l_1<<"; have_inter_l_2 = "<<have_inter_l_2;
+                inter_l_x = inter_l_x_1;
+                inter_l_y = inter_l_y_1;
+                have_inter_l = false;
+
+                qDebug()<<"Here";
                 //exit(-1);
             }
         }
 
-        prev_Px = Px;
         //qDebug()<<"left_ray.a = "<<left_ray.a<<" ; left_ray.b = "<<left_ray.b<<" ; left_ray.c = "<<left_ray.c;
 
         //PyPz, PyPz will be the infinite ray correspond to Py or Py+1
         Line right_ray_1(vertex_x_r[start_vertex_r[inf_rays_Sr[Py]]]  ,  vertex_y_r[start_vertex_r[inf_rays_Sr[Py]]] ,
                        vertex_x_r[end_vertex_r[inf_rays_Sr[Py]]]    ,  vertex_y_r[end_vertex_r[inf_rays_Sr[Py]]] );
+        right_ray_1.w1 = vertex_w_r[start_vertex_r[inf_rays_Sr[Py]]];
+        right_ray_1.w2 = vertex_w_r[end_vertex_r[inf_rays_Sr[Py]]];
         Line right_ray_2(vertex_x_r[start_vertex_r[inf_rays_Sr[(Py+1)%inf_rays_Sr.size()]]]  ,  vertex_y_r[start_vertex_r[inf_rays_Sr[(Py+1)%inf_rays_Sr.size()]]] ,
                        vertex_x_r[end_vertex_r[inf_rays_Sr[(Py+1)%inf_rays_Sr.size()]]]    ,  vertex_y_r[end_vertex_r[inf_rays_Sr[(Py+1)%inf_rays_Sr.size()]]] );
-        right_ray_1.w1 = vertex_w_r[start_vertex_r[inf_rays_Sr[Py]]];
-        right_ray_1.w2 = vertex_w_r[end_vertex_r[inf_rays_Sr[(Py+1)%inf_rays_Sr.size()]]];
+        right_ray_2.w1 = vertex_w_r[start_vertex_r[inf_rays_Sr[(Py+1)%inf_rays_Sr.size()]]];
+        right_ray_2.w2 = vertex_w_r[end_vertex_r[inf_rays_Sr[(Py+1)%inf_rays_Sr.size()]]];
+        //qDebug()<<"right_ray_1.w1 = "<<right_ray_1.w1<<"; right_ray_1.w2 = "<<right_ray_1.w2;
+        //qDebug()<<"right_ray_2.w1 = "<<right_ray_2.w1<<"; right_ray_2.w2 = "<<right_ray_2.w2;
 
+        //qDebug()<<" Py ="<<Py<<"; prev_Py = "<<prev_Py;
         if(Py == (Py+1)%inf_rays_Sr.size() ){
             //only 1 candidate
             right_ray = right_ray_1;
@@ -1163,58 +1176,59 @@ void WingedEdge::merge(WingedEdge S_l, WingedEdge S_r)
             right_edge = inf_rays_Sr[Py];
 
             next_Py = (Py + Hull_Sr.size() - 1) % Hull_Sr.size();
+            prev_Py = Py;
         }
         else{
             double inter_r_x_1, inter_r_y_1;
             double inter_r_x_2, inter_r_y_2;
             bool have_inter_r_1 = Line::find_intersect(BS->line, right_ray_1, inter_r_x_1, inter_r_y_1);
             bool have_inter_r_2 = Line::find_intersect(BS->line, right_ray_2, inter_r_x_2, inter_r_y_2);
-            if(!have_inter_r_1 || ((fabs(inter_r_y_1 - inter_r_y_2)< 1e-8 ) && ((Py+1)%inf_rays_Sr.size()!= prev_Py)) ){
+            qDebug()<<"have_inter_r_1 = "<<have_inter_r_1<<"have_inter_r_2 = "<<have_inter_r_2;
+            if((have_inter_r_2&& ((Py+1)%inf_rays_Sr.size()!= prev_Py)) || (have_inter_r_2 && (fabs(inter_r_y_1 - inter_r_y_2)< 1e-8 ) && ((Py+1)%inf_rays_Sr.size()!= prev_Py)) ){
                 inter_r_x = inter_r_x_2;
                 inter_r_y = inter_r_y_2;
                 have_inter_r = have_inter_r_2;
 
                 right_edge = inf_rays_Sr[(Py+1)%inf_rays_Sr.size()];
-                qDebug()<<"Here";
+                //qDebug()<<"Here";
                 next_Py = (Py + 1) % Hull_Sr.size();
+                prev_Py = (Py + 1) % inf_rays_Sr.size();
                 //qDebug()<<"have_inter_r_1 = "<<have_inter_r_1<<"; inter_r_y_2 = "<<inter_r_y_2<<"; inter_r_y_1 = "<<inter_r_y_1
                         //<<"; (Py+1)%inf_rays_Sr.size() ="<<(Py+1)%inf_rays_Sr.size()<<"; prev_Py = "<<prev_Py;
             }
-            else if(!have_inter_r_2 || Py != prev_Py ){
+            else if((have_inter_r_1 &&(Py != prev_Py)) ){
                 inter_r_x = inter_r_x_1;
                 inter_r_y = inter_r_y_1;
                 have_inter_r = have_inter_r_1;
-
                 right_edge = inf_rays_Sr[Py];
 
                 next_Py = (Py + Hull_Sr.size() - 1) % Hull_Sr.size();
+                prev_Py = Py;
             }
             else{
-                qDebug()<<"Failed when finding right_ray";
-                qDebug()<<"have_inter_r_1 = "<<have_inter_r_1<<"; have_inter_r_2 = "<<have_inter_r_2;
-                qDebug()<<"prev_Py = "<<prev_Py;
-                qDebug()<<"(Py+1)%inf_rays_Sr.size() = "<<(Py+1)%inf_rays_Sr.size();
-                qDebug()<<"Py = "<<Py;
-                //exit(-1);
+                inter_r_x = inter_r_x_1;
+                inter_r_y = inter_r_y_1;
+                have_inter_r = false;
             }
         }
 
-        prev_Py = Py;
         //qDebug()<<"right_ray.a = "<<right_ray.a<<" ; right_ray.b = "<<right_ray.b<<" ; right_ray.c = "<<right_ray.c;
         //qDebug()<<"have_inter_l = "<<have_inter_l<<"; have_inter_r = "<<have_inter_r;
+        //qDebug()<<"inter_l_x = "<<inter_l_x<<"inter_l_y = "<<inter_l_y;
+        //qDebug()<<"inter_r_x = "<<inter_r_x<<"inter_r_y = "<<inter_r_y;
 
         //The next point BS really intersect with
         double inter_x,inter_y;
 
-        qDebug()<<"Px = "<<Px<<"; Py = "<<Py;
+
         int vertex_to_move;
         if(have_inter_l && have_inter_r &&fabs(inter_l_x-inter_r_x) < 1e-8 && fabs(inter_l_y-inter_r_y) < 1e-8){
             inter_x = inter_l_x;
             inter_y = inter_l_y;
 
             if(top){
-                prev_x = (-1)*(BS->line.b*(inter_y+600) + BS->line.c)/BS->line.a;
-                prev_y = inter_y+600;
+                prev_x = (-1.0)*(BS->line.b*(inter_y+600.0) + BS->line.c)/BS->line.a;
+                prev_y = inter_y+600.0;
             }
 
 
@@ -1309,15 +1323,15 @@ void WingedEdge::merge(WingedEdge S_l, WingedEdge S_r)
             //Py changes, counter clockwise
             Py = next_Py;
         }
-        else if(!have_inter_r || inter_l_y >= inter_r_y){
+        else if(!have_inter_r || (have_inter_l &&(inter_l_y >= inter_r_y)) ){
             //No intersection with right_ray, Must intersect with left_ray
             //Or left_ray got the upper intersection with BS
             inter_x = inter_l_x;
             inter_y = inter_l_y;
 
             if(top){
-                prev_x = (-1)*(BS->line.b*(inter_y+600) + BS->line.c)/BS->line.a;
-                prev_y = inter_y+600;
+                prev_x = (-1.0)*(BS->line.b*(inter_y+600.0) + BS->line.c)/BS->line.a;
+                prev_y = inter_y+600.0;
             }
 
             /********* Move the infinite vertex to (inter_x,inter_y) **********/
@@ -1390,11 +1404,12 @@ void WingedEdge::merge(WingedEdge S_l, WingedEdge S_r)
 
             }
             else{
-                prev_x = (-1)*(BS->line.b*(inter_y+600) + BS->line.c)/BS->line.a;
-                prev_y = inter_y+600;
+                prev_x = (-1)*(BS->line.b*(inter_y+600.0) + BS->line.c)/BS->line.a;
+                prev_y = inter_y+600.0;
             }
 
             //qDebug()<<"Here";
+
             //Px changes, clockwise
             Px = next_Px;
 
@@ -1407,8 +1422,8 @@ void WingedEdge::merge(WingedEdge S_l, WingedEdge S_r)
             inter_y = inter_r_y;
 
             if(top){
-                prev_x = (-1)*(BS->line.b*(inter_y+600) + BS->line.c)/BS->line.a;
-                prev_y = inter_y+600;
+                prev_x = (-1.0)*(BS->line.b*(inter_y+600.0) + BS->line.c)/BS->line.a;
+                prev_y = inter_y+600.0;
             }
 
             /*
@@ -1422,7 +1437,7 @@ void WingedEdge::merge(WingedEdge S_l, WingedEdge S_r)
             */
 
             /********* Move the infinite vertex to (inter_x,inter_y) **********/
-            if(cross_product(prev_x,prev_y,inter_x,inter_y,vertex_x_r[start_vertex_r[right_edge]],vertex_x_r[start_vertex_r[right_edge]]) < 0){
+            if(cross_product(prev_x,prev_y,inter_x,inter_y,vertex_x_r[start_vertex_r[right_edge]],vertex_y_r[start_vertex_r[right_edge]]) < 0){
                 //start_vertex of inf_rays_S[Py] is the infinite vertex
                 //qDebug()<<"start";
                 if(this->end_vertex.back() == (start_vertex_r[right_edge] + num_v_l)){
@@ -1443,9 +1458,9 @@ void WingedEdge::merge(WingedEdge S_l, WingedEdge S_r)
                     vertex_to_move = start_vertex_r[right_edge] + num_v_l;
                 }
             }
-            else if(cross_product(prev_x,prev_y,inter_x,inter_y,vertex_x_r[end_vertex_r[right_edge]],vertex_x_r[end_vertex_r[right_edge]]) < 0){
+            else if(cross_product(prev_x,prev_y,inter_x,inter_y,vertex_x_r[end_vertex_r[right_edge]],vertex_y_r[end_vertex_r[right_edge]]) < 0){
                 //qDebug()<<"end";
-                qDebug()<<"this->end_vertex.back() ="<<this->end_vertex.back()<<"; (end_vertex_r[right_edge] + num_v_l) ="<<(end_vertex_r[right_edge] + num_v_l);
+                //qDebug()<<"this->end_vertex.back() ="<<this->end_vertex.back()<<"; (end_vertex_r[right_edge] + num_v_l) ="<<(end_vertex_r[right_edge] + num_v_l);
                 if(this->end_vertex.back() == (end_vertex_r[right_edge] + num_v_l)){
                     //Under some scenerio, the vertex to be configed has been configed in previous iteration
                     this->x.push_back(inter_x);
@@ -1488,10 +1503,11 @@ void WingedEdge::merge(WingedEdge S_l, WingedEdge S_r)
 
             }
             else{
-                prev_x = (-1)*(BS->line.b*(inter_y+600) + BS->line.c)/BS->line.a;
-                prev_y = inter_y+600;
+                prev_x = (-1.0)*(BS->line.b*(inter_y+600.0) + BS->line.c)/BS->line.a;
+                prev_y = inter_y+600.0;
             }
             //qDebug()<<"Py = "<<Py;
+
             //Py changes
             Py = next_Py;
             //qDebug()<<"Py = "<<Py;
@@ -1658,6 +1674,9 @@ void WingedEdge::merge(WingedEdge S_l, WingedEdge S_r)
         //HP = HP ∪ BS
         this->HP.push_back(*BS);
 
+
+
+
         //qDebug()<<"Px = "<<Px<<"; Py = "<<Py;
     }while(Px != Pc || Py != Pd);
 /*******************************       End of while      ************************************/
@@ -1672,14 +1691,14 @@ void WingedEdge::merge(WingedEdge S_l, WingedEdge S_r)
 
     if(top){/*?????????*/
         //deal with the situation that Pa==Pc, Pb==Pd
-        prev_y = 600;
-        prev_x = (-1)*(BS->line.b*(prev_y) + BS->line.c)/BS->line.a;
+        prev_y = 600.0;
+        prev_x = (-1.0)*(BS->line.b*(prev_y) + BS->line.c)/BS->line.a;
     }
 
     BS->x1 = prev_x;
     BS->y1 = prev_y;
-    BS->x2 = (-1)*(BS->line.b*(prev_y-600)+ BS->line.c)/BS->line.a;
-    BS->y2 = prev_y-600;
+    BS->x2 = (-1.0)*(BS->line.b*(prev_y-600.0)+ BS->line.c)/BS->line.a;
+    BS->y2 = prev_y-600.0;
     //qDebug()<<"BS->line.a = "<<BS->line.a<<"; BS->line.b = "<<BS->line.b<<"; BS->line.c = "<<BS->line.c;
     //qDebug()<<"BS->x1 = "<<BS->x1<<"; BS->y1 = "<<BS->y1<<"; BS->x2 = "<<BS->x2<<"; BS->y2 = "<<BS->y2;
 
@@ -1806,8 +1825,10 @@ void WingedEdge::merge(WingedEdge S_l, WingedEdge S_r)
     this->cw_successor.push_back(edge_to_be_config_r);
     this->ccw_successor.push_back(edge_to_be_config_l);
 
+    vector<int> inf_rays;
+    //this->constructConvexHull(this->HULL,inf_rays_Sl);
 
-    this->output_all_data_structures();
+    //this->output_all_data_structures();
 }
 
 double WingedEdge::find_k_th(vector<double> S,unsigned long k)
@@ -2530,26 +2551,26 @@ Line WingedEdge::findPerpendicularBisector(double x_1, double y_1, double x_2, d
 
     if(fabs(y_1-y_2) < 1e-8){
         //x = (x_1+x_2)/2
-        result.a = 1;
-        result.b = 0;
-        result.c = (-1)*(x_1+x_2)/2;
+        result.a = 1.0;
+        result.b = 0.0;
+        result.c = (-1.0)*(x_1+x_2)/2.0;
 
-        result.x1 = (x_1+x_2)/2;
-        result.y1 = 0;
-        result.x2 = (x_1+x_2)/2;
-        result.y2 = 600;
+        result.x1 = (x_1+x_2)/2.0;
+        result.y1 = 0.0;
+        result.x2 = (x_1+x_2)/2.0;
+        result.y2 = 600.0;
     }
     else{
         result.a = (x_1-x_2);
         result.b = (y_1-y_2);
-        result.c = (x_2*x_2+y_2*y_2-x_1*x_1-y_1*y_1)/2;
+        result.c = (x_2*x_2+y_2*y_2-x_1*x_1-y_1*y_1)/2.0;
 
         //qDebug()<<"result.a = "<<result.a<<" ; result.b = "<<result.b<<" ; result.b = "<<result.c;
 
-        result.x1 = 0;
-        result.y1 = (-1)*result.c;
-        result.x2 = 600;
-        result.y2 = (-1)*(result.a*600+result.c);
+        result.x1 = 0.0;
+        result.y1 = (-1.0)*result.c/(y_1-y_2);
+        result.x2 = 600.0;
+        result.y2 = (-1.0)*(result.a*600.0+result.c)/(y_1-y_2);
     }
 
     return result;
@@ -2651,6 +2672,11 @@ void WingedEdge::combineWingedEdges(WingedEdge S_l, WingedEdge S_r)
         this->y.push_back(y_r[i]);
     }
 
+}
+
+vector<int> WingedEdge::getHULL() const
+{
+    return HULL;
 }
 
 vector<int> WingedEdge::getHULL_Sr() const

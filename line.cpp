@@ -6,10 +6,10 @@ Line::Line()
     this->a = 0;
     this->b = 0;
     this->c = 0;
-    this->x1=0;
-    this->y1=0;
-    this->x2=0;
-    this->y2=0;
+    this->x1= 0;
+    this->y1= 0;
+    this->x2= 0;
+    this->y2= 0;
 }
 
 Line::Line(double x1, double y1, double x2, double y2)
@@ -23,14 +23,14 @@ Line::Line(double x1, double y1, double x2, double y2)
 
     if(fabs(x1-x2) < 1e-8){
         //Vertical line : x = x1;
-        this->a = 1;
-        this->b = 0;
-        this->c = (-1)*x1;
+        this->a = 1.0;
+        this->b = 0.0;
+        this->c = (-1.0)*x1;
     }
     else{
         this->a = (y1-y2)/(x2-x1);
-        this->b = 1;
-        this->c = (-1)*(a*x1+b*y1);
+        this->b = 1.0;
+        this->c = (-1.0)*(a*x1+b*y1);
     }
 }
 
@@ -53,7 +53,7 @@ bool Line::find_intersect(Line m, Line n, double &inter_x, double &inter_y)
 
     inter_x = (n.c*m.b - m.c*n.b) / determinant;
     inter_y = (n.a*m.c - m.a*n.c) / determinant;
-/*
+
     if(m.w1 || m.w2){
         double side_of_point_1 = Line::cross_product(n.x1,n.y1,n.x2,n.y2,m.x1,m.y1);
         double side_of_point_2 = Line::cross_product(n.x1,n.y1,n.x2,n.y2,m.x2,m.y2);
@@ -70,10 +70,16 @@ bool Line::find_intersect(Line m, Line n, double &inter_x, double &inter_y)
 
         //same side => intersrction is not on n
         if(side_of_point_1*side_of_point_2 > 0){
+            /*
+            qDebug()<<"m.x1 = "<<m.x1<<"; m.y1 = "<<m.y1<<"; m.x2 ="<<m.x2<<"; m.y2 ="<<m.y2;
+            qDebug()<<"n.x1 = "<<n.x1<<"; n.y1 = "<<n.y1<<"; n.x2 ="<<n.x2<<"; n.y2 ="<<n.y2;
+            qDebug()<<"side_of_point_1 ="<<side_of_point_1;
+            qDebug()<<"side_of_point_2 ="<<side_of_point_2;
+            */
             return false;
         }
     }
-*/
+
     return true;
 }
 

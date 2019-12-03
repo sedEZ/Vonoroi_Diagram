@@ -850,6 +850,7 @@ moc_dialog.cpp: dialog.h \
 		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtCore/qlocale.h \
 		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtCore/qcontiguouscache.h \
 		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtWidgets/QGraphicsLineItem \
+		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtWidgets/QGraphicsItemGroup \
 		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtCore/QPointF \
 		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtCore/QVector \
 		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtCore/QString \
@@ -990,6 +991,7 @@ moc_mygraphicsscene.cpp: mygraphicsscene.h \
 		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtCore/qlocale.h \
 		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtCore/qcontiguouscache.h \
 		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtWidgets/QGraphicsLineItem \
+		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtWidgets/QGraphicsItemGroup \
 		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtCore/QPointF \
 		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtCore/QVector \
 		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtCore/QString \
@@ -1189,6 +1191,7 @@ main.o: main.cpp dialog.h \
 		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtCore/qlocale.h \
 		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtCore/qcontiguouscache.h \
 		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtWidgets/QGraphicsLineItem \
+		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtWidgets/QGraphicsItemGroup \
 		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtCore/QPointF \
 		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtCore/QVector \
 		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtCore/QString \
@@ -1335,6 +1338,7 @@ dialog.o: dialog.cpp dialog.h \
 		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtCore/qlocale.h \
 		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtCore/qcontiguouscache.h \
 		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtWidgets/QGraphicsLineItem \
+		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtWidgets/QGraphicsItemGroup \
 		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtCore/QPointF \
 		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtCore/QVector \
 		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtCore/QString \
@@ -1475,6 +1479,7 @@ mygraphicsscene.o: mygraphicsscene.cpp mygraphicsscene.h \
 		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtCore/qlocale.h \
 		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtCore/qcontiguouscache.h \
 		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtWidgets/QGraphicsLineItem \
+		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtWidgets/QGraphicsItemGroup \
 		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtCore/QPointF \
 		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtCore/QVector \
 		/home/tl32rodan/Qt5.13.2/5.13.2/gcc_64/include/QtCore/QString \

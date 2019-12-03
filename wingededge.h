@@ -106,6 +106,8 @@ public:
     vector<int> getHULL_Sr() const;
     void setHULL_Sr(const vector<int> &value);
 
+    vector<int> getHULL() const;
+
 private:
     //Combine 2 WingedEdge ds as this
     void combineWingedEdges(WingedEdge S_l, WingedEdge S_r );
@@ -139,6 +141,7 @@ private:
     vector<double> y;
 
     vector<int> HULL_Sl,HULL_Sr;
+    vector<int> HULL;
 
     vector<struct bisector> HP;
     //For storing : Check if the WingedEdge object is waiting merging.
